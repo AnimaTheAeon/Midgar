@@ -10,6 +10,7 @@ interface CssExports {
   'label': string;
   'modeButton': string;
   'statusLine': string;
+  'update': string;
   'value': string;
   'warn': string;
   'window': string;

@@ -50,6 +50,18 @@ or from the newest run under Actions.
 Point Jenova at your series folder and it will fetch subtitles for whatever
 Midgar imports.
 
+## Updates
+
+Midgar checks this repo's Releases for new versions.
+
+- **Windows:** the tray icon pops up when an update is ready; click it (or
+  **Install update** in the tray menu) and Midgar downloads the installer,
+  updates itself and starts again. **Check for updates** is in the tray menu too.
+- **Synology:** an **UPDATE … READY** button appears in the status line. It
+  downloads the new `.spk`; install it with Package Center → Manual Install.
+  Your settings and library are kept. (DSM doesn't let packages replace
+  themselves, so this step stays manual.)
+
 ## Building
 
 GitHub Actions (`.github/workflows/build.yml`) builds everything on each push:

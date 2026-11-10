@@ -206,8 +206,59 @@ namespace NzbDrone.SysTray
                 Restart(string.Empty);
                 Exit();
             }));
+            // Keep the PC app itself up to date too.
+            AvailableUpdate update = null;
+            var updateItem = new ToolStripMenuItem { Visible = false };
+            updateItem.Click += async (_, _) =>
+            {
+                if (update == null)
+                {
+                    return;
+                }
+
+                updateItem.Enabled = false;
+                updateItem.Text = "Downloading update…";
+
+                try
+                {
+                    await AppUpdater.StartInstallAsync(update);
+                    Exit();
+                }
+                catch (Exception)
+                {
+                    updateItem.Enabled = true;
+                    updateItem.Text = $"Install update {update.Version}";
+                }
+            };
+            menu.Items.Insert(1, updateItem);
+
+            async System.Threading.Tasks.Task CheckUpdates(bool manual)
+            {
+                update = await AppUpdater.CheckAsync();
+
+                if (update != null)
+                {
+                    updateItem.Text = $"Install update {update.Version}";
+                    updateItem.Visible = true;
+                    tray.ShowBalloonTip(8000, $"Midgar {update.Version} is ready", "Right-click the tray icon and pick Install update.", ToolTipIcon.Info);
+                }
+                else if (manual)
+                {
+                    tray.ShowBalloonTip(4000, "Midgar", "You're on the latest version.", ToolTipIcon.Info);
+                }
+            }
+
+            menu.Items.Add(new ToolStripMenuItem("Check for updates", null, async (_, _) => await CheckUpdates(true)));
             menu.Items.Add(new ToolStripSeparator());
             menu.Items.Add(new ToolStripMenuItem("Exit", null, (_, _) => Exit()));
+
+            using var updateTimer = new System.Windows.Forms.Timer { Interval = 60 * 1000 };
+            updateTimer.Tick += async (_, _) =>
+            {
+                updateTimer.Interval = 6 * 60 * 60 * 1000;
+                await CheckUpdates(false);
+            };
+            updateTimer.Start();
 
             tray.ContextMenuStrip = menu;
             tray.DoubleClick += (_, _) => Show();
