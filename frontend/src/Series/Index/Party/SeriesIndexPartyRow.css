@@ -202,3 +202,44 @@
     display: none;
   }
 }
+
+/* Box of X: slanted rows, orb-green bars, no FFVII hand. */
+
+:global(html.boxofx) {
+  .row {
+    border-radius: 0;
+    clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 14px);
+
+    &:hover,
+    &:focus-within {
+      background: linear-gradient(90deg, rgb(60 150 20 / 45%), rgb(20 70 8 / 35%));
+    }
+  }
+
+  .hand {
+    display: none;
+  }
+
+  .portrait {
+    border-radius: 0;
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  }
+
+  .bar {
+    border-color: rgb(170 255 80 / 45%);
+    border-radius: 0;
+    background: #000e00;
+  }
+
+  .info {
+    background: linear-gradient(90deg, #4fb51a, #e2ff6a);
+  }
+
+  .off {
+    background: #4a5a42;
+  }
+
+  .tag {
+    border-radius: 0;
+  }
+}

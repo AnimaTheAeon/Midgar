@@ -13,6 +13,12 @@ import { inputTypes, kinds } from 'Helpers/Props';
 import SettingsToolbarConnector from 'Settings/SettingsToolbarConnector';
 import translate from 'Utilities/String/translate';
 
+// Midgar: the two looks. Sonarr's old theme names count as the FFVII menu.
+export const themeOptions = [
+  { key: 'midgar', value: 'FFVII menu' },
+  { key: 'boxofx', value: 'Box of X' }
+];
+
 export const firstDayOfWeekOptions = [
   {
     key: 0,
@@ -99,6 +105,25 @@ class UISettings extends Component {
                 id="uiSettings"
                 {...otherProps}
               >
+                <FieldSet legend="Theme">
+                  <FormGroup>
+                    <FormLabel>Theme</FormLabel>
+                    <FormInputGroup
+                      type={inputTypes.SELECT}
+                      name="theme"
+                      helpText="Applies right away."
+                      values={themeOptions}
+                      onChange={({ name, value }) => {
+                        // Switch and save straight away, like the desktop apps.
+                        onInputChange({ name, value });
+                        onSavePress();
+                      }}
+                      {...settings.theme}
+                      value={settings.theme.value === 'boxofx' ? 'boxofx' : 'midgar'}
+                    />
+                  </FormGroup>
+                </FieldSet>
+
                 <FieldSet legend={translate('Calendar')}>
                   <FormGroup>
                     <FormLabel>{translate('FirstDayOfWeek')}</FormLabel>

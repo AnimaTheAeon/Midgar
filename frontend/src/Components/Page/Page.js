@@ -6,6 +6,7 @@ import ConnectionLostModal from 'App/ConnectionLostModal';
 import SignalRConnector from 'Components/SignalRConnector';
 import AuthenticationRequiredModal from 'FirstRun/AuthenticationRequiredModal';
 import locationShape from 'Helpers/Props/Shapes/locationShape';
+import BoxOfXLayout from './BoxOfX/BoxOfXLayout';
 import PageHeader from './Header/PageHeader';
 import StatusLine from './Midgar/StatusLine';
 import { useMidgarPolling } from './Midgar/useMidgarStatus';
@@ -86,9 +87,43 @@ class Page extends Component {
       isSidebarVisible,
       enableColorImpairedMode,
       authenticationEnabled,
+      isBoxOfX,
       onSidebarToggle,
       onSidebarVisibleChange
     } = this.props;
+
+    const modals = (
+      <React.Fragment>
+        <AppUpdatedModal
+          isOpen={this.state.isUpdatedModalOpen}
+          onModalClose={this.onUpdatedModalClose}
+        />
+
+        <ConnectionLostModal
+          isOpen={this.state.isConnectionLostModalOpen}
+          onModalClose={this.onConnectionLostModalClose}
+        />
+
+        <AuthenticationRequiredModal
+          isOpen={!authenticationEnabled}
+        />
+      </React.Fragment>
+    );
+
+    // Midgar: the Box of X theme has its own home screen and page layout.
+    if (isBoxOfX) {
+      return (
+        <ColorImpairedContext.Provider value={enableColorImpairedMode}>
+          <SignalRConnector />
+
+          <BoxOfXLayout location={location}>
+            {children}
+          </BoxOfXLayout>
+
+          {modals}
+        </ColorImpairedContext.Provider>
+      );
+    }
 
     return (
       <ColorImpairedContext.Provider value={enableColorImpairedMode}>
@@ -112,19 +147,7 @@ class Page extends Component {
 
           <MidgarStatusLine />
 
-          <AppUpdatedModal
-            isOpen={this.state.isUpdatedModalOpen}
-            onModalClose={this.onUpdatedModalClose}
-          />
-
-          <ConnectionLostModal
-            isOpen={this.state.isConnectionLostModalOpen}
-            onModalClose={this.onConnectionLostModalClose}
-          />
-
-          <AuthenticationRequiredModal
-            isOpen={!authenticationEnabled}
-          />
+          {modals}
         </div>
       </ColorImpairedContext.Provider>
     );
@@ -141,6 +164,7 @@ Page.propTypes = {
   isDisconnected: PropTypes.bool.isRequired,
   enableColorImpairedMode: PropTypes.bool.isRequired,
   authenticationEnabled: PropTypes.bool.isRequired,
+  isBoxOfX: PropTypes.bool.isRequired,
   onResize: PropTypes.func.isRequired,
   onSidebarToggle: PropTypes.func.isRequired,
   onSidebarVisibleChange: PropTypes.func.isRequired

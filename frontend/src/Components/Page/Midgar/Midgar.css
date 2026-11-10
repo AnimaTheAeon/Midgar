@@ -134,3 +134,10 @@
     text-decoration: none;
   }
 }
+
+/* Box of X: corner-cut windows. */
+
+:global(html.boxofx) .window {
+  border-radius: 0;
+  clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
+}

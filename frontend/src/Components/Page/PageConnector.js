@@ -142,6 +142,7 @@ const selectErrors = createSelector(
 function createMapStateToProps() {
   return createSelector(
     (state) => state.settings.ui.item.enableColorImpairedMode,
+    (state) => state.settings.ui.item.theme || window.Sonarr.theme,
     selectIsPopulated,
     selectErrors,
     selectAppProps,
@@ -149,6 +150,7 @@ function createMapStateToProps() {
     createSystemStatusSelector(),
     (
       enableColorImpairedMode,
+      theme,
       isPopulated,
       errors,
       app,
@@ -161,7 +163,8 @@ function createMapStateToProps() {
         isPopulated,
         isSmallScreen: dimensions.isSmallScreen,
         authenticationEnabled: systemStatus.authentication !== 'none',
-        enableColorImpairedMode
+        enableColorImpairedMode,
+        isBoxOfX: theme === 'boxofx'
       };
     }
   );

@@ -22,3 +22,14 @@
     font-size: 18px;
   }
 }
+
+/* Box of X: display face, upper case. */
+
+:global(html.boxofx) .legend {
+  border-bottom-color: rgb(160 255 80 / 35%);
+  color: #c8ff4a;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 17px;
+  font-family: 'Orbitron', 'Nunito', sans-serif;
+}

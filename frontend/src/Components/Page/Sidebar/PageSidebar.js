@@ -20,7 +20,7 @@ import styles from './PageSidebar.css';
 const HEADER_HEIGHT = parseInt(dimensions.headerHeight);
 const SIDEBAR_WIDTH = parseInt(dimensions.sidebarWidth);
 
-const links = [
+export const links = [
   {
     iconName: icons.SERIES_CONTINUING,
     title: () => translate('Series'),
@@ -141,9 +141,9 @@ const links = [
         to: '/settings/general'
       },
       {
+        // Midgar: not advanced, it holds the Theme picker.
         title: () => translate('Ui'),
-        to: '/settings/ui',
-        isAdvanced: true
+        to: '/settings/ui'
       }
     ]
   },
@@ -181,7 +181,7 @@ const links = [
   }
 ];
 
-function getActiveParent(pathname) {
+export function getActiveParent(pathname) {
   let activeParent = links[0].to;
 
   links.forEach((link) => {

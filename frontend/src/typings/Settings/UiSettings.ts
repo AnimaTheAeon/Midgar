@@ -1,5 +1,5 @@
 export default interface UiSettings {
-  theme: 'auto' | 'dark' | 'light';
+  theme: 'auto' | 'dark' | 'light' | 'midgar' | 'boxofx';
   showRelativeDates: boolean;
   shortDateFormat: string;
   longDateFormat: string;
