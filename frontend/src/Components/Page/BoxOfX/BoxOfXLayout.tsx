@@ -485,7 +485,11 @@ function BoxOfXLayout({ location, children }: BoxOfXLayoutProps) {
             </nav>
           ) : null}
 
-          <div className={styles.frame}>{children}</div>
+          <div className={styles.frameGlow}>
+            <div className={styles.frame}>
+              <div className={styles.frameInner}>{children}</div>
+            </div>
+          </div>
 
           <div className={styles.bottomRow}>
             <div className={styles.messages}>

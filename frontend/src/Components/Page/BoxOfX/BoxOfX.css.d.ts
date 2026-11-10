@@ -10,6 +10,8 @@ interface CssExports {
   'bottomRow': string;
   'emblem': string;
   'frame': string;
+  'frameGlow': string;
+  'frameInner': string;
   'gloss': string;
   'good': string;
   'grid': string;
