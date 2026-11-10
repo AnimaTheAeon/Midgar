@@ -5,7 +5,6 @@
 #define AppURL "https://github.com/AnimaTheAeon/Midgar"
 #define AppExeName "Midgar.exe"
 #define BuildNumber GetEnv('MIDGAR_VERSION')
-#define MajorVersion GetEnv('MIDGAR_MAJOR_VERSION')
 #define Framework GetEnv('FRAMEWORK')
 #define Runtime GetEnv('RUNTIME')
 
@@ -31,7 +30,7 @@ UninstallDisplayIcon={app}\{#AppExeName}
 DisableReadyPage=True
 CompressionThreads=2
 Compression=lzma2/normal
-VersionInfoVersion={#MajorVersion}
+VersionInfoVersion={#BuildNumber}
 SetupLogging=yes
 OutputDir="..\..\..\_artifacts"
 AppVerName={#AppName} {#BuildNumber}

@@ -17,6 +17,7 @@ function About() {
 
   const {
     version,
+    appVersion,
     packageVersion,
     packageAuthor,
     isNetCore,
@@ -38,7 +39,10 @@ function About() {
   return (
     <FieldSet legend={translate('About')}>
       <DescriptionList className={styles.descriptionList}>
-        <DescriptionListItem title={translate('Version')} data={version} />
+        <DescriptionListItem
+          title={translate('Version')}
+          data={appVersion || version}
+        />
 
         {packageVersion && (
           <DescriptionListItem

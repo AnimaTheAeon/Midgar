@@ -37,7 +37,7 @@ namespace NzbDrone.SysTray
 
                 var tag = root.GetProperty("tag_name").GetString() ?? string.Empty;
 
-                if (!Version.TryParse(tag.TrimStart('v', 'V'), out var latest) || latest <= BuildInfo.Version)
+                if (!Version.TryParse(tag.TrimStart('v', 'V'), out var latest) || Full(latest) <= Full(BuildInfo.AppVersion))
                 {
                     return null;
                 }
@@ -87,10 +87,16 @@ namespace NzbDrone.SysTray
             });
         }
 
+        // 1.1 and 1.1.0 are the same version.
+        private static Version Full(Version v)
+        {
+            return new Version(v.Major, v.Minor, Math.Max(v.Build, 0), Math.Max(v.Revision, 0));
+        }
+
         private static HttpClient CreateClient()
         {
             var client = new HttpClient { Timeout = TimeSpan.FromMinutes(10) };
-            client.DefaultRequestHeaders.UserAgent.ParseAdd($"Midgar/{BuildInfo.Version}");
+            client.DefaultRequestHeaders.UserAgent.ParseAdd($"Midgar/{BuildInfo.AppVersion}");
             client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
 
             return client;

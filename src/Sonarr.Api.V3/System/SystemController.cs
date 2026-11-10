@@ -62,6 +62,7 @@ namespace Sonarr.Api.V3.System
                 AppName = BuildInfo.AppName,
                 InstanceName = _configFileProvider.InstanceName,
                 Version = BuildInfo.Version.ToString(),
+                AppVersion = BuildInfo.AppVersion.ToString(),
                 BuildTime = BuildInfo.BuildDateTime,
                 IsDebug = BuildInfo.IsDebug,
                 IsProduction = RuntimeInfo.IsProduction,

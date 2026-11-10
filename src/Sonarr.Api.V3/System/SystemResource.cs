@@ -11,6 +11,7 @@ namespace Sonarr.Api.V3.System
         public string AppName { get; set; }
         public string InstanceName { get; set; }
         public string Version { get; set; }
+        public string AppVersion { get; set; }
         public DateTime BuildTime { get; set; }
         public bool IsDebug { get; set; }
         public bool IsProduction { get; set; }

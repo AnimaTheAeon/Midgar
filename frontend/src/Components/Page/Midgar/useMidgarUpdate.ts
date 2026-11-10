@@ -66,7 +66,7 @@ async function check() {
     const release = (await response.json()) as Release;
     const version = release.tag_name.replace(/^v/i, '');
 
-    if (isNewer(version, window.Sonarr.version)) {
+    if (isNewer(version, window.Sonarr.appVersion || window.Sonarr.version)) {
       const find = (suffix: string) =>
         release.assets.find((a) => a.name.endsWith(suffix))
           ?.browser_download_url;

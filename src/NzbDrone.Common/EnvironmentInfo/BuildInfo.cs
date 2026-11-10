@@ -24,11 +24,21 @@ namespace NzbDrone.Common.EnvironmentInfo
             }
 
             Release = $"{Version}-{Branch}";
+
+            AppVersion = Version;
+            var midgarVersion = attributes.OfType<AssemblyMetadataAttribute>().FirstOrDefault(a => a.Key == "MidgarVersion");
+            if (midgarVersion != null && System.Version.TryParse(midgarVersion.Value, out var parsed))
+            {
+                AppVersion = parsed;
+            }
         }
 
         public static string AppName { get; } = "Midgar";
 
         public static Version Version { get; }
+
+        // Midgar's own version (1.1, 1.2, ...). Version above keeps Sonarr's numbering for compatibility.
+        public static Version AppVersion { get; }
         public static string Branch { get; }
         public static string Release { get; }
 

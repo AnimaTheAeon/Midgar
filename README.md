@@ -31,9 +31,9 @@ as a Synology package. Sibling app to
 
 ## Install
 
-Midgar also works as a download client target for
-[Lifestream](https://github.com/AnimaTheAeon/Lifestream): add a **Transmission**
-download client pointing at Lifestream's host and RPC port.
+To download with [Lifestream](https://github.com/AnimaTheAeon/Lifestream), go to
+Settings → Download Clients → **+** and pick **Lifestream**. Enter the PC or
+NAS address, port 9091, and the username and password set in Lifestream.
 
 Grab the latest build from [Releases](https://github.com/AnimaTheAeon/Midgar/releases)
 or from the newest run under Actions.
@@ -52,7 +52,10 @@ Midgar imports.
 
 ## Updates
 
-Midgar checks this repo's Releases for new versions.
+Midgar checks this repo's Releases for new versions. Versions are numbered
+1.1, 1.2, and so on: publish a release tagged `v1.2` and the build attaches
+the installer and `.spk` to it. (Behind the scenes Midgar still reports a
+Sonarr 4.x version to other tools so Prowlarr and Materia accept it.)
 
 - **Windows:** the tray icon pops up when an update is ready; click it (or
   **Install update** in the tray menu) and Midgar downloads the installer,

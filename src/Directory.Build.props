@@ -76,6 +76,9 @@
     <!-- Should be replaced by CI -->
     <AssemblyVersion>10.0.0.*</AssemblyVersion>
     <AssemblyConfiguration>$(Configuration)-dev</AssemblyConfiguration>
+    <!-- Midgar's own version, shown to people and used for updates. AssemblyVersion
+         stays on Sonarr's 4.x numbering so Prowlarr and other tools accept it. -->
+    <MidgarVersion>1.1</MidgarVersion>
     <NeutralLanguage>en</NeutralLanguage>
 
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
@@ -86,6 +89,12 @@
 
     <PathMap>$(MSBuildProjectDirectory)=./$(MSBuildProjectName)/</PathMap>
   </PropertyGroup>
+  <ItemGroup Condition="'$(SonarrProject)'=='true'">
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>MidgarVersion</_Parameter1>
+      <_Parameter2>$(MidgarVersion)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
   <!-- Set the AssemblyConfiguration attribute for projects -->
   <ItemGroup Condition="'$(SonarrProject)'=='true'">
     <AssemblyAttribute Include="System.Reflection.AssemblyConfigurationAttribute">

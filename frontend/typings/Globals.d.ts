@@ -8,6 +8,7 @@ interface Window {
     theme: string;
     urlBase: string;
     version: string;
+    appVersion?: string;
     isProduction: boolean;
   };
 }
