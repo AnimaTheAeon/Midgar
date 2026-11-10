@@ -206,6 +206,7 @@ namespace NzbDrone.SysTray
                 Restart(string.Empty);
                 Exit();
             }));
+
             // Keep the PC app itself up to date too.
             AvailableUpdate update = null;
             var updateItem = new ToolStripMenuItem { Visible = false };
