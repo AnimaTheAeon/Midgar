@@ -25,7 +25,13 @@ namespace NzbDrone.SysTray
         private readonly NotifyIcon _trayIcon = new NotifyIcon();
         private readonly ContextMenuStrip _trayMenu = new ContextMenuStrip();
 
+        private readonly System.Windows.Forms.Timer _updateTimer = new System.Windows.Forms.Timer();
+        private readonly ToolStripMenuItem _updateItem = new ToolStripMenuItem { Visible = false };
+
         private EventWaitHandle _showSignal;
+        private AvailableUpdate _update;
+        private Version _announced;
+        private bool _installing;
         private AppWindow _window;
         private bool _toldAboutTray;
         private bool _useBrowser;
@@ -43,8 +49,12 @@ namespace NzbDrone.SysTray
             open.Font = new System.Drawing.Font(open.Font, System.Drawing.FontStyle.Bold);
 
             _trayMenu.Items.Add(open);
+            _updateItem.Font = new System.Drawing.Font(open.Font, System.Drawing.FontStyle.Bold);
+            _updateItem.Click += (_, _) => InstallUpdate();
+            _trayMenu.Items.Add(_updateItem);
             _trayMenu.Items.Add(new ToolStripMenuItem("Open in Browser", null, (_, _) => OpenBrowser()));
             _trayMenu.Items.Add(new ToolStripMenuItem("Use Midgar on my NAS instead…", null, (_, _) => SwitchToNas()));
+            _trayMenu.Items.Add(new ToolStripMenuItem("Check for updates", null, async (_, _) => await CheckForUpdates(true)));
             _trayMenu.Items.Add(new ToolStripSeparator());
             _trayMenu.Items.Add(new ToolStripMenuItem("Exit", null, OnExit));
 
@@ -54,6 +64,22 @@ namespace NzbDrone.SysTray
             _trayIcon.ContextMenuStrip = _trayMenu;
             _trayIcon.Visible = true;
             _trayIcon.DoubleClick += (_, _) => ShowAppWindow();
+            _trayIcon.BalloonTipClicked += (_, _) =>
+            {
+                if (_update != null && _announced == _update.Version)
+                {
+                    InstallUpdate();
+                }
+            };
+
+            // First check a minute after start, then every 6 hours.
+            _updateTimer.Interval = 60 * 1000;
+            _updateTimer.Tick += async (_, _) =>
+            {
+                _updateTimer.Interval = 6 * 60 * 60 * 1000;
+                await CheckForUpdates(false);
+            };
+            _updateTimer.Start();
 
             Application.Run(this);
         }
@@ -102,6 +128,7 @@ namespace NzbDrone.SysTray
         {
             if (isDisposing)
             {
+                _updateTimer.Dispose();
                 _trayIcon.Dispose();
                 _showSignal?.Dispose();
             }
@@ -195,6 +222,57 @@ namespace NzbDrone.SysTray
             catch (Exception ex)
             {
                 Logger.Warn(ex, "Couldn't open the browser");
+            }
+        }
+
+        private async Task CheckForUpdates(bool manual)
+        {
+            var update = await AppUpdater.CheckAsync();
+
+            if (update == null)
+            {
+                if (manual)
+                {
+                    _trayIcon.ShowBalloonTip(4000, "Midgar", $"You're on the latest version ({BuildInfo.Version}).", ToolTipIcon.Info);
+                }
+
+                return;
+            }
+
+            _update = update;
+            _updateItem.Text = $"Install update {update.Version}";
+            _updateItem.Visible = true;
+
+            if (manual || _announced != update.Version)
+            {
+                _announced = update.Version;
+                _trayIcon.ShowBalloonTip(8000, $"Midgar {update.Version} is ready", "Click here (or Install update in the tray menu) to update. Midgar restarts by itself.", ToolTipIcon.Info);
+            }
+        }
+
+        private async void InstallUpdate()
+        {
+            if (_update == null || _installing)
+            {
+                return;
+            }
+
+            _installing = true;
+            _updateItem.Text = "Downloading update…";
+            _updateItem.Enabled = false;
+
+            try
+            {
+                await AppUpdater.StartInstallAsync(_update);
+                _lifecycle.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                Logger.Warn(ex, "Update failed");
+                _installing = false;
+                _updateItem.Text = $"Install update {_update.Version}";
+                _updateItem.Enabled = true;
+                _trayIcon.ShowBalloonTip(6000, "Midgar", "The update couldn't be downloaded. Try again later, or get it from the Releases page.", ToolTipIcon.Warning);
             }
         }
 

@@ -64,6 +64,8 @@ Name: "{app}"; Type: filesandordirs
 [Run]
 Filename: "{app}\Midgar.Console.exe"; Description: "Let phones and other PCs on my network open Midgar"; StatusMsg: "Allowing network access"; Parameters: "/registerurl /exitimmediately"; Flags: postinstall unchecked runascurrentuser runhidden waituntilterminated
 Filename: "{app}\{#AppExeName}"; Description: "Start Midgar"; Flags: postinstall skipifsilent nowait
+; After a quiet update from the tray, start Midgar again.
+Filename: "{app}\{#AppExeName}"; Flags: nowait skipifnotsilent runasoriginaluser
 
 [Code]
 function InitializeSetup(): Boolean;
@@ -75,8 +77,8 @@ begin
   if not RegQueryStringValue(HKLM, 'SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}', 'pv', Version) and
      not RegQueryStringValue(HKCU, 'Software\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}', 'pv', Version) then
   begin
-    MsgBox('Midgar shows its window with the Microsoft Edge WebView2 Runtime, which this PC doesn''t seem to have.' + #13#10#13#10 +
+    SuppressibleMsgBox('Midgar shows its window with the Microsoft Edge WebView2 Runtime, which this PC doesn''t seem to have.' + #13#10#13#10 +
            'Midgar will still install and open in your browser. To get the app window, install the WebView2 Runtime from Microsoft (search "WebView2 Runtime download").',
-           mbInformation, MB_OK);
+           mbInformation, MB_OK, IDOK);
   end;
 end;
