@@ -533,7 +533,28 @@
   color: #1c3504;
 }
 
+.frameGlow {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  filter: drop-shadow(0 0 7px rgba(140, 240, 60, 0.28));
+}
+
+/* The outline is this layer showing 2px around the inner panel, so the cut
+ * corners keep their border. */
 .frame {
+  display: flex;
+  flex: 1 1 auto;
+  box-sizing: border-box;
+  padding: 2px;
+  min-width: 0;
+  min-height: 0;
+  background: rgba(160, 255, 80, 0.75);
+  clip-path: polygon(22px 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%, 0 22px);
+}
+
+.frameInner {
   position: relative;
   display: flex;
   flex: 1 1 auto;
@@ -541,9 +562,8 @@
   overflow: hidden;
   min-width: 0;
   min-height: 0;
-  border: 2px solid rgba(160, 255, 80, 0.75);
-  background: linear-gradient(160deg, rgba(26, 86, 12, 0.88) 0%, rgba(14, 60, 8, 0.88) 40%, rgba(10, 48, 6, 0.9) 62%, rgba(3, 22, 3, 0.92) 100%);
-  clip-path: polygon(22px 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%, 0 22px);
+  background: linear-gradient(160deg, rgba(26, 86, 12, 0.94) 0%, rgba(14, 60, 8, 0.94) 40%, rgba(10, 48, 6, 0.95) 62%, rgba(3, 22, 3, 0.96) 100%);
+  clip-path: polygon(21px 0, 100% 0, 100% calc(100% - 21px), calc(100% - 21px) 100%, 0 100%, 0 21px);
 }
 
 .messages {
@@ -589,7 +609,7 @@
     }
   }
 
-  .frame {
+  .frameGlow {
     min-height: 70vh;
   }
 }
