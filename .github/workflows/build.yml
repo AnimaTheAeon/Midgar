@@ -11,7 +11,11 @@ permissions:
   contents: write
 
 env:
-  # Numbered like the Sonarr v4 release it is based on, so tools that talk to Sonarr (Prowlarr etc.) accept it.
+  # Midgar's own version (1.1, 1.2, ...) comes from the release tag (v1.1).
+  # Builds that aren't releases are numbered MIDGAR_BASE.0.<run>.
+  MIDGAR_BASE: "1.1"
+  # Hidden assembly version, numbered like the Sonarr v4 release it is based on,
+  # so tools that talk to Sonarr (Prowlarr, Materia etc.) accept it.
   MAJOR_VERSION: 4
   BASE_VERSION: 4.0.20
   FRAMEWORK: net6.0
@@ -21,14 +25,16 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.v.outputs.version }}
+      assembly: ${{ steps.v.outputs.assembly }}
     steps:
       - id: v
         run: |
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
           else
-            echo "version=${BASE_VERSION}.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+            echo "version=${MIDGAR_BASE}.0.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
           fi
+          echo "assembly=${BASE_VERSION}.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
 
   frontend:
     runs-on: ubuntu-latest
@@ -55,6 +61,7 @@ jobs:
     runs-on: windows-latest
     env:
       VERSION: ${{ needs.prepare.outputs.version }}
+      ASSEMBLY_VERSION: ${{ needs.prepare.outputs.assembly }}
       RUNTIME: win-x64
     steps:
       - uses: actions/checkout@v4
@@ -64,7 +71,7 @@ jobs:
       - name: Set version
         shell: bash
         run: |
-          sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>$VERSION<\/AssemblyVersion>/g" src/Directory.Build.props
+          sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>$ASSEMBLY_VERSION<\/AssemblyVersion>/g" -e "s/<MidgarVersion>[0-9.]\+<\/MidgarVersion>/<MidgarVersion>$VERSION<\/MidgarVersion>/g" src/Directory.Build.props
           sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>main<\/AssemblyConfiguration>/g" src/Directory.Build.props
       - name: Build
         shell: bash
@@ -92,7 +99,6 @@ jobs:
         run: |
           choco upgrade innosetup -y --no-progress | Out-Null
           $env:MIDGAR_VERSION = $env:VERSION
-          $env:MIDGAR_MAJOR_VERSION = "${{ env.MAJOR_VERSION }}"
           & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" distribution\windows\setup\midgar.iss
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@v4
@@ -107,6 +113,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VERSION: ${{ needs.prepare.outputs.version }}
+      ASSEMBLY_VERSION: ${{ needs.prepare.outputs.assembly }}
       RUNTIME: linux-x64
     steps:
       - uses: actions/checkout@v4
@@ -115,7 +122,7 @@ jobs:
           global-json-file: global.json
       - name: Set version
         run: |
-          sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>$VERSION<\/AssemblyVersion>/g" src/Directory.Build.props
+          sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>$ASSEMBLY_VERSION<\/AssemblyVersion>/g" -e "s/<MidgarVersion>[0-9.]\+<\/MidgarVersion>/<MidgarVersion>$VERSION<\/MidgarVersion>/g" src/Directory.Build.props
           sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>main<\/AssemblyConfiguration>/g" src/Directory.Build.props
       - name: Build
         run: dotnet msbuild -restore src/Sonarr.sln -p:Configuration=Release -p:Platform=Posix -p:RuntimeIdentifiers=$RUNTIME -t:PublishAllRids

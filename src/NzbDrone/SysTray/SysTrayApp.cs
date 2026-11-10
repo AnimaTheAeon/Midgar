@@ -58,7 +58,7 @@ namespace NzbDrone.SysTray
             _trayMenu.Items.Add(new ToolStripSeparator());
             _trayMenu.Items.Add(new ToolStripMenuItem("Exit", null, OnExit));
 
-            _trayIcon.Text = string.Format("Midgar - {0}", BuildInfo.Version);
+            _trayIcon.Text = string.Format("Midgar - {0}", BuildInfo.AppVersion);
             _trayIcon.Icon = Properties.Resources.Sonarr;
 
             _trayIcon.ContextMenuStrip = _trayMenu;
@@ -233,7 +233,7 @@ namespace NzbDrone.SysTray
             {
                 if (manual)
                 {
-                    _trayIcon.ShowBalloonTip(4000, "Midgar", $"You're on the latest version ({BuildInfo.Version}).", ToolTipIcon.Info);
+                    _trayIcon.ShowBalloonTip(4000, "Midgar", $"You're on the latest version ({BuildInfo.AppVersion}).", ToolTipIcon.Info);
                 }
 
                 return;
