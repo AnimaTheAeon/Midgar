@@ -41,3 +41,12 @@
   font-family: 'Nunito';
   src: url('nunito-latin-800-normal.woff2') format('woff2');
 }
+
+/* Orbitron 800 (SIL OFL, see Orbitron-OFL.txt), the display face of the Box of X theme. */
+
+@font-face {
+  font-weight: 800;
+  font-style: normal;
+  font-family: 'Orbitron';
+  src: url('orbitron-latin-800-normal.woff2') format('woff2');
+}

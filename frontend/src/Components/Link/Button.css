@@ -119,3 +119,21 @@
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
+
+/* Box of X: corner-cut buttons. */
+
+:global(html.boxofx) .button {
+  border-radius: 0;
+  text-shadow: none;
+  clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+}
+
+:global(html.boxofx) .primary {
+  background: linear-gradient(180deg, #e2ff6a, #b5e82e 55%, #8cc81c);
+  color: #1c3504;
+
+  &:hover {
+    background: linear-gradient(180deg, #f2ff9a, #c8f040 55%, #9cd824);
+    color: #1c3504;
+  }
+}

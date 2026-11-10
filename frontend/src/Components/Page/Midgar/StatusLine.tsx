@@ -14,8 +14,8 @@ function formatCountdown(ms: number) {
   return `${String(m).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 }
 
-// The status line along the bottom of the window.
-function StatusLine() {
+// What the status line says; also used by the Box of X status box.
+export function useStatusSummary() {
   const now = useNow();
   const status = useMidgarStatus();
   const update = useMidgarUpdate();
@@ -41,26 +41,41 @@ function StatusLine() {
     parts.push(status.detail);
   }
 
+  return {
+    status,
+    text: parts.join(' · '),
+    update: update
+      ? {
+          version: update.version,
+          href: (isWindows ? update.pageUrl : update.spkUrl) ?? update.pageUrl,
+          title: isWindows
+            ? 'Right-click the Midgar tray icon and pick Install update.'
+            : 'Download the new package, then in Package Center choose Manual Install. Your settings and library are kept.',
+        }
+      : undefined,
+  };
+}
+
+// The status line along the bottom of the window.
+function StatusLine() {
+  const { status, text, update } = useStatusSummary();
+
   return (
     <footer className={styles.statusLine}>
       <StatusBadge kind={status.kind} size={18} />
       <span
         className={status.kind === 'good' ? undefined : styles[status.kind]}
       >
-        {parts.join(' · ')}
+        {text}
       </span>
 
       {update ? (
         <a
           className={styles.update}
-          href={(isWindows ? update.pageUrl : update.spkUrl) ?? update.pageUrl}
+          href={update.href}
           target="_blank"
           rel="noreferrer"
-          title={
-            isWindows
-              ? 'Right-click the Midgar tray icon and pick Install update.'
-              : 'Download the new package, then in Package Center choose Manual Install. Your settings and library are kept.'
-          }
+          title={update.title}
         >
           UPDATE {update.version} READY
         </a>

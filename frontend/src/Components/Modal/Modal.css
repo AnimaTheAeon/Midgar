@@ -107,3 +107,11 @@
     height: 100% !important;
   }
 }
+
+/* Box of X: corner-cut pop-up windows. */
+
+:global(html.boxofx) .modal {
+  border-color: rgb(160 255 80 / 75%);
+  border-radius: 0;
+  clip-path: polygon(22px 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%, 0 22px);
+}

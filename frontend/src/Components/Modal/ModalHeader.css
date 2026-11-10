@@ -8,3 +8,14 @@
   font-weight: 800;
   font-size: 22px;
 }
+
+/* Box of X: display face, upper case. */
+
+:global(html.boxofx) .modalHeader {
+  color: #dcff64;
+  text-transform: uppercase;
+  text-shadow: 0 0 6px rgb(150 255 60 / 35%);
+  letter-spacing: 0.06em;
+  font-size: 19px;
+  font-family: 'Orbitron', 'Nunito', sans-serif;
+}

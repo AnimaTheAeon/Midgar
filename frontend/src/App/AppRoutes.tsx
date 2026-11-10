@@ -7,6 +7,7 @@ import AddNewSeriesConnector from 'AddSeries/AddNewSeries/AddNewSeriesConnector'
 import ImportSeries from 'AddSeries/ImportSeries/ImportSeries';
 import CalendarPage from 'Calendar/CalendarPage';
 import NotFound from 'Components/NotFound';
+import HomeRoute from 'Components/Page/BoxOfX/HomeRoute';
 import Switch from 'Components/Router/Switch';
 import SeriesDetailsPageConnector from 'Series/Details/SeriesDetailsPageConnector';
 import SeriesIndex from 'Series/Index/SeriesIndex';
@@ -154,6 +155,12 @@ function AppRoutes() {
       <Route path="/system/events" component={LogsTableConnector} />
 
       <Route path="/system/logs/files" component={Logs} />
+
+      {/*
+        Box of X home screen
+      */}
+
+      <Route path="/home" exact={true} component={HomeRoute} />
 
       {/*
         Not Found
