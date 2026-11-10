@@ -1,0 +1,16 @@
+#!/bin/sh
+mkdir -p "$SYNOPKG_PKGVAR"
+{
+cat << 'NOTE'
+<p style="font-weight:bold;">One more step: let Midgar into your TV and download folders</p>
+<p>Midgar runs as its own system user, so it can only see folders you allow. For each shared folder it needs (for example <b>video</b> and your downloads folder):</p>
+<ol style="list-style-type:decimal;list-style-position:inside;">
+<li>Open <b>Control Panel</b> &rarr; <b>Shared Folder</b></li>
+<li>Select the folder and click <b>Edit</b> &rarr; <b>Permissions</b></li>
+<li>Switch the list from <b>Local users</b> to <b>System internal user</b></li>
+<li>Tick <b>Read/Write</b> for <b>Midgar</b> and click <b>Save</b></li>
+</ol>
+<p>Then open <b>Midgar</b> from the main menu, or go to port <b>8990</b> on this NAS. On your PC, right-click the Midgar tray icon and pick <b>Use Midgar on my NAS instead</b>.</p>
+NOTE
+} >> "$SYNOPKG_TEMP_LOGFILE"
+exit 0

@@ -1,0 +1,80 @@
+/* Midgar: FFVII menu entries. The pointing hand marks where you are. */
+
+.item {
+  position: relative;
+  color: var(--sidebarColor);
+}
+
+.isActiveItem {
+  composes: item;
+}
+
+.link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 1px 8px;
+  padding: 3px 10px 3px 40px;
+  min-height: 30px;
+  border-radius: 4px;
+  color: var(--sidebarColor);
+  text-shadow: var(--ff7TextShadow);
+  font-weight: 800;
+  font-size: 18px;
+
+  &:hover,
+  &:focus {
+    background-color: var(--menuItemHoverBackgroundColor);
+    color: #fff;
+    text-decoration: none;
+  }
+}
+
+.childLink {
+  composes: link;
+
+  padding: 2px 10px 2px 56px;
+  min-height: 24px;
+  color: var(--lightGray);
+  font-size: 14px;
+}
+
+/* The white glove (same drawing as Lifestream). */
+.hand {
+  position: absolute;
+  top: 50%;
+  left: 6px;
+  display: none;
+  margin-top: -10px;
+}
+
+.isActiveLink > .hand,
+.isActiveParentLink:not(:has(~ .item .isActiveLink)) > .hand {
+  display: block;
+}
+
+.childLink > .hand {
+  left: 22px;
+}
+
+.isActiveLink {
+  background-color: var(--sidebarActiveBackgroundColor);
+  color: #fff;
+}
+
+.isActiveParentLink {
+  color: #fff;
+}
+
+.iconContainer {
+  /* Midgar: text-only menu like FFVII. */
+  display: none;
+}
+
+.noIcon {
+  margin-left: 0;
+}
+
+.status {
+  margin-left: auto;
+}

@@ -1,0 +1,204 @@
+/* FFVII party-member row. Height must match PARTY_ROW_HEIGHT (112px). */
+
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 8px 12px 8px 44px;
+  height: 108px;
+  border-radius: 6px;
+  color: var(--textColor);
+  gap: 16px;
+
+  &:hover,
+  &:focus-within {
+    background: rgb(112 204 255 / 10%);
+  }
+}
+
+/* The pointing hand slides in next to the row you're on. */
+.hand {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  margin-top: -10px;
+  opacity: 0;
+  transition:
+    opacity 120ms ease-out,
+    transform 120ms ease-out;
+  transform: translateX(-6px);
+}
+
+.row:hover .hand,
+.row:focus-within .hand {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.portrait {
+  position: relative;
+  flex: none;
+  overflow: hidden;
+  width: 66px;
+  height: 96px;
+  border: 2px solid var(--ff7BorderLight);
+  border-radius: 4px;
+  background: var(--ff7Well);
+}
+
+.portraitImage {
+  object-fit: cover;
+}
+
+.identity {
+  display: flex;
+  flex: 1 1 220px;
+  flex-direction: column;
+  min-width: 0;
+  gap: 8px;
+}
+
+.name {
+  overflow: hidden;
+  color: var(--textColor);
+  text-overflow: ellipsis;
+  text-shadow: var(--ff7TextShadow);
+  white-space: nowrap;
+  font-weight: 800;
+  font-size: 22px;
+
+  &:hover {
+    color: #fff;
+    text-decoration: none;
+  }
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  overflow: hidden;
+  max-height: 40px;
+  color: var(--lightGray);
+  font-size: 14px;
+  gap: 4px 16px;
+}
+
+.label {
+  color: var(--ff7Label);
+  text-shadow: var(--ff7TextShadow);
+  letter-spacing: 0.06em;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.value {
+  text-shadow: var(--ff7TextShadow);
+  font-weight: 800;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gauges {
+  display: flex;
+  flex: 0 0 230px;
+  flex-direction: column;
+  min-width: 140px;
+  gap: 5px;
+}
+
+.gaugeHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.bar {
+  overflow: hidden;
+  height: 8px;
+  border: 1px solid var(--ff7BorderDark);
+  border-radius: 4px;
+  background: var(--ff7Well);
+}
+
+.fill {
+  height: 100%;
+}
+
+.good {
+  background: linear-gradient(90deg, #1e9a46, #a0f0b0);
+}
+
+.warn {
+  background: linear-gradient(90deg, #c89614, #ffec8c);
+}
+
+.bad {
+  background: linear-gradient(90deg, #b43c3c, #ffa0a0);
+}
+
+.info {
+  background: linear-gradient(90deg, #1e6ee6, #8ce6ff);
+}
+
+.off {
+  background: #5a5e78;
+}
+
+.tag {
+  flex: none;
+  box-sizing: border-box;
+  padding: 3px 8px;
+  min-width: 118px;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  text-align: center;
+  text-shadow: 1px 1px 0 #000;
+  letter-spacing: 0.06em;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.goodText {
+  color: var(--ff7Good);
+}
+
+.warnText {
+  color: var(--ff7Warn);
+}
+
+.badText {
+  color: var(--ff7Bad);
+}
+
+.infoText {
+  color: #8ce6ff;
+}
+
+.offText {
+  color: #a4a8c0;
+}
+
+.actions {
+  display: flex;
+  flex: none;
+  opacity: 0.6;
+
+  .row:hover &,
+  .row:focus-within & {
+    opacity: 1;
+  }
+}
+
+@media only screen and (max-width: $breakpointSmall) {
+  .row {
+    padding-left: 12px;
+    gap: 10px;
+  }
+
+  .hand,
+  .gauges,
+  .actions {
+    display: none;
+  }
+}

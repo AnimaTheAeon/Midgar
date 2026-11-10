@@ -1,0 +1,159 @@
+name: Build Midgar
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  # Numbered like the Sonarr v4 release it is based on, so tools that talk to Sonarr (Prowlarr etc.) accept it.
+  MAJOR_VERSION: 4
+  BASE_VERSION: 4.0.20
+  FRAMEWORK: net6.0
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - id: v
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${BASE_VERSION}.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          fi
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+      - run: yarn install --frozen-lockfile --network-timeout 120000
+      - name: Lint
+        run: |
+          yarn lint
+          yarn stylelint
+      - name: Build (includes type check)
+        run: yarn build --env production
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ui
+          path: _output/UI
+
+  windows:
+    needs: [prepare, frontend]
+    runs-on: windows-latest
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+      RUNTIME: win-x64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Set version
+        shell: bash
+        run: |
+          sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>$VERSION<\/AssemblyVersion>/g" src/Directory.Build.props
+          sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>main<\/AssemblyConfiguration>/g" src/Directory.Build.props
+      - name: Build
+        shell: bash
+        run: dotnet msbuild -restore src/Sonarr.sln -p:Configuration=Release -p:Platform=Windows -p:RuntimeIdentifiers=$RUNTIME -p:EnableWindowsTargeting=true -t:PublishAllRids
+      - uses: actions/download-artifact@v4
+        with:
+          name: ui
+          path: _output/UI
+      - name: Package
+        shell: bash
+        run: |
+          folder=_artifacts/$RUNTIME/$FRAMEWORK/Midgar
+          rm -rf "$folder" && mkdir -p "$folder"
+          cp -r _output/$FRAMEWORK/$RUNTIME/publish/* "$folder"
+          cp -r _output/$FRAMEWORK-windows/$RUNTIME/publish/* "$folder"
+          cp -r _output/UI "$folder/UI"
+          cp LICENSE.md "$folder"
+          rm -f "$folder"/Sonarr.Mono.* "$folder"/Mono.Posix.NETStandard.* "$folder"/libMonoPosixHelper.*
+          test -f "$folder/Midgar.exe"
+          test -f "$folder/Midgar.Console.exe"
+          test -f "$folder/Microsoft.Web.WebView2.WinForms.dll"
+          (cd _artifacts/$RUNTIME/$FRAMEWORK && 7z a -tzip "../../Midgar-$VERSION-$RUNTIME.zip" ./Midgar > /dev/null)
+      - name: Installer
+        shell: pwsh
+        run: |
+          choco upgrade innosetup -y --no-progress | Out-Null
+          $env:MIDGAR_VERSION = $env:VERSION
+          $env:MIDGAR_MAJOR_VERSION = "${{ env.MAJOR_VERSION }}"
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" distribution\windows\setup\midgar.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: midgar-windows
+          path: |
+            _artifacts/*.zip
+            _artifacts/*-setup.exe
+
+  synology:
+    needs: [prepare, frontend]
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+      RUNTIME: linux-x64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Set version
+        run: |
+          sed -i'' -e "s/<AssemblyVersion>[0-9.*]\+<\/AssemblyVersion>/<AssemblyVersion>$VERSION<\/AssemblyVersion>/g" src/Directory.Build.props
+          sed -i'' -e "s/<AssemblyConfiguration>[\$()A-Za-z-]\+<\/AssemblyConfiguration>/<AssemblyConfiguration>main<\/AssemblyConfiguration>/g" src/Directory.Build.props
+      - name: Build
+        run: dotnet msbuild -restore src/Sonarr.sln -p:Configuration=Release -p:Platform=Posix -p:RuntimeIdentifiers=$RUNTIME -t:PublishAllRids
+      - uses: actions/download-artifact@v4
+        with:
+          name: ui
+          path: _output/UI
+      - name: Package
+        id: spk
+        run: |
+          app=_staging/Midgar
+          rm -rf _staging && mkdir -p "$app"
+          cp -r _output/$FRAMEWORK/$RUNTIME/publish/* "$app"
+          cp -r _output/UI "$app/UI"
+          cp LICENSE.md "$app"
+          rm -f "$app"/Sonarr.Windows.* "$app"/ServiceUninstall.* "$app"/ServiceInstall.*
+          test -x "$app/Midgar" || chmod +x "$app/Midgar"
+          file "$app/Midgar"
+          spk=$(sh distribution/synology/build-spk.sh "$app" "$VERSION" _artifacts)
+          echo "file=$spk" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: midgar-synology-x86_64
+          path: _artifacts/*.spk
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [prepare, windows, synology]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: midgar-*
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: Midgar ${{ needs.prepare.outputs.version }}
+          files: dist/*
+          generate_release_notes: true
+          make_latest: true
