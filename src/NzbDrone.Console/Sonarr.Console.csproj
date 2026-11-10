@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+
+    <ApplicationIcon>..\NzbDrone.Host\Sonarr.ico</ApplicationIcon>
+  </PropertyGroup>
+  <!-- Midgar: own process names so it never collides with a real Sonarr install. -->
+  <PropertyGroup Condition="$(RuntimeIdentifier.StartsWith('win'))">
+    <AssemblyName>Midgar.Console</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="!$(RuntimeIdentifier.StartsWith('win'))">
+    <AssemblyName>Midgar</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NzbDrone.Host\Sonarr.Host.csproj" />
+    <ProjectReference Include="..\Sonarr.RuntimePatches\Sonarr.RuntimePatches.csproj" />
+  </ItemGroup>
+</Project>

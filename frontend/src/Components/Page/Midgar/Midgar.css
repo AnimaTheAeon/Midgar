@@ -1,0 +1,119 @@
+/* FFVII window pieces shared by the info window and status line (Midgar). */
+
+.window {
+  box-sizing: border-box;
+  border: 2px solid var(--ff7BorderLight);
+  border-radius: 8px;
+  background: var(--ff7Window);
+  box-shadow: var(--ff7FrameShadow);
+  color: var(--textColor);
+}
+
+.infoWindow {
+  composes: window;
+
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  padding: 14px 16px;
+  gap: 6px;
+}
+
+.infoHeadline {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2px;
+  color: var(--textColor);
+  text-shadow: var(--ff7TextShadow);
+  font-weight: 800;
+  font-size: 14px;
+    gap: 8px;
+
+  &:hover {
+    color: #fff;
+    text-decoration: none;
+  }
+}
+
+.infoRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.label {
+  color: var(--ff7Label);
+  text-shadow: var(--ff7TextShadow);
+  letter-spacing: 0.06em;
+  font-weight: 800;
+  font-size: 13px;
+  }
+
+.value {
+  text-shadow: var(--ff7TextShadow);
+  font-weight: 800;
+  font-size: 16px;
+    font-variant-numeric: tabular-nums;
+}
+
+.good {
+  color: var(--ff7Good);
+}
+
+.warn {
+  color: var(--ff7Warn);
+}
+
+.bad {
+  color: var(--ff7Bad);
+}
+
+.badge {
+  flex: none;
+}
+
+.modeButton {
+  margin-top: 4px;
+  min-height: 32px;
+  border: 1px solid var(--ff7BorderMid);
+  border-radius: 4px;
+  background: #101a5c;
+  color: var(--ff7Label);
+  text-shadow: 1px 1px 0 #000;
+  font-weight: 800;
+  font-size: 14px;
+    cursor: pointer;
+
+  &:hover {
+    border-color: var(--ff7BorderLight);
+    background: #2c48aa;
+  }
+}
+
+.statusLine {
+  composes: window;
+
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  overflow: hidden;
+  padding: 0 16px;
+  min-height: 44px;
+  text-shadow: var(--ff7TextShadow);
+  white-space: nowrap;
+  font-weight: 800;
+  font-size: 16px;
+    gap: 10px;
+
+  & > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media only screen and (max-width: $breakpointSmall) {
+  .statusLine {
+    font-size: 14px;
+  }
+}

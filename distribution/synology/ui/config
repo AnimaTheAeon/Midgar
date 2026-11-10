@@ -1,0 +1,14 @@
+{
+	".url": {
+		"Midgar.Web": {
+			"type": "url",
+			"allUsers": true,
+			"title": "Midgar",
+			"desc": "Your TV series, FFVII style",
+			"icon": "images/midgar_{0}.png",
+			"protocol": "http",
+			"port": "8990",
+			"url": "/"
+		}
+	}
+}

@@ -1,0 +1,10 @@
+.modalHeader {
+  @add-mixin truncate;
+
+  flex-shrink: 0;
+  padding: 15px 50px 15px 30px;
+  border-bottom: 1px solid var(--borderColor);
+  text-shadow: var(--ff7TextShadow);
+  font-weight: 800;
+  font-size: 22px;
+}

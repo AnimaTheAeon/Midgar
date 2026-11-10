@@ -1,0 +1,39 @@
+/* Midgar: FFVII party-menu layout. Content window on the left, the menu and
+ * info windows on the right, a status line along the bottom. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 12px;
+  height: 100%;
+  background: var(--ff7Backdrop);
+  gap: 12px;
+}
+
+.main {
+  position: relative; /* need this to position inner content - is this really needed? */
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: row-reverse;
+  min-height: 0;
+  gap: 12px;
+
+  & > div:not(:first-child) {
+    overflow: hidden;
+    min-width: 0;
+    border: 2px solid var(--ff7BorderLight);
+    border-radius: 8px;
+    background: var(--ff7Window);
+    box-shadow: var(--ff7FrameShadow);
+  }
+}
+
+@media only screen and (max-width: $breakpointSmall) {
+  .page {
+    flex-grow: 1;
+    padding: 8px;
+    height: initial;
+    gap: 8px;
+  }
+}

@@ -1,0 +1,24 @@
+html,
+body {
+  height: 100%; /* needed for proper layout */
+}
+
+body {
+  overflow: hidden;
+  background-color: var(--ff7Backdrop);
+}
+
+/* Midgar: headings get the FFVII drop shadow. */
+h1,
+h2,
+h3,
+legend {
+  text-shadow: var(--ff7TextShadow);
+  font-weight: 800;
+}
+
+@media only screen and (max-width: $breakpointSmall) {
+  body {
+    overflow-y: auto;
+  }
+}

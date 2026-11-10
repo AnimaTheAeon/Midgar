@@ -1,0 +1,50 @@
+#!/bin/sh
+# DSM service control for Midgar.
+PID_FILE="$SYNOPKG_PKGVAR/midgar-service.pid"
+BIN="$SYNOPKG_PKGDEST/app/Midgar"
+DATA="$SYNOPKG_PKGVAR"
+
+is_running() {
+	[ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null
+}
+
+case "$1" in
+	start)
+		is_running && exit 0
+		# .NET looks for ICU for culture data; DSM may not ship it.
+		if ! ls /usr/lib/libicuuc.so* /lib/libicuuc.so* >/dev/null 2>&1; then
+			export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+		fi
+		export HOME="$DATA"
+		cd "$SYNOPKG_PKGDEST/app" || exit 1
+		nohup "$BIN" -nobrowser -data="$DATA" >> "$DATA/service.out" 2>&1 < /dev/null &
+		echo $! > "$PID_FILE"
+		sleep 1
+		is_running && exit 0
+		exit 1
+		;;
+	stop)
+		if is_running; then
+			PID="$(cat "$PID_FILE")"
+			kill -TERM "$PID" 2>/dev/null
+			# Give it time to close the database cleanly.
+			i=0
+			while [ $i -lt 60 ] && kill -0 "$PID" 2>/dev/null; do
+				sleep 0.5
+				i=$((i + 1))
+			done
+			kill -KILL "$PID" 2>/dev/null
+		fi
+		rm -f "$PID_FILE"
+		exit 0
+		;;
+	status)
+		is_running && exit 0
+		exit 3
+		;;
+	log)
+		echo "$DATA/logs/sonarr.txt"
+		exit 0
+		;;
+esac
+exit 0

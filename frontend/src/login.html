@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Chrome, Opera, and Firefox OS -->
+    <meta name="theme-color" content="#121e78" />
+    <!-- Windows Phone -->
+    <meta name="msapplication-navbutton-color" content="#121e78" />
+    <!-- Android/Apple Phone -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="format-detection" content="telephone=no" />
+
+    <meta name="description" content="Midgar" />
+
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/Content/Images/Icons/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/Content/Images/Icons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/Content/Images/Icons/favicon-16x16.png"
+    />
+    <link
+      rel="manifest"
+      href="/Content/manifest.json"
+      crossorigin="use-credentials"
+    />
+    <link
+      rel="mask-icon"
+      href="/Content/Images/Icons/safari-pinned-tab.svg"
+      color="#00ccff"
+    />
+    <link
+      rel="shortcut icon"
+      type="image/ico"
+      href="/favicon.ico"
+      data-no-hash
+    />
+    <meta name="msapplication-config" content="/Content/browserconfig.xml" />
+
+    <link rel="stylesheet" type="text/css" href="/Content/styles.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/Fonts/fonts.css" />
+
+    <title>Login - Midgar</title>
+
+    <style>
+      /* Midgar: FFVII-style sign-in window. */
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #04040c;
+        color: #f4f4f8;
+        font-family: 'Nunito', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+        font-weight: 700;
+      }
+
+      .window {
+        box-sizing: border-box;
+        width: 340px;
+        padding: 22px 26px 26px;
+        border: 2px solid #d6d8e4;
+        border-radius: 8px;
+        background: linear-gradient(160deg, #2e56be 0%, #1a2c96 40%, #121e78 62%, #06083a 100%);
+        box-shadow: 0 0 0 1px #2c2e46, inset 0 0 0 1px #8c90a8, 0 6px 14px rgba(0, 0, 0, 0.6);
+        text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.85);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+        font-weight: 800;
+        font-size: 28px;
+      }
+
+      .logo {
+        width: 40px;
+        height: 40px;
+      }
+
+      .label {
+        display: block;
+        margin: 14px 0 6px;
+        color: #70ccff;
+        font-weight: 800;
+        font-size: 13px;
+        letter-spacing: 0.06em;
+      }
+
+      .form-input {
+        box-sizing: border-box;
+        width: 100%;
+        height: 40px;
+        padding: 0 12px;
+        border: 1px solid #5a64a0;
+        border-radius: 4px;
+        background: #080c34;
+        color: #f4f4f8;
+        font: inherit;
+        font-size: 16px;
+        text-shadow: none;
+      }
+
+      .form-input:focus {
+        outline: 0;
+        border-color: #d6d8e4;
+        box-shadow: 0 0 0 2px rgba(112, 204, 255, 0.4);
+      }
+
+      .remember-me-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 14px;
+        font-size: 14px;
+      }
+
+      .forgot-password {
+        color: #aab2d6;
+        font-size: 13px;
+        text-decoration: none;
+      }
+
+      .forgot-password:hover,
+      .forgot-password:focus {
+        color: #fff;
+        text-decoration: underline;
+      }
+
+      .button {
+        position: relative;
+        width: 100%;
+        min-height: 44px;
+        margin-top: 20px;
+        border: 1px solid #d6d8e4;
+        border-radius: 4px;
+        background: #3c64c8;
+        color: #fff;
+        font: inherit;
+        font-weight: 800;
+        font-size: 18px;
+        text-shadow: 1px 1px 0 #000;
+        cursor: pointer;
+      }
+
+      .button:hover,
+      .button:focus {
+        background: #4a78e0;
+        outline: 0;
+      }
+
+      .button:hover::before,
+      .button:focus::before {
+        position: absolute;
+        top: 50%;
+        left: 12px;
+        width: 30px;
+        height: 20px;
+        margin-top: -10px;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 20'%3E%3Crect x='1' y='5' width='6' height='11' rx='2' fill='%23c4c8d6' stroke='%231e1e28' stroke-width='1.2'/%3E%3Crect x='6' y='4' width='12' height='13' rx='4' fill='%23fafafc' stroke='%231e1e28' stroke-width='1.2'/%3E%3Crect x='14' y='4' width='15' height='5' rx='2.5' fill='%23fafafc' stroke='%231e1e28' stroke-width='1.2'/%3E%3C/svg%3E") no-repeat center / contain;
+        content: '';
+      }
+
+      .login-failed {
+        margin-top: 16px;
+        color: #ff6e6e;
+        font-size: 14px;
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="window">
+      <div class="brand">
+        <img src="/Content/Images/logo.svg" alt="" class="logo" />
+        <span>Midgar</span>
+      </div>
+
+      <form role="form" method="POST">
+        <label class="label" for="username">USERNAME</label>
+        <input
+          type="email"
+          id="username"
+          name="username"
+          class="form-input"
+          autocomplete="off"
+          pattern=".{1,}"
+          required
+          title="User name is required"
+          autofocus="true"
+          autocapitalize="false"
+        />
+
+        <label class="label" for="password">PASSWORD</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="form-input"
+          required
+        />
+
+        <div class="remember-me-container">
+          <span>
+            <input
+              type="checkbox"
+              name="rememberMe"
+              id="rememberMe"
+              checked="checked"
+            />
+            <label for="rememberMe">Remember me</label>
+          </span>
+
+          <a
+            href="https://wiki.servarr.com/sonarr/faq#help-i-have-locked-myself-out"
+            class="forgot-password"
+            >Forgot password?</a
+          >
+        </div>
+
+        <button type="submit" class="button">Login</button>
+
+        <div id="login-failed" class="login-failed hidden">
+          Incorrect username or password
+        </div>
+      </form>
+    </main>
+  </body>
+
+  <script type="text/javascript">
+    if (window.location.search.indexOf('loginFailed=true') > -1) {
+      document.getElementById('login-failed').classList.remove('hidden');
+    }
+  </script>
+</html>
