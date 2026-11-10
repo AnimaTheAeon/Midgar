@@ -13,6 +13,7 @@ import MessagesConnector from 'Components/Page/Sidebar/Messages/MessagesConnecto
 import { getActiveParent, links } from 'Components/Page/Sidebar/PageSidebar';
 import HealthStatus from 'System/Status/Health/HealthStatus';
 import Orb from './Orb';
+import { sinkIntoGlow, zoomIntoOrb, zoomOutOfOrb } from './orbZoom';
 import styles from './BoxOfX.css';
 
 // Midgar: the "Box of X" layout. A home screen with the big orb and the menu
@@ -354,7 +355,19 @@ function BoxOfXLayout({ location, children }: BoxOfXLayoutProps) {
     [history]
   );
 
-  const goHome = useCallback(() => go(HOME), [go]);
+  // From home, zoom into the orb first; BACK sinks the page into the glow,
+  // then the orb shrinks back on the home screen.
+  const openFromHome = useCallback(
+    (to: string) => zoomIntoOrb(() => go(to)),
+    [go]
+  );
+  const goHome = useCallback(() => sinkIntoGlow(() => go(HOME)), [go]);
+
+  useEffect(() => {
+    if (isHome) {
+      zoomOutOfOrb();
+    }
+  }, [isHome]);
   const openShortcuts = useCallback(() => setIsShortcutsOpen(true), []);
   const closeShortcuts = useCallback(() => setIsShortcutsOpen(false), []);
 
@@ -444,7 +457,7 @@ function BoxOfXLayout({ location, children }: BoxOfXLayoutProps) {
       </span>
 
       {isHome ? (
-        <Home onOpen={go} />
+        <Home onOpen={openFromHome} />
       ) : (
         <div className={styles.pageScreen}>
           <div className={styles.topRow}>

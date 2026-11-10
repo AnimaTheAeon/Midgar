@@ -13,7 +13,7 @@ function Orb() {
   });
 
   return (
-    <div className={styles.orb} aria-hidden={true}>
+    <div className={styles.orb} aria-hidden={true} data-big-orb={true}>
       <div className={styles.shellOuter} />
       <div className={styles.shellSpin} />
       <div className={styles.shellJelly} />
