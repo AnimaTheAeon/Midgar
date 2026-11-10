@@ -68,8 +68,9 @@ namespace NzbDrone.Common.Instrumentation
             LogManager.ReconfigExistingLoggers();
         }
 
-        // Midgar: crash reports would go to the Sonarr team's server, so they stay off.
-        private static readonly bool CrashReports = false;
+        // Midgar: crash reports would go to the Sonarr team's server, so they stay off
+        // unless MIDGAR_CRASH_REPORTS=1 is set.
+        private static readonly bool CrashReports = Environment.GetEnvironmentVariable("MIDGAR_CRASH_REPORTS") == "1";
 
         private static void RegisterSentry(bool updateClient, IAppFolderInfo appFolderInfo)
         {
