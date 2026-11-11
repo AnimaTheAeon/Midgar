@@ -4,6 +4,7 @@ using System.IO;
 using NzbDrone.Common.Disk;
 using NzbDrone.Common.EnvironmentInfo;
 using NzbDrone.Common.Extensions;
+using NzbDrone.Common.Http;
 using NzbDrone.Core.Configuration;
 using NzbDrone.Core.Configuration.Events;
 using NzbDrone.Core.Localization;
@@ -86,20 +87,17 @@ namespace NzbDrone.Core.HealthCheck.Checks
                 }
             }
 
-            if (BuildInfo.BuildDateTime < DateTime.UtcNow.AddDays(-14))
-            {
-                var latestAvailable = _checkUpdateService.AvailableUpdate();
+            // Midgar: looks at Midgar's own releases and points at System > Updates.
+            var latestAvailable = _checkUpdateService.AvailableUpdate();
 
-                if (latestAvailable != null)
+            if (latestAvailable != null)
+            {
+                return new HealthCheck(GetType(),
+                    HealthCheckResult.Notice,
+                    $"Midgar {latestAvailable.Version} is available. Open System > Updates to install it.")
                 {
-                    return new HealthCheck(GetType(),
-                        HealthCheckResult.Warning,
-                        _localizationService.GetLocalizedString("UpdateAvailableHealthCheckMessage", new Dictionary<string, object>
-                        {
-                            { "version", $"v{latestAvailable.Version}" }
-                        }),
-                        "#new-update-is-available");
-                }
+                    WikiUrl = new HttpUri("https://github.com/AnimaTheAeon/Midgar/releases/latest")
+                };
             }
 
             return new HealthCheck(GetType());

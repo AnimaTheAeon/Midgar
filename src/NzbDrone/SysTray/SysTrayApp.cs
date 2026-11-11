@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Extensions.Hosting;
 using NLog;
+using NzbDrone.Common;
 using NzbDrone.Common.EnvironmentInfo;
 using NzbDrone.Common.Instrumentation;
 using NzbDrone.Common.Processes;
@@ -29,6 +30,7 @@ namespace NzbDrone.SysTray
         private readonly ToolStripMenuItem _updateItem = new ToolStripMenuItem { Visible = false };
 
         private EventWaitHandle _showSignal;
+        private EventWaitHandle _installSignal;
         private AvailableUpdate _update;
         private Version _announced;
         private bool _installing;
@@ -88,6 +90,7 @@ namespace NzbDrone.SysTray
         {
             // Created before the web host starts, so the startup "open the UI" call finds it.
             _showSignal = new EventWaitHandle(false, EventResetMode.AutoReset, AppWindowSignal.Name);
+            _installSignal = new EventWaitHandle(false, EventResetMode.AutoReset, MidgarUpdateSignal.Name);
 
             var thread = new Thread(Start);
             thread.SetApartmentState(ApartmentState.STA);
@@ -120,8 +123,12 @@ namespace NzbDrone.SysTray
             base.OnLoad(e);
 
             // Anything that wants the UI (startup, a second launch) sets the signal.
-            var listener = new Thread(ListenForShowRequests) { IsBackground = true, Name = "Midgar window signal" };
+            var listener = new Thread(() => ListenFor(_showSignal, ShowAppWindow)) { IsBackground = true, Name = "Midgar window signal" };
             listener.Start();
+
+            // The Updates page asks for the newest release to be installed.
+            var installListener = new Thread(() => ListenFor(_installSignal, InstallFromApp)) { IsBackground = true, Name = "Midgar update signal" };
+            installListener.Start();
         }
 
         protected override void Dispose(bool isDisposing)
@@ -131,6 +138,7 @@ namespace NzbDrone.SysTray
                 _updateTimer.Dispose();
                 _trayIcon.Dispose();
                 _showSignal?.Dispose();
+                _installSignal?.Dispose();
             }
 
             if (InvokeRequired)
@@ -150,20 +158,20 @@ namespace NzbDrone.SysTray
             return new Uri(string.Format("http://localhost:{0}{1}/", _configFileProvider.Port, urlBase));
         }
 
-        private void ListenForShowRequests()
+        private void ListenFor(EventWaitHandle signal, Action action)
         {
             while (true)
             {
                 try
                 {
-                    _showSignal.WaitOne();
+                    signal.WaitOne();
 
                     if (IsDisposed || Disposing)
                     {
                         return;
                     }
 
-                    BeginInvoke(new MethodInvoker(ShowAppWindow));
+                    BeginInvoke(new MethodInvoker(action));
                 }
                 catch (ObjectDisposedException)
                 {
@@ -272,8 +280,24 @@ namespace NzbDrone.SysTray
                 _installing = false;
                 _updateItem.Text = $"Install update {_update.Version}";
                 _updateItem.Enabled = true;
-                _trayIcon.ShowBalloonTip(6000, "Midgar", "The update couldn't be downloaded. Try again later, or get it from the Releases page.", ToolTipIcon.Warning);
+                _trayIcon.ShowBalloonTip(6000, "Midgar", "The update couldn't be downloaded or didn't pass its check. Try again later, or get it from the Releases page.", ToolTipIcon.Warning);
             }
+        }
+
+        private async void InstallFromApp()
+        {
+            if (_update == null)
+            {
+                await CheckForUpdates(false);
+            }
+
+            if (_update == null)
+            {
+                _trayIcon.ShowBalloonTip(4000, "Midgar", $"You're on the latest version ({BuildInfo.AppVersion}).", ToolTipIcon.Info);
+                return;
+            }
+
+            InstallUpdate();
         }
 
         private void SwitchToNas()

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Label from 'Components/Label';
 import { kinds, sizes } from 'Helpers/Props';
+import styles from './PageSidebarStatus.css';
 
 function PageSidebarStatus({ count, errors, warnings }) {
   if (!count) {
@@ -18,6 +19,7 @@ function PageSidebarStatus({ count, errors, warnings }) {
 
   return (
     <Label
+      className={kind === kinds.INFO ? styles.statusInfo : styles.status}
       kind={kind}
       size={sizes.MEDIUM}
     >

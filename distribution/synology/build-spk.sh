@@ -24,12 +24,12 @@ mkdir -p "$WORK/spk"
 sed "s/@VERSION@/$VERSION/" "$HERE/INFO.in" > "$WORK/spk/INFO"
 echo "extractsize=\"$(du -sk "$WORK/pkg" | cut -f1)\"" >> "$WORK/spk/INFO"
 cp "$WORK/package.tgz" "$WORK/spk/"
-cp -R "$HERE/scripts" "$HERE/conf" "$WORK/spk/"
+cp -R "$HERE/scripts" "$HERE/conf" "$HERE/WIZARD_UIFILES" "$WORK/spk/"
 cp "$HERE/PACKAGE_ICON.PNG" "$HERE/PACKAGE_ICON_256.PNG" "$WORK/spk/"
 chmod 755 "$WORK/spk/scripts/"*
 
 mkdir -p "$OUT"
 OUT="$(cd "$OUT" && pwd)"
 NAME="Midgar-$VERSION-x86_64.spk"
-(cd "$WORK/spk" && tar --owner=0 --group=0 -cf "$OUT/$NAME" INFO package.tgz scripts conf PACKAGE_ICON.PNG PACKAGE_ICON_256.PNG)
+(cd "$WORK/spk" && tar --owner=0 --group=0 -cf "$OUT/$NAME" INFO package.tgz scripts conf WIZARD_UIFILES PACKAGE_ICON.PNG PACKAGE_ICON_256.PNG)
 echo "$OUT/$NAME"

@@ -182,7 +182,8 @@
 .actions {
   display: flex;
   flex: none;
-  opacity: 0.6;
+  opacity: 0.85;
+  gap: 4px;
 
   .row:hover &,
   .row:focus-within & {
@@ -199,6 +200,11 @@
   .hand,
   .gauges,
   .actions {
+    display: none;
+  }
+
+  /* Seasons and next episode fit; the quality profile doesn't. */
+  .stats > span:nth-child(3) {
     display: none;
   }
 }

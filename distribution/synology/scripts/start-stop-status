@@ -43,7 +43,7 @@ case "$1" in
 		exit 3
 		;;
 	log)
-		echo "$DATA/logs/sonarr.txt"
+		echo "$DATA/logs/midgar.txt"
 		exit 0
 		;;
 esac

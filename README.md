@@ -62,19 +62,18 @@ Midgar imports.
 
 ## Updates
 
-Midgar checks this repo's Releases for new versions. Versions are numbered
-1.1, 1.2, and so on, set by `<MidgarVersion>` in `src/Directory.Build.props`.
-A push to `main` with a new version number publishes that release with the
-installer, the `.spk` and the portable zip. (Behind the scenes Midgar still reports a
-Sonarr 4.x version to other tools so Prowlarr and Materia accept it.)
+Midgar checks this repo's Releases for new versions and shows them on
+**System → Updates**, with what changed. On Windows the Install button there
+(or the tray menu) downloads the installer, checks it against the checksum
+GitHub publishes, and restarts Midgar on the new version. On Synology the page
+downloads the new `.spk` for Package Center → Manual Install.
 
-- **Windows:** the tray icon pops up when an update is ready; click it (or
-  **Install update** in the tray menu) and Midgar downloads the installer,
-  updates itself and starts again. **Check for updates** is in the tray menu too.
-- **Synology:** an **UPDATE … READY** button appears in the status line. It
-  downloads the new `.spk`; install it with Package Center → Manual Install.
-  Your settings and library are kept. (DSM doesn't let packages replace
-  themselves, so this step stays manual.)
+Versions are numbered 1.1, 1.2, and so on, set by `<MidgarVersion>` in
+`src/Directory.Build.props`. A push to `main` with a new version number
+publishes that release with the installer, the `.spk` and the portable zip;
+its notes are that version's section of `CHANGELOG.md`. (Behind the scenes
+Midgar still reports a Sonarr 4.x version to other tools so Prowlarr and
+Materia accept it.) Midgar never contacts Sonarr's update or notice servers.
 
 ## Building
 

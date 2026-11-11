@@ -30,6 +30,12 @@ namespace NzbDrone.Core.HealthCheck
 
         public override HealthCheck Check()
         {
+            // Midgar: Sonarr's server-side notices are about Sonarr releases, so they are never fetched.
+            if (BuildInfo.AppName != "Sonarr")
+            {
+                return new HealthCheck(GetType());
+            }
+
             var request = _cloudRequestBuilder.Services.Create()
                 .Resource("/notification")
                 .AddQueryParam("version", BuildInfo.Version)

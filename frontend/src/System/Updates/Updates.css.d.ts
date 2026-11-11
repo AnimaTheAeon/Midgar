@@ -3,13 +3,17 @@
 interface CssExports {
   'date': string;
   'info': string;
+  'install': string;
   'label': string;
   'loading': string;
   'message': string;
   'messageContainer': string;
+  'noNotes': string;
+  'refresh': string;
   'space': string;
   'upToDateIcon': string;
   'update': string;
+  'updateIcon': string;
   'version': string;
 }
 export const cssExports: CssExports;

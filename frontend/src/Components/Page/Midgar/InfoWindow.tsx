@@ -1,15 +1,14 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import AppState from 'App/State/AppState';
-import Link from 'Components/Link/Link';
 import { toggleAdvancedSettings } from 'Store/Actions/settingsActions';
 import formatBytes from 'Utilities/Number/formatBytes';
-import StatusBadge from './StatusBadge';
 import useMidgarStatus from './useMidgarStatus';
 import useNow, { formatClock } from './useNow';
 import styles from './Midgar.css';
 
-// The small window under the menu, like the Time / Gil box in FFVII.
+// The small window under the menu, like the Time / Gil box in FFVII. It holds
+// the counts; the status line along the bottom says how Midgar is doing.
 function InfoWindow() {
   const dispatch = useDispatch();
   const now = useNow();
@@ -26,16 +25,10 @@ function InfoWindow() {
 
   return (
     <section className={styles.infoWindow} aria-label="Status">
-      <Link
-        className={styles.infoHeadline}
-        to="/system/status"
-        title={status.detail}
+      <div
+        className={styles.infoRow}
+        title="How long Midgar has been running since it last started."
       >
-        <StatusBadge kind={status.kind} />
-        <span className={styles[status.kind]}>{status.title}</span>
-      </Link>
-
-      <div className={styles.infoRow}>
         <span className={styles.label}>Time</span>
         <span className={styles.value}>
           {formatClock((now - started) / 1000)}

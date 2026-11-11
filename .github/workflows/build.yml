@@ -173,6 +173,19 @@ jobs:
           path: dist
           pattern: midgar-*
           merge-multiple: true
+      - uses: actions/checkout@v4
+        if: steps.rel.outputs.exists == 'false' || startsWith(github.ref, 'refs/tags/v')
+        with:
+          sparse-checkout: CHANGELOG.md
+          sparse-checkout-cone-mode: false
+          path: repo
+      # Release notes are this version's section of CHANGELOG.md.
+      - name: Release notes
+        if: steps.rel.outputs.exists == 'false' || startsWith(github.ref, 'refs/tags/v')
+        run: |
+          awk -v v="## ${{ needs.prepare.outputs.version }}" '$0 == v {on=1; next} /^## / {on=0} on' repo/CHANGELOG.md > notes.md
+          [ -s notes.md ] || echo "- Small fixes." > notes.md
+          cat notes.md
       - uses: softprops/action-gh-release@v2
         if: steps.rel.outputs.exists == 'false' || startsWith(github.ref, 'refs/tags/v')
         with:
@@ -180,5 +193,5 @@ jobs:
           target_commitish: ${{ github.sha }}
           name: Midgar ${{ needs.prepare.outputs.version }}
           files: dist/*
-          generate_release_notes: true
+          body_path: notes.md
           make_latest: true

@@ -1,6 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import AppState from 'App/State/AppState';
+import Link from 'Components/Link/Link';
 import StatusBadge from './StatusBadge';
 import useMidgarStatus from './useMidgarStatus';
 import useMidgarUpdate from './useMidgarUpdate';
@@ -15,13 +14,10 @@ function formatCountdown(ms: number) {
 }
 
 // What the status line says; also used by the Box of X status box.
-export function useStatusSummary() {
+export function useStatusSummary(includeQueue = true) {
   const now = useNow();
   const status = useMidgarStatus();
   const update = useMidgarUpdate();
-  const isWindows = useSelector(
-    (state: AppState) => state.system.status.item.isWindows
-  );
 
   const parts: string[] = [];
 
@@ -30,9 +26,11 @@ export function useStatusSummary() {
       parts.push(`RSS sync in ${formatCountdown(status.nextRssSync - now)}`);
     }
 
-    parts.push(
-      status.queueCount === 1 ? '1 in queue' : `${status.queueCount} in queue`
-    );
+    if (includeQueue) {
+      parts.push(
+        status.queueCount === 1 ? '1 in queue' : `${status.queueCount} in queue`
+      );
+    }
 
     parts.push(
       status.seriesCount === 1 ? '1 series' : `${status.seriesCount} series`
@@ -44,21 +42,15 @@ export function useStatusSummary() {
   return {
     status,
     text: parts.join(' · '),
-    update: update
-      ? {
-          version: update.version,
-          href: (isWindows ? update.pageUrl : update.spkUrl) ?? update.pageUrl,
-          title: isWindows
-            ? 'Right-click the Midgar tray icon and pick Install update.'
-            : 'Download the new package, then in Package Center choose Manual Install. Your settings and library are kept.',
-        }
-      : undefined,
+    // The Updates page has the Install button (or the package download).
+    update: update ? { version: update.version } : undefined,
   };
 }
 
 // The status line along the bottom of the window.
 function StatusLine() {
-  const { status, text, update } = useStatusSummary();
+  // The info window above already shows the queue count.
+  const { status, text, update } = useStatusSummary(false);
 
   return (
     <footer className={styles.statusLine}>
@@ -70,15 +62,13 @@ function StatusLine() {
       </span>
 
       {update ? (
-        <a
+        <Link
           className={styles.update}
-          href={update.href}
-          target="_blank"
-          rel="noreferrer"
-          title={update.title}
+          to="/system/updates"
+          title="Open the Updates page to install it."
         >
           UPDATE {update.version} READY
-        </a>
+        </Link>
       ) : null}
     </footer>
   );

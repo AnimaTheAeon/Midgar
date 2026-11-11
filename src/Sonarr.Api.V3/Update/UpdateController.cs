@@ -36,12 +36,13 @@ namespace Sonarr.Api.V3.Update
                 var first = resources.First();
                 first.Latest = true;
 
-                if (first.Version > BuildInfo.Version)
+                // Midgar: compare against Midgar's own version, not the Sonarr-compatible one.
+                if (first.Version > BuildInfo.AppVersion)
                 {
                     first.Installable = true;
                 }
 
-                var installed = resources.SingleOrDefault(r => r.Version == BuildInfo.Version);
+                var installed = resources.SingleOrDefault(r => r.Version == BuildInfo.AppVersion);
 
                 if (installed != null)
                 {

@@ -1,3 +1,18 @@
 .status {
   composes: label from '~Components/Label.css';
 }
+
+.statusInfo {
+  composes: status;
+}
+
+/* Box of X: counts are dark numbers on the lime chip, big enough to read. */
+
+:global(html.boxofx) .statusInfo {
+  padding: 2px 7px;
+  border-color: #dcff64;
+  background-color: #dcff64;
+  color: #1c3504;
+  font-weight: 800;
+  font-size: 13px;
+}

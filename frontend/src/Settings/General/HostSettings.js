@@ -30,6 +30,14 @@ function HostSettings(props) {
     launchBrowser
   } = settings;
 
+  const canOpenOnStart = isWindows && mode !== 'service';
+
+  // Midgar: in Simple mode the only setting here is "Open Midgar on start",
+  // which only applies to the Windows app. Networking is under Show Advanced.
+  if (!advancedSettings && !canOpenOnStart) {
+    return null;
+  }
+
   return (
     <FieldSet legend={translate('Host')}>
       <FormGroup
@@ -48,7 +56,10 @@ function HostSettings(props) {
         />
       </FormGroup>
 
-      <FormGroup>
+      <FormGroup
+        advancedSettings={advancedSettings}
+        isAdvanced={true}
+      >
         <FormLabel>{translate('PortNumber')}</FormLabel>
 
         <FormInputGroup
@@ -63,7 +74,10 @@ function HostSettings(props) {
         />
       </FormGroup>
 
-      <FormGroup>
+      <FormGroup
+        advancedSettings={advancedSettings}
+        isAdvanced={true}
+      >
         <FormLabel>{translate('UrlBase')}</FormLabel>
 
         <FormInputGroup
@@ -76,7 +90,10 @@ function HostSettings(props) {
         />
       </FormGroup>
 
-      <FormGroup>
+      <FormGroup
+        advancedSettings={advancedSettings}
+        isAdvanced={true}
+      >
         <FormLabel>{translate('AllowedHosts')}</FormLabel>
 
         <FormInputGroup
@@ -199,14 +216,14 @@ function HostSettings(props) {
       }
 
       {
-        isWindows && mode !== 'service' ?
+        canOpenOnStart ?
           <FormGroup size={sizes.MEDIUM}>
-            <FormLabel>{translate('OpenBrowserOnStart')}</FormLabel>
+            <FormLabel>Open Midgar on start</FormLabel>
 
             <FormInputGroup
               type={inputTypes.CHECK}
               name="launchBrowser"
-              helpText={translate('OpenBrowserOnStartHelpText')}
+              helpText="Show the Midgar window when Midgar starts. When off, it starts quietly in the tray."
               onChange={onInputChange}
               {...launchBrowser}
             />

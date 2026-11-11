@@ -1,0 +1,17 @@
+/* Midgar: shown under the toolbar while there are unsaved changes. */
+
+.saveBar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  padding: 8px 20px;
+  border-bottom: 1px solid var(--warningColor);
+  background-color: var(--alertWarningBackgroundColor);
+  gap: 14px;
+}
+
+.saveText {
+  color: var(--warningColor);
+  font-weight: bold;
+}

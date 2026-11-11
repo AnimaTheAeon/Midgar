@@ -17,7 +17,6 @@ import PageContentBody from 'Components/Page/PageContentBody';
 import PageToolbar from 'Components/Page/Toolbar/PageToolbar';
 import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
-import PageToolbarSeparator from 'Components/Page/Toolbar/PageToolbarSeparator';
 import Popover from 'Components/Tooltip/Popover';
 import Tooltip from 'Components/Tooltip/Tooltip';
 import { align, icons, kinds, sizes, sortDirections, tooltipPositions } from 'Helpers/Props';
@@ -253,53 +252,24 @@ class SeriesDetails extends Component {
     return (
       <PageContent title={title}>
         <PageToolbar>
-          <PageToolbarSection>
+          {/* Midgar: the three everyday actions up front, the rest under More. */}
+          <PageToolbarSection maxVisibleButtons={3}>
             <PageToolbarButton
-              label={translate('RefreshAndScan')}
+              label={translate('Search')}
+              iconName={icons.SEARCH}
+              isDisabled={!monitored || !hasMonitoredEpisodes || !hasEpisodes}
+              isSpinning={isSearching}
+              title={hasMonitoredEpisodes ? 'Search for every monitored episode of this show' : translate('NoMonitoredEpisodes')}
+              onPress={onSearchPress}
+            />
+
+            <PageToolbarButton
+              label={translate('Refresh')}
               iconName={icons.REFRESH}
               spinningName={icons.REFRESH}
               title={translate('RefreshAndScanTooltip')}
               isSpinning={isRefreshing}
               onPress={onRefreshPress}
-            />
-
-            <PageToolbarButton
-              label={translate('SearchMonitored')}
-              iconName={icons.SEARCH}
-              isDisabled={!monitored || !hasMonitoredEpisodes || !hasEpisodes}
-              isSpinning={isSearching}
-              title={hasMonitoredEpisodes ? undefined : translate('NoMonitoredEpisodes')}
-              onPress={onSearchPress}
-            />
-
-            <PageToolbarSeparator />
-
-            <PageToolbarButton
-              label={translate('PreviewRename')}
-              iconName={icons.ORGANIZE}
-              isDisabled={!hasEpisodeFiles}
-              onPress={this.onOrganizePress}
-            />
-
-            <PageToolbarButton
-              label={translate('ManageEpisodes')}
-              iconName={icons.EPISODE_FILE}
-              onPress={this.onManageEpisodesPress}
-            />
-
-            <PageToolbarButton
-              label={translate('History')}
-              iconName={icons.HISTORY}
-              isDisabled={!hasEpisodes}
-              onPress={this.onSeriesHistoryPress}
-            />
-
-            <PageToolbarSeparator />
-
-            <PageToolbarButton
-              label={translate('SeriesMonitoring')}
-              iconName={icons.MONITORED}
-              onPress={this.onMonitorOptionsPress}
             />
 
             <PageToolbarButton
@@ -309,11 +279,36 @@ class SeriesDetails extends Component {
             />
 
             <PageToolbarButton
+              label={translate('SeriesMonitoring')}
+              iconName={icons.MONITORED}
+              onPress={this.onMonitorOptionsPress}
+            />
+
+            <PageToolbarButton
+              label={translate('ManageEpisodes')}
+              iconName={icons.EPISODE_FILE}
+              onPress={this.onManageEpisodesPress}
+            />
+
+            <PageToolbarButton
+              label={translate('PreviewRename')}
+              iconName={icons.ORGANIZE}
+              isDisabled={!hasEpisodeFiles}
+              onPress={this.onOrganizePress}
+            />
+
+            <PageToolbarButton
+              label={translate('History')}
+              iconName={icons.HISTORY}
+              isDisabled={!hasEpisodes}
+              onPress={this.onSeriesHistoryPress}
+            />
+
+            <PageToolbarButton
               label={translate('Delete')}
               iconName={icons.DELETE}
               onPress={this.onDeleteSeriesPress}
             />
-
           </PageToolbarSection>
 
           <PageToolbarSection alignContent={align.RIGHT}>

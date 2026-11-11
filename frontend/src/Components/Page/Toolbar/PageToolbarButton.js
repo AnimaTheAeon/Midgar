@@ -28,7 +28,7 @@ function PageToolbarButton(props) {
       <Icon
         name={isSpinning ? (spinningName || iconName) : iconName}
         isSpinning={isSpinning}
-        size={21}
+        size={22}
       />
 
       <div className={styles.labelContainer}>

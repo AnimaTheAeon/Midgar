@@ -17,6 +17,7 @@ interface CssExports {
   'grid': string;
   'hint': string;
   'hintKey': string;
+  'hints': string;
   'home': string;
   'homeMain': string;
   'jelly': string;
@@ -30,6 +31,7 @@ interface CssExports {
   'menuTabInner': string;
   'messages': string;
   'miniOrb': string;
+  'modeHint': string;
   'node': string;
   'orb': string;
   'orbGlow': string;

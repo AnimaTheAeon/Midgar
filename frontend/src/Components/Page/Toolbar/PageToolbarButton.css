@@ -22,12 +22,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 24px;
+  height: 27px;
 }
 
 .label {
   padding: 0 3px;
   color: var(--toolbarLabelColor);
-  font-size: $extraSmallFontSize;
-  line-height: calc($extraSmallFontSize + 1px);
+  font-size: 12px;
+  line-height: 13px;
 }

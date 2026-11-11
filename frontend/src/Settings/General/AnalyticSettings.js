@@ -17,6 +17,11 @@ function AnalyticSettings(props) {
     analyticsEnabled
   } = settings;
 
+  // Midgar: nothing is sent to Sonarr's servers, so there is nothing to switch.
+  if (window.Sonarr.appVersion) {
+    return null;
+  }
+
   return (
     <FieldSet legend={translate('Analytics')}>
       <FormGroup size={sizes.MEDIUM}>

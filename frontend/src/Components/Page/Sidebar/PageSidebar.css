@@ -29,9 +29,11 @@
 }
 
 @media only screen and (max-width: $breakpointSmall) {
+  /* Phones: the menu is a drawer that slides fully off the left edge. */
   .sidebarContainer {
     position: fixed;
     top: 0;
+    left: 0;
     z-index: 2;
     height: 100vh;
   }
