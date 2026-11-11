@@ -28,7 +28,9 @@ function UpdateSettings(props) {
     updateScriptPath
   } = settings;
 
-  if (!advancedSettings) {
+  // Midgar: updates come from Midgar's own releases (System > Updates), so
+  // Sonarr's branch and update-script settings are never shown.
+  if (!advancedSettings || window.Sonarr.appVersion) {
     return null;
   }
 

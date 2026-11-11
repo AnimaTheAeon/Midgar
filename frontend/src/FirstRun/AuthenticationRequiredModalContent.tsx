@@ -63,6 +63,28 @@ export default function AuthenticationRequiredModalContent({
     };
   }, [dispatch]);
 
+  // Midgar: start from the choice that fits a home setup, so one Save is enough.
+  const methodValue = authenticationMethod?.value;
+
+  useEffect(() => {
+    if (isPopulated && methodValue === 'none') {
+      dispatch(
+        // @ts-expect-error Actions aren't typed
+        setGeneralSettingsValue({
+          name: 'authenticationMethod',
+          value: 'forms',
+        })
+      );
+      dispatch(
+        // @ts-expect-error Actions aren't typed
+        setGeneralSettingsValue({
+          name: 'authenticationRequired',
+          value: 'disabledForLocalAddresses',
+        })
+      );
+    }
+  }, [isPopulated, methodValue, dispatch]);
+
   const onInputChange = useCallback(
     (args: InputChanged) => {
       // @ts-expect-error Actions aren't typed
@@ -89,11 +111,14 @@ export default function AuthenticationRequiredModalContent({
 
   return (
     <ModalContent onModalClose={onModalClose}>
-      <ModalHeader>{translate('AuthenticationRequired')}</ModalHeader>
+      <ModalHeader>Set up sign-in</ModalHeader>
 
       <ModalBody>
         <Alert className={styles.authRequiredAlert} kind={kinds.WARNING}>
-          {translate('AuthenticationRequiredWarning')}
+          Pick a username and password for Midgar. With the choices below you
+          won't be asked for them on this computer or on your home network, only
+          if Midgar is opened from outside it. Save once and this window won't
+          come back.
         </Alert>
 
         {isPopulated && !error ? (

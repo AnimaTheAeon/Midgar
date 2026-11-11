@@ -1,0 +1,10 @@
+[{
+	"step_title": "Uninstalling also removes Midgar's settings",
+	"items": [{
+		"desc": "Midgar's settings, its list of shows and its automatic backups are stored inside the package, so uninstalling deletes them. Your video files are not touched."
+	}, {
+		"desc": "To keep a copy first: cancel, open Midgar, go to <b>System</b> &rarr; <b>Backup</b>, click <b>Backup Now</b> and download the file. You can restore it on that same page after installing Midgar again."
+	}, {
+		"desc": "Updating Midgar to a newer version does not need an uninstall and keeps everything."
+	}]
+}]

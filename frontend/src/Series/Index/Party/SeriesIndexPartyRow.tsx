@@ -160,13 +160,15 @@ function SeriesIndexPartyRow({
         </Link>
 
         <div className={styles.stats}>
-          <span>
+          <span
+            title={seasonCount === 1 ? '1 season' : `${seasonCount} seasons`}
+          >
             <span className={styles.label}>LV</span> {seasonCount}
           </span>
-          <span>
+          <span title="When the next episode airs">
             <span className={styles.label}>NEXT</span> {next}
           </span>
-          <span>
+          <span title="Quality profile">
             <span className={styles.label}>Q</span>{' '}
             {qualityProfile?.name ?? '—'}
           </span>
@@ -206,6 +208,7 @@ function SeriesIndexPartyRow({
       <div className={styles.actions}>
         <SpinnerIconButton
           name={icons.REFRESH}
+          size={16}
           title={translate('RefreshSeries')}
           isSpinning={isRefreshingSeries}
           onPress={onRefreshPress}
@@ -213,6 +216,7 @@ function SeriesIndexPartyRow({
 
         <SpinnerIconButton
           name={icons.SEARCH}
+          size={16}
           title={translate('SearchForMonitoredEpisodes')}
           isSpinning={isSearchingSeries}
           onPress={onSearchPress}
@@ -220,6 +224,7 @@ function SeriesIndexPartyRow({
 
         <IconButton
           name={icons.EDIT}
+          size={16}
           title={translate('EditSeries')}
           onPress={onEditPress}
         />

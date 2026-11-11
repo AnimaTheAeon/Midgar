@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import QueueStatus from 'Activity/Queue/Status/QueueStatus';
 import AppState from 'App/State/AppState';
@@ -11,6 +11,7 @@ import SeriesSearchInputConnector from 'Components/Page/Header/SeriesSearchInput
 import { useStatusSummary } from 'Components/Page/Midgar/StatusLine';
 import MessagesConnector from 'Components/Page/Sidebar/Messages/MessagesConnector';
 import { getActiveParent, links } from 'Components/Page/Sidebar/PageSidebar';
+import { toggleAdvancedSettings } from 'Store/Actions/settingsActions';
 import HealthStatus from 'System/Status/Health/HealthStatus';
 import Orb from './Orb';
 import { sinkIntoGlow, zoomIntoOrb, zoomOutOfOrb } from './orbZoom';
@@ -61,18 +62,31 @@ function isTyping(target: EventTarget | null) {
 }
 
 function isPopupOpen() {
-  // Pop-ups (dialogs, open menus) render here; closed menus leave empty holders.
+  // Dialogs, open menus and tooltips render under #portal-root. Closed menus
+  // and tooltips leave empty or zero-size holders there, so look for
+  // something that actually takes up space on screen.
   const portal = document.getElementById('portal-root');
 
-  return (
-    !!portal &&
-    Array.from(portal.children).some((child) => child.childElementCount > 0)
-  );
+  if (!portal) {
+    return false;
+  }
+
+  return Array.from(portal.querySelectorAll('*')).some((element) => {
+    const rect = element.getBoundingClientRect();
+
+    return rect.width > 24 && rect.height > 24;
+  });
 }
 
-function sectionTabs(section: NavLink, showAdvanced: boolean) {
+function sectionTabs(
+  section: NavLink,
+  showAdvanced: boolean,
+  pathname: string
+) {
+  // Advanced pages only show with Show Advanced on, except the one you're on,
+  // so the tab row always marks where you are.
   const children = (section.children ?? []).filter(
-    (child) => showAdvanced || !child.isAdvanced
+    (child) => showAdvanced || !child.isAdvanced || isTabActive(child, pathname)
   );
 
   if (children.some((child) => child.to === section.to)) {
@@ -156,15 +170,13 @@ function StatusBox({ isHome }: StatusBoxProps) {
       </Link>
 
       {update ? (
-        <a
+        <Link
           className={styles.updateChip}
-          href={update.href}
-          target="_blank"
-          rel="noreferrer"
-          title={update.title}
+          to="/system/updates"
+          title="Open the Updates page to install it."
         >
           UPDATE {update.version} READY
-        </a>
+        </Link>
       ) : null}
     </div>
   );
@@ -256,6 +268,28 @@ function MenuItem({
   );
 }
 
+// Simple shows the settings most people need; Advanced shows everything.
+function ModeHint() {
+  const dispatch = useDispatch();
+  const advanced = useSelector(
+    (state: AppState) => state.settings.advancedSettings
+  );
+  const toggle = useCallback(() => {
+    dispatch(toggleAdvancedSettings());
+  }, [dispatch]);
+
+  return (
+    <button
+      className={styles.modeHint}
+      type="button"
+      title="Simple shows the settings most people need. Advanced shows everything."
+      onClick={toggle}
+    >
+      MODE: {advanced ? 'ADVANCED' : 'SIMPLE'}
+    </button>
+  );
+}
+
 interface HomeProps {
   onOpen: (to: string) => void;
 }
@@ -330,7 +364,10 @@ function Home({ onOpen }: HomeProps) {
 
       <div className={styles.bottomRow}>
         <StatusBox isHome={true} />
-        <Hint keyName="ENTER" label="SELECT" onPress={openCurrent} />
+        <div className={styles.hints}>
+          <ModeHint />
+          <Hint keyName="ENTER" label="SELECT" onPress={openCurrent} />
+        </div>
       </div>
     </div>
   );
@@ -362,6 +399,17 @@ function BoxOfXLayout({ location, children }: BoxOfXLayoutProps) {
     [go]
   );
   const goHome = useCallback(() => sinkIntoGlow(() => go(HOME)), [go]);
+
+  // BACK steps out one level, like Turks: a show's page goes to the series
+  // list first, everything else goes home.
+  const isSeriesDetails = pathname.startsWith('/series/');
+  const goBack = useCallback(() => {
+    if (isSeriesDetails) {
+      go('/');
+    } else {
+      goHome();
+    }
+  }, [isSeriesDetails, go, goHome]);
 
   useEffect(() => {
     if (isHome) {
@@ -396,7 +444,7 @@ function BoxOfXLayout({ location, children }: BoxOfXLayoutProps) {
   }, [isHome, sectionIndex]);
 
   // Esc (when not typing and no pop-up is open) and the mouse's back button
-  // return to the home screen.
+  // step back one level.
   useEffect(() => {
     if (isHome) {
       return undefined;
@@ -412,7 +460,7 @@ function BoxOfXLayout({ location, children }: BoxOfXLayoutProps) {
         return;
       }
 
-      goHome();
+      goBack();
     };
 
     const onMouseUp = (event: MouseEvent) => {
@@ -423,7 +471,7 @@ function BoxOfXLayout({ location, children }: BoxOfXLayoutProps) {
       event.preventDefault();
 
       if (!isPopupOpen()) {
-        goHome();
+        goBack();
       }
     };
 
@@ -442,9 +490,9 @@ function BoxOfXLayout({ location, children }: BoxOfXLayoutProps) {
       window.removeEventListener('mouseup', onMouseUp);
       window.removeEventListener('mousedown', onMouseDown);
     };
-  }, [isHome, goHome]);
+  }, [isHome, goBack]);
 
-  const tabs = sectionTabs(section, showAdvanced);
+  const tabs = sectionTabs(section, showAdvanced, pathname);
 
   return (
     <div className={styles.layout}>
@@ -509,7 +557,11 @@ function BoxOfXLayout({ location, children }: BoxOfXLayoutProps) {
               <MessagesConnector />
             </div>
 
-            <Hint keyName="ESC" label="BACK" onPress={goHome} />
+            <Hint
+              keyName="ESC"
+              label={isSeriesDetails ? 'SERIES' : 'BACK'}
+              onPress={goBack}
+            />
           </div>
         </div>
       )}

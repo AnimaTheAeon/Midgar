@@ -16,7 +16,7 @@ const BUTTON_WIDTH = parseInt(dimensions.toolbarButtonWidth);
 const SEPARATOR_MARGIN = parseInt(dimensions.toolbarSeparatorMargin);
 const SEPARATOR_WIDTH = 2 * SEPARATOR_MARGIN + 1;
 
-function calculateOverflowItems(children, isMeasured, width, collapseButtons) {
+function calculateOverflowItems(children, isMeasured, width, collapseButtons, maxVisibleButtons) {
   let buttonCount = 0;
   let separatorCount = 0;
   const validChildren = [];
@@ -38,10 +38,13 @@ function calculateOverflowItems(children, isMeasured, width, collapseButtons) {
   // If the width of buttons and separators is less than
   // the available width return all valid children.
 
+  // Midgar: a section can cap how many buttons it shows; the rest go under More.
+  const isCapped = !!maxVisibleButtons && buttonCount > maxVisibleButtons;
+
   if (
     !isMeasured ||
     !collapseButtons ||
-    totalWidth < width
+    (totalWidth < width && !isCapped)
   ) {
     return {
       buttons: validChildren,
@@ -50,13 +53,14 @@ function calculateOverflowItems(children, isMeasured, width, collapseButtons) {
     };
   }
 
-  const maxButtons = Math.max(Math.floor((width - separatorsWidth) / BUTTON_WIDTH), 1);
+  const fitButtons = Math.max(Math.floor((width - separatorsWidth) / BUTTON_WIDTH), 1);
+  const maxButtons = isCapped ? Math.min(fitButtons, maxVisibleButtons) : fitButtons;
   const buttons = [];
   const overflowItems = [];
   let actualButtons = 0;
 
   // Return all buttons if only one is being pushed to the overflow menu.
-  if (buttonCount - 1 === maxButtons) {
+  if (buttonCount - 1 === maxButtons && !isCapped) {
     return {
       buttons: validChildren,
       buttonCount,
@@ -117,7 +121,8 @@ class PageToolbarSection extends Component {
     const {
       children,
       alignContent,
-      collapseButtons
+      collapseButtons,
+      maxVisibleButtons
     } = this.props;
 
     const {
@@ -129,7 +134,7 @@ class PageToolbarSection extends Component {
       buttons,
       buttonCount,
       overflowItems
-    } = calculateOverflowItems(children, isMeasured, width, collapseButtons);
+    } = calculateOverflowItems(children, isMeasured, width, collapseButtons, maxVisibleButtons);
 
     return (
       <Measure
@@ -196,7 +201,8 @@ class PageToolbarSection extends Component {
 PageToolbarSection.propTypes = {
   children: PropTypes.node,
   alignContent: PropTypes.oneOf([align.LEFT, align.CENTER, align.RIGHT]),
-  collapseButtons: PropTypes.bool.isRequired
+  collapseButtons: PropTypes.bool.isRequired,
+  maxVisibleButtons: PropTypes.number
 };
 
 PageToolbarSection.defaultProps = {

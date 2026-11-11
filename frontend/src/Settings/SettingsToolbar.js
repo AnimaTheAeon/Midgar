@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import keyboardShortcuts, { shortcuts } from 'Components/keyboardShortcuts';
+import SpinnerButton from 'Components/Link/SpinnerButton';
 import PageToolbar from 'Components/Page/Toolbar/PageToolbar';
-import PageToolbarButton from 'Components/Page/Toolbar/PageToolbarButton';
 import PageToolbarSection from 'Components/Page/Toolbar/PageToolbarSection';
-import { icons } from 'Helpers/Props';
+import { kinds } from 'Helpers/Props';
 import translate from 'Utilities/String/translate';
 import AdvancedSettingsButton from './AdvancedSettingsButton';
 import PendingChangesModal from './PendingChangesModal';
+import styles from './SettingsToolbar.css';
 
 class SettingsToolbar extends Component {
 
@@ -51,36 +52,47 @@ class SettingsToolbar extends Component {
       onAdvancedSettingsPress
     } = this.props;
 
+    // Midgar: instead of a small greyed-out toolbar icon, a Save bar appears
+    // under the toolbar as soon as something has changed.
     return (
-      <PageToolbar>
-        <PageToolbarSection>
-          <AdvancedSettingsButton
-            advancedSettings={advancedSettings}
-            onAdvancedSettingsPress={onAdvancedSettingsPress}
+      <>
+        <PageToolbar>
+          <PageToolbarSection>
+            <AdvancedSettingsButton
+              advancedSettings={advancedSettings}
+              onAdvancedSettingsPress={onAdvancedSettingsPress}
+            />
+
+            {
+              additionalButtons
+            }
+          </PageToolbarSection>
+
+          <PendingChangesModal
+            isOpen={hasPendingLocation}
+            onConfirm={onConfirmNavigation}
+            onCancel={onCancelNavigation}
           />
+        </PageToolbar>
 
-          {
-            showSave &&
-              <PageToolbarButton
-                label={hasPendingChanges ? translate('SaveChanges') : translate('NoChanges')}
-                iconName={icons.SAVE}
-                isSpinning={isSaving}
-                isDisabled={!hasPendingChanges}
+        {
+          showSave && (hasPendingChanges || isSaving) ?
+            <div className={styles.saveBar}>
+              <span className={styles.saveText}>
+                You have unsaved changes.
+              </span>
+
+              <SpinnerButton
+                kind={kinds.PRIMARY}
+                isSpinning={!!isSaving}
                 onPress={onSavePress}
-              />
-          }
-
-          {
-            additionalButtons
-          }
-        </PageToolbarSection>
-
-        <PendingChangesModal
-          isOpen={hasPendingLocation}
-          onConfirm={onConfirmNavigation}
-          onCancel={onCancelNavigation}
-        />
-      </PageToolbar>
+              >
+                {translate('SaveChanges')}
+              </SpinnerButton>
+            </div> :
+            null
+        }
+      </>
     );
   }
 }

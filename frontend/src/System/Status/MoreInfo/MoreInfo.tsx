@@ -6,6 +6,8 @@ import FieldSet from 'Components/FieldSet';
 import Link from 'Components/Link/Link';
 import translate from 'Utilities/String/translate';
 
+// Midgar: its own links. Midgar is built on Sonarr, whose wiki still explains
+// most settings.
 function MoreInfo() {
   return (
     <FieldSet legend={translate('MoreInfo')}>
@@ -14,75 +16,36 @@ function MoreInfo() {
           {translate('HomePage')}
         </DescriptionListItemTitle>
         <DescriptionListItemDescription>
-          <Link to="https://sonarr.tv/">sonarr.tv</Link>
+          <Link to="https://github.com/AnimaTheAeon/Midgar">
+            github.com/AnimaTheAeon/Midgar
+          </Link>
         </DescriptionListItemDescription>
 
-        <DescriptionListItemTitle>{translate('Wiki')}</DescriptionListItemTitle>
+        <DescriptionListItemTitle>Releases</DescriptionListItemTitle>
+        <DescriptionListItemDescription>
+          <Link to="https://github.com/AnimaTheAeon/Midgar/releases">
+            github.com/AnimaTheAeon/Midgar/releases
+          </Link>
+        </DescriptionListItemDescription>
+
+        <DescriptionListItemTitle>Report a problem</DescriptionListItemTitle>
+        <DescriptionListItemDescription>
+          <Link to="https://github.com/AnimaTheAeon/Midgar/issues">
+            github.com/AnimaTheAeon/Midgar/issues
+          </Link>
+        </DescriptionListItemDescription>
+
+        <DescriptionListItemTitle>Settings help</DescriptionListItemTitle>
         <DescriptionListItemDescription>
           <Link to="https://wiki.servarr.com/sonarr">
             wiki.servarr.com/sonarr
-          </Link>
+          </Link>{' '}
+          (Sonarr's wiki; Midgar's settings work the same way)
         </DescriptionListItemDescription>
 
-        <DescriptionListItemTitle>
-          {translate('Forums')}
-        </DescriptionListItemTitle>
+        <DescriptionListItemTitle>Built on</DescriptionListItemTitle>
         <DescriptionListItemDescription>
-          <Link to="https://forums.sonarr.tv/">forums.sonarr.tv</Link>
-        </DescriptionListItemDescription>
-
-        <DescriptionListItemTitle>
-          {translate('Twitter')}
-        </DescriptionListItemTitle>
-        <DescriptionListItemDescription>
-          <Link to="https://twitter.com/sonarrtv">@sonarrtv</Link>
-        </DescriptionListItemDescription>
-
-        <DescriptionListItemTitle>
-          {translate('Discord')}
-        </DescriptionListItemTitle>
-        <DescriptionListItemDescription>
-          <Link to="https://discord.sonarr.tv/">discord.sonarr.tv</Link>
-        </DescriptionListItemDescription>
-
-        <DescriptionListItemTitle>{translate('IRC')}</DescriptionListItemTitle>
-        <DescriptionListItemDescription>
-          <Link to="irc://irc.libera.chat/#sonarr">
-            {translate('IRCLinkText')}
-          </Link>
-        </DescriptionListItemDescription>
-        <DescriptionListItemDescription>
-          <Link to="https://web.libera.chat/?channels=#sonarr">
-            {translate('LiberaWebchat')}
-          </Link>
-        </DescriptionListItemDescription>
-
-        <DescriptionListItemTitle>
-          {translate('Donations')}
-        </DescriptionListItemTitle>
-        <DescriptionListItemDescription>
-          <Link to="https://sonarr.tv/donate">sonarr.tv/donate</Link>
-        </DescriptionListItemDescription>
-
-        <DescriptionListItemTitle>
-          {translate('Source')}
-        </DescriptionListItemTitle>
-        <DescriptionListItemDescription>
-          <Link to="https://github.com/Sonarr/Sonarr/">
-            github.com/Sonarr/Sonarr
-          </Link>
-        </DescriptionListItemDescription>
-
-        <DescriptionListItemTitle>
-          {translate('FeatureRequests')}
-        </DescriptionListItemTitle>
-        <DescriptionListItemDescription>
-          <Link to="https://forums.sonarr.tv/">forums.sonarr.tv</Link>
-        </DescriptionListItemDescription>
-        <DescriptionListItemDescription>
-          <Link to="https://github.com/Sonarr/Sonarr/issues">
-            github.com/Sonarr/Sonarr/issues
-          </Link>
+          <Link to="https://github.com/Sonarr/Sonarr/">Sonarr</Link>
         </DescriptionListItemDescription>
       </DescriptionList>
     </FieldSet>

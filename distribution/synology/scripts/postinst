@@ -10,6 +10,7 @@ cat << 'NOTE'
 <li>Switch the list from <b>Local users</b> to <b>System internal user</b></li>
 <li>Tick <b>Read/Write</b> for <b>Midgar</b> and click <b>Save</b></li>
 </ol>
+<p>If you skip this, Midgar will say a folder "is not writable" when you add it.</p>
 <p>Then open <b>Midgar</b> from the main menu, or go to port <b>8990</b> on this NAS. On your PC, right-click the Midgar tray icon and pick <b>Use Midgar on my NAS instead</b>.</p>
 NOTE
 } >> "$SYNOPKG_TEMP_LOGFILE"

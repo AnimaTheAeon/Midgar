@@ -1,6 +1,28 @@
 .messageContainer {
   display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   margin-bottom: 20px;
+  gap: 10px;
+}
+
+.updateIcon {
+  color: var(--warningColor);
+  font-size: 30px;
+}
+
+.refresh {
+  composes: button from '~Components/Link/SpinnerButton.css';
+
+  margin-left: auto;
+}
+
+.install {
+  margin-bottom: 30px;
+}
+
+.noNotes {
+  color: var(--helpTextColor);
 }
 
 .upToDateIcon {
@@ -30,7 +52,7 @@
   align-items: center;
   margin-bottom: 10px;
   padding-bottom: 5px;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid var(--borderColor);
 }
 
 .version {

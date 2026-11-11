@@ -5,7 +5,116 @@
   font-size: 20px;
 }
 
-.buttonContainer {
-  margin-top: 20px;
+/* Midgar: the getting-started checklist on an empty library. */
+
+.gettingStarted {
+  margin: 10px auto 0;
+  max-width: 720px;
+}
+
+.heading {
+  margin-bottom: 14px;
+  font-weight: 800;
+  font-size: 22px;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 10px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid var(--borderColor);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.18);
+  gap: 14px;
+}
+
+.mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--ff7Label);
+  border-radius: 50%;
+  color: var(--ff7Label);
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.done {
+  opacity: 0.75;
+
+  .mark {
+    border-color: var(--successColor);
+    color: var(--successColor);
+  }
+}
+
+.stepText {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+
+.stepTitle {
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.stepDetail {
+  color: var(--helpTextColor);
+  font-size: 13px;
+}
+
+.importHint {
+  margin-top: 16px;
+  color: var(--helpTextColor);
   text-align: center;
+}
+
+:global(html.boxofx) .step {
+  border-radius: 0;
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+}
+
+:global(html.boxofx) .heading,
+:global(html.boxofx) .stepTitle {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'Orbitron', 'Nunito', sans-serif;
+}
+
+:global(html.boxofx) .heading {
+  font-size: 18px;
+}
+
+:global(html.boxofx) .stepTitle {
+  font-size: 13px;
+}
+
+@media only screen and (max-width: $breakpointSmall) {
+  .step {
+    flex-wrap: wrap;
+  }
+
+  .stepText {
+    flex: 1 1 calc(100% - 60px);
+  }
+
+  .step > a,
+  .step > button {
+    margin-left: 46px;
+  }
 }

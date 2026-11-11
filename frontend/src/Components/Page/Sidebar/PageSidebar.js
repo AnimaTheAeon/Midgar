@@ -166,7 +166,11 @@ export const links = [
         title: () => translate('Backup'),
         to: '/system/backup'
       },
-      // Midgar: no Updates entry; that page lists Sonarr's releases.
+      {
+        // Midgar: its own releases, with an Install button.
+        title: () => translate('Updates'),
+        to: '/system/updates'
+      },
       {
         title: () => translate('Events'),
         to: '/system/events',

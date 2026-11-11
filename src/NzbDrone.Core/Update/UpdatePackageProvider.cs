@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using NzbDrone.Common.Cloud;
+using System.Linq;
+using Newtonsoft.Json.Linq;
+using NLog;
+using NzbDrone.Common.Cache;
 using NzbDrone.Common.EnvironmentInfo;
 using NzbDrone.Common.Http;
-using NzbDrone.Core.Analytics;
-using NzbDrone.Core.Datastore;
 
 namespace NzbDrone.Core.Update
 {
@@ -15,77 +15,142 @@ namespace NzbDrone.Core.Update
         List<UpdatePackage> GetRecentUpdates(string branch, Version currentVersion, Version previousVersion = null);
     }
 
+    // Midgar: versions are the GitHub releases of AnimaTheAeon/Midgar. Sonarr's own
+    // update server is never asked, since it only knows about Sonarr.
     public class UpdatePackageProvider : IUpdatePackageProvider
     {
-        private readonly IHttpClient _httpClient;
-        private readonly IHttpRequestBuilderFactory _requestBuilder;
-        private readonly IPlatformInfo _platformInfo;
-        private readonly IAnalyticsService _analyticsService;
-        private readonly IMainDatabase _mainDatabase;
+        private const string ReleasesUrl = "https://api.github.com/repos/AnimaTheAeon/Midgar/releases?per_page=10";
 
-        public UpdatePackageProvider(IHttpClient httpClient, ISonarrCloudRequestBuilder requestBuilder, IAnalyticsService analyticsService, IPlatformInfo platformInfo, IMainDatabase mainDatabase)
+        private readonly IHttpClient _httpClient;
+        private readonly ICached<List<UpdatePackage>> _cache;
+        private readonly Logger _logger;
+
+        public UpdatePackageProvider(IHttpClient httpClient, ICacheManager cacheManager, Logger logger)
         {
-            _platformInfo = platformInfo;
-            _analyticsService = analyticsService;
-            _requestBuilder = requestBuilder.Services;
             _httpClient = httpClient;
-            _mainDatabase = mainDatabase;
+            _cache = cacheManager.GetCache<List<UpdatePackage>>(GetType());
+            _logger = logger;
         }
 
         public UpdatePackage GetLatestUpdate(string branch, Version currentVersion)
         {
-            var request = _requestBuilder.Create()
-                                         .Resource("/update/{branch}")
-                                         .AddQueryParam("version", currentVersion)
-                                         .AddQueryParam("os", OsInfo.Os.ToString().ToLowerInvariant())
-                                         .AddQueryParam("arch", RuntimeInformation.OSArchitecture)
-                                         .AddQueryParam("runtime", "netcore")
-                                         .AddQueryParam("runtimeVer", _platformInfo.Version)
-                                         .AddQueryParam("dbType", _mainDatabase.DatabaseType)
-                                         .AddQueryParam("includeMajorVersion", true)
-                                         .SetSegment("branch", branch);
+            var latest = GetRecentUpdates(branch, currentVersion).OrderByDescending(u => u.Version).FirstOrDefault();
 
-            if (_analyticsService.IsEnabled)
-            {
-                // Send if the system is active so we know which versions to deprecate/ignore
-                request.AddQueryParam("active", _analyticsService.InstallIsActive.ToString().ToLower());
-            }
-
-            var update = _httpClient.Get<UpdatePackageAvailable>(request.Build()).Resource;
-
-            if (!update.Available)
+            if (latest == null || Normalize(latest.Version) <= Normalize(BuildInfo.AppVersion))
             {
                 return null;
             }
 
-            return update.UpdatePackage;
+            return latest;
         }
 
-        public List<UpdatePackage> GetRecentUpdates(string branch, Version currentVersion, Version previousVersion)
+        public List<UpdatePackage> GetRecentUpdates(string branch, Version currentVersion, Version previousVersion = null)
         {
-            var request = _requestBuilder.Create()
-                                         .Resource("/update/{branch}/changes")
-                                         .AddQueryParam("version", currentVersion)
-                                         .AddQueryParam("os", OsInfo.Os.ToString().ToLowerInvariant())
-                                         .AddQueryParam("arch", RuntimeInformation.OSArchitecture)
-                                         .AddQueryParam("runtime", "netcore")
-                                         .AddQueryParam("runtimeVer", _platformInfo.Version)
-                                         .SetSegment("branch", branch);
-
-            if (previousVersion != null && previousVersion != currentVersion)
+            try
             {
-                request.AddQueryParam("prevVersion", previousVersion);
+                return _cache.Get("releases", FetchReleases, TimeSpan.FromHours(1));
+            }
+            catch (Exception ex)
+            {
+                _logger.Debug(ex, "Couldn't get the list of Midgar releases");
+
+                return new List<UpdatePackage>();
+            }
+        }
+
+        // 1.4 and 1.4.0 are the same version.
+        private static Version Normalize(Version version)
+        {
+            return new Version(version.Major, version.Minor, Math.Max(version.Build, 0), Math.Max(version.Revision, 0));
+        }
+
+        private List<UpdatePackage> FetchReleases()
+        {
+            var request = new HttpRequest(ReleasesUrl, HttpAccept.Json);
+            request.LogHttpError = false;
+
+            var response = _httpClient.Get(request);
+            var suffix = OsInfo.IsWindows ? "-win-x64-setup.exe" : ".spk";
+            var packages = new List<UpdatePackage>();
+
+            foreach (var release in JArray.Parse(response.Content))
+            {
+                if (release.Value<bool?>("draft") == true || release.Value<bool?>("prerelease") == true)
+                {
+                    continue;
+                }
+
+                var tag = release.Value<string>("tag_name") ?? string.Empty;
+
+                if (!Version.TryParse(tag.TrimStart('v', 'V'), out var version))
+                {
+                    continue;
+                }
+
+                var package = new UpdatePackage
+                {
+                    Version = version,
+                    ReleaseDate = release.Value<DateTime?>("published_at") ?? DateTime.UtcNow,
+                    Branch = "main",
+                    Url = release.Value<string>("html_url"),
+                    Changes = ParseChanges(release.Value<string>("body"))
+                };
+
+                var assets = release["assets"] as JArray;
+
+                if (assets != null)
+                {
+                    foreach (var asset in assets)
+                    {
+                        var name = asset.Value<string>("name") ?? string.Empty;
+
+                        if (name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+                        {
+                            package.FileName = name;
+                            package.Url = asset.Value<string>("browser_download_url");
+                            package.Hash = (asset.Value<string>("digest") ?? string.Empty).Replace("sha256:", string.Empty);
+                        }
+                    }
+                }
+
+                packages.Add(package);
             }
 
-            if (_analyticsService.IsEnabled)
+            return packages;
+        }
+
+        // Release notes are a bullet list; lines starting with "Fixed" go under Fixed.
+        private static UpdateChanges ParseChanges(string body)
+        {
+            var changes = new UpdateChanges();
+
+            foreach (var raw in (body ?? string.Empty).Split('\n'))
             {
-                // Send if the system is active so we know which versions to deprecate/ignore
-                request.AddQueryParam("active", _analyticsService.InstallIsActive.ToString().ToLower());
+                var line = raw.Trim();
+
+                if (!line.StartsWith("- ") && !line.StartsWith("* "))
+                {
+                    continue;
+                }
+
+                var text = line.Substring(2).Trim();
+
+                if (text.Length == 0 || text.Contains("Full Changelog"))
+                {
+                    continue;
+                }
+
+                if (text.StartsWith("Fixed", StringComparison.OrdinalIgnoreCase))
+                {
+                    changes.Fixed.Add(text);
+                }
+                else
+                {
+                    changes.New.Add(text);
+                }
             }
 
-            var updates = _httpClient.Get<List<UpdatePackage>>(request.Build());
-
-            return updates.Resource;
+            return changes;
         }
     }
 }

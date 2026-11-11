@@ -73,8 +73,22 @@
 }
 
 @media only screen and (max-width: $breakpointSmall) {
+  .header {
+    padding-right: 4px;
+  }
+
   .logoContainer {
-    flex: 0 0 60px;
+    flex: 0 0 auto;
+    padding-left: 12px;
+  }
+
+  .brandName {
+    display: none;
+  }
+
+  .sidebarToggleContainer {
+    flex: 0 0 40px;
+    margin-right: 4px;
   }
 
   .sidebarToggleContainer {

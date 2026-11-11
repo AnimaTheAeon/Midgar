@@ -13,7 +13,10 @@ namespace NzbDrone.Core.Validation.Paths
             _diskProvider = diskProvider;
         }
 
-        protected override string GetDefaultMessageTemplate() => "Folder '{path}' is not writable by user '{user}'";
+        // Midgar: on a NAS this is nearly always a missing shared-folder permission, so say how to fix it.
+        protected override string GetDefaultMessageTemplate() => OperatingSystem.IsWindows()
+            ? "Folder '{path}' is not writable by user '{user}'"
+            : "Folder '{path}' is not writable by user '{user}'. On a Synology NAS, open Control Panel > Shared Folder, select the folder, then Edit > Permissions > System internal user, and tick Read/Write for Midgar.";
 
         protected override bool IsValid(PropertyValidatorContext context)
         {

@@ -1,6 +1,7 @@
 using System;
 using NLog;
 using NzbDrone.Common.Cloud;
+using NzbDrone.Common.EnvironmentInfo;
 using NzbDrone.Common.Http;
 using NzbDrone.Common.Serializer;
 using NzbDrone.Core.Localization;
@@ -23,6 +24,12 @@ namespace NzbDrone.Core.HealthCheck.Checks
 
         public override HealthCheck Check()
         {
+            // Midgar: this check asks Sonarr's server for the time, so it is skipped.
+            if (BuildInfo.AppName != "Sonarr")
+            {
+                return new HealthCheck(GetType());
+            }
+
             try
             {
                 var request = _cloudRequestBuilder.Create()
