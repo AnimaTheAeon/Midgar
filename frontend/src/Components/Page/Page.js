@@ -30,7 +30,9 @@ class Page extends Component {
 
     this.state = {
       isUpdatedModalOpen: false,
-      isConnectionLostModalOpen: false
+      isConnectionLostModalOpen: false,
+      // Midgar: the sign-in window can be put off until next launch.
+      isAuthenticationModalDismissed: false
     };
   }
 
@@ -71,6 +73,10 @@ class Page extends Component {
     this.setState({ isUpdatedModalOpen: false });
   };
 
+  onAuthenticationModalClose = () => {
+    this.setState({ isAuthenticationModalDismissed: true });
+  };
+
   onConnectionLostModalClose = () => {
     this.setState({ isConnectionLostModalOpen: false });
   };
@@ -105,7 +111,8 @@ class Page extends Component {
         />
 
         <AuthenticationRequiredModal
-          isOpen={!authenticationEnabled}
+          isOpen={!authenticationEnabled && !this.state.isAuthenticationModalDismissed}
+          onModalClose={this.onAuthenticationModalClose}
         />
       </React.Fragment>
     );

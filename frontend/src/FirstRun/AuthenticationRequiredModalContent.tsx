@@ -4,6 +4,7 @@ import Alert from 'Components/Alert';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
 import FormLabel from 'Components/Form/FormLabel';
+import Button from 'Components/Link/Button';
 import SpinnerErrorButton from 'Components/Link/SpinnerErrorButton';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import ModalBody from 'Components/Modal/ModalBody';
@@ -32,11 +33,13 @@ const SECTION = 'general';
 
 const selector = createSettingsSectionSelector(SECTION);
 
-function onModalClose() {
-  // No-op
+interface AuthenticationRequiredModalContentProps {
+  onModalClose: () => void;
 }
 
-export default function AuthenticationRequiredModalContent() {
+export default function AuthenticationRequiredModalContent({
+  onModalClose,
+}: AuthenticationRequiredModalContentProps) {
   const { isPopulated, error, isSaving, saveError, settings } =
     useSelector(selector);
   const dispatch = useDispatch();
@@ -56,7 +59,7 @@ export default function AuthenticationRequiredModalContent() {
     dispatch(fetchGeneralSettings());
 
     return () => {
-      dispatch(clearPendingChanges());
+      dispatch(clearPendingChanges({ section: `settings.${SECTION}` }));
     };
   }, [dispatch]);
 
@@ -77,14 +80,15 @@ export default function AuthenticationRequiredModalContent() {
     }
 
     dispatch(fetchStatus());
-  }, [isSaving, wasSaving, saveError, dispatch]);
+    onModalClose();
+  }, [isSaving, wasSaving, saveError, dispatch, onModalClose]);
 
   const onPress = useCallback(() => {
     dispatch(saveGeneralSettings());
   }, [dispatch]);
 
   return (
-    <ModalContent showCloseButton={false} onModalClose={onModalClose}>
+    <ModalContent onModalClose={onModalClose}>
       <ModalHeader>{translate('AuthenticationRequired')}</ModalHeader>
 
       <ModalBody>
@@ -103,7 +107,7 @@ export default function AuthenticationRequiredModalContent() {
                 values={authenticationMethodOptions}
                 helpText={translate('AuthenticationMethodHelpText')}
                 helpTextWarning={
-                  authenticationMethod.value === 'none'
+                  authenticationMethod?.value === 'none'
                     ? translate('AuthenticationMethodHelpTextWarning')
                     : undefined
                 }
@@ -196,6 +200,12 @@ export default function AuthenticationRequiredModalContent() {
       </ModalBody>
 
       <ModalFooter>
+        <div className={styles.later}>
+          You can set this up later in Settings → General → Security.
+        </div>
+
+        <Button onPress={onModalClose}>{translate('Cancel')}</Button>
+
         <SpinnerErrorButton
           kind={kinds.PRIMARY}
           isSpinning={isSaving}
