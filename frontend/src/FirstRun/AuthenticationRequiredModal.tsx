@@ -3,16 +3,16 @@ import Modal from 'Components/Modal/Modal';
 import { sizes } from 'Helpers/Props';
 import AuthenticationRequiredModalContent from './AuthenticationRequiredModalContent';
 
-function onModalClose() {
-  // No-op
-}
-
 interface AuthenticationRequiredModalProps {
   isOpen: boolean;
+  onModalClose: () => void;
 }
 
+// Midgar: Cancel (or Esc) closes this until Midgar next starts; the same
+// settings are in Settings > General > Security.
 export default function AuthenticationRequiredModal({
   isOpen,
+  onModalClose,
 }: AuthenticationRequiredModalProps) {
   return (
     <Modal
@@ -21,7 +21,7 @@ export default function AuthenticationRequiredModal({
       closeOnBackgroundClick={false}
       onModalClose={onModalClose}
     >
-      <AuthenticationRequiredModalContent />
+      <AuthenticationRequiredModalContent onModalClose={onModalClose} />
     </Modal>
   );
 }
