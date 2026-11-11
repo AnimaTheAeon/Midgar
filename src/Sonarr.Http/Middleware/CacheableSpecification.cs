@@ -41,6 +41,13 @@ namespace Sonarr.Http.Middleware
 
             var path = request.Path.Value ?? "";
 
+            // Midgar: the logo and icons keep their file names when they change, so the
+            // browser must ask for them again instead of keeping an old copy for a year.
+            if (path.Contains("/Content/Images/", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
             if (path.EndsWith("/index.js"))
             {
                 return false;

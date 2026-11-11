@@ -3,6 +3,10 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.5
+
+- Fixed the old icon still showing in the top-left corner of the window after an update.
+
 ## 1.4
 
 - Updates page (System > Updates): shows your version and the newest one with what changed, and installs it from inside Midgar. On Synology it downloads the new package.

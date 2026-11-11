@@ -57,7 +57,7 @@ class PageHeader extends Component {
           >
             <img
               className={styles.logo}
-              src={`${window.Sonarr.urlBase}/Content/Images/logo.svg`}
+              src={`${window.Sonarr.urlBase}/Content/Images/logo.svg?v=${window.Sonarr.appVersion || window.Sonarr.version}`}
               alt=""
             />
             <span className={styles.brandName}>Midgar</span>
