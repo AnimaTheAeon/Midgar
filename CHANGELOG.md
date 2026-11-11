@@ -5,7 +5,7 @@ Lines starting with "Fixed" are listed under Fixed.
 
 ## 1.6
 
-- Windows: the folder picker can see network folders. Type \\\\name-of-your-NAS\\ to list its shared folders; network folders you've mapped or opened in File Explorer are listed with your drives.
+- Windows: the folder picker can see network folders. Type `\\name-of-your-NAS\` to list its shared folders; network folders you've mapped or opened in File Explorer are listed with your drives.
 
 ## 1.5
 
