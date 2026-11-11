@@ -69,6 +69,12 @@ namespace NzbDrone.Common.Disk
                 query = "/";
             }
 
+            // Midgar: "\\server\" lists that server's shared folders.
+            if (OsInfo.IsWindows && WindowsNetwork.IsServerPath(query))
+            {
+                return GetShares(query);
+            }
+
             if (
                 allowFoldersWithoutTrailingSlashes &&
                 query.IsPathValid(PathValidationType.CurrentOs) &&
@@ -82,13 +88,55 @@ namespace NzbDrone.Common.Disk
 
             if (lastSeparatorIndex != -1)
             {
+                if (OsInfo.IsWindows && WindowsNetwork.IsServerPath(path))
+                {
+                    return GetShares(path);
+                }
+
                 return GetResult(path, includeFiles);
             }
 
             return new FileSystemResult();
         }
 
+        private static FileSystemResult GetShares(string serverPath)
+        {
+            return new FileSystemResult
+            {
+                Parent = string.Empty,
+                Directories = WindowsNetwork.GetShares(serverPath)
+                                            .Select(share => new FileSystemModel
+                                            {
+                                                Type = FileSystemEntityType.Folder,
+                                                Name = share.TrimEnd('\\').Substring(serverPath.Length),
+                                                Path = share,
+                                                LastModified = null
+                                            })
+                                            .ToList()
+            };
+        }
+
         private List<FileSystemModel> GetDrives()
+        {
+            var drives = GetLocalDrives();
+
+            // Midgar: network folders this Windows user has mapped or opened before.
+            if (!_runtimeInfo.IsWindowsService)
+            {
+                drives.AddRange(WindowsNetwork.GetKnownShares()
+                                              .Select(share => new FileSystemModel
+                                              {
+                                                  Type = FileSystemEntityType.Drive,
+                                                  Name = share.TrimEnd('\\'),
+                                                  Path = share,
+                                                  LastModified = null
+                                              }));
+            }
+
+            return drives;
+        }
+
+        private List<FileSystemModel> GetLocalDrives()
         {
             return _diskProvider.GetMounts()
                                 .Where(d =>
@@ -201,6 +249,17 @@ namespace NzbDrone.Common.Disk
 
         private static string GetParent(string path)
         {
+            // Midgar: up from "\\server\share\" is the server's list of shared folders.
+            if (OsInfo.IsWindows)
+            {
+                var server = WindowsNetwork.GetServerOfShareRoot(path);
+
+                if (server != null)
+                {
+                    return server;
+                }
+            }
+
             var di = new DirectoryInfo(path);
 
             if (di.Parent != null)

@@ -5,6 +5,7 @@ interface CssExports {
   'loading': string;
   'mappedDrivesWarning': string;
   'modalBody': string;
+  'networkHint': string;
   'pathInput': string;
   'scroller': string;
 }
