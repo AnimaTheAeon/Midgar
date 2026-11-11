@@ -37,6 +37,7 @@ AppVerName={#AppName} {#BuildNumber}
 WizardStyle=modern
 WizardImageFile=wizard-large.bmp
 WizardSmallImageFile=wizard-small.bmp
+SetupIconFile=..\..\..\src\NzbDrone.Host\Sonarr.ico
 CloseApplications=yes
 
 [Languages]
