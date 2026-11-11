@@ -151,6 +151,15 @@ function FileBrowserModalContent(props: FileBrowserModalContentProps) {
           </Alert>
         ) : null}
 
+        {isWindows && !isWindowsService ? (
+          <div className={styles.networkHint}>
+            For a folder on your NAS or another computer, type{' '}
+            <code>{'\\\\its-name\\'}</code> (for example{' '}
+            <code>{'\\\\DS923\\'}</code>) to see its shared folders. Ones you've
+            already opened in File Explorer are listed with your drives.
+          </div>
+        ) : null}
+
         <PathInputInternal
           className={styles.pathInput}
           placeholder={translate('FileBrowserPlaceholderText')}
