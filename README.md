@@ -63,8 +63,9 @@ Midgar imports.
 ## Updates
 
 Midgar checks this repo's Releases for new versions. Versions are numbered
-1.1, 1.2, and so on: publish a release tagged `v1.2` and the build attaches
-the installer and `.spk` to it. (Behind the scenes Midgar still reports a
+1.1, 1.2, and so on, set by `<MidgarVersion>` in `src/Directory.Build.props`.
+A push to `main` with a new version number publishes that release with the
+installer, the `.spk` and the portable zip. (Behind the scenes Midgar still reports a
 Sonarr 4.x version to other tools so Prowlarr and Materia accept it.)
 
 - **Windows:** the tray icon pops up when an update is ready; click it (or
