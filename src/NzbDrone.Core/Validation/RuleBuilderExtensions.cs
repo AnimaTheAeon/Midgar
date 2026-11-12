@@ -85,6 +85,7 @@ namespace NzbDrone.Core.Validation
         public static IRuleBuilderOptions<T, string> StartsOrEndsWithSonarr<T>(this IRuleBuilder<T, string> ruleBuilder)
         {
             ruleBuilder.SetValidator(new NotEmptyValidator(null));
+
             // Midgar: the name has to start or end with the app's own name (Midgar).
             return ruleBuilder.SetValidator(new RegularExpressionValidator($"^{BuildInfo.AppName}|{BuildInfo.AppName}$")).WithMessage($"Must start or end with {BuildInfo.AppName}");
         }
