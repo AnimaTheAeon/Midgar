@@ -78,7 +78,7 @@
     <AssemblyConfiguration>$(Configuration)-dev</AssemblyConfiguration>
     <!-- Midgar's own version, shown to people and used for updates. AssemblyVersion
          stays on Sonarr's 4.x numbering so Prowlarr and other tools accept it. -->
-    <MidgarVersion>1.6</MidgarVersion>
+    <MidgarVersion>1.7</MidgarVersion>
     <NeutralLanguage>en</NeutralLanguage>
 
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>

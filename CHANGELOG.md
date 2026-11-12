@@ -3,6 +3,10 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.7
+
+- Fixed the Synology package failing to install ("Failed to install the package"). It asked DSM for a port setting it couldn't find.
+
 ## 1.6
 
 - Windows: the folder picker can see network folders. Type `\\name-of-your-NAS\` to list its shared folders; network folders you've mapped or opened in File Explorer are listed with your drives.
