@@ -3,6 +3,11 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.8
+
+- Fixed sign-in and General settings refusing to save (a leftover Sonarr rule wanted the instance name to contain "Sonarr").
+- The sign-in window says why a save failed.
+
 ## 1.7
 
 - Fixed the Synology package failing to install ("Failed to install the package"). It asked DSM for a port setting it couldn't find.

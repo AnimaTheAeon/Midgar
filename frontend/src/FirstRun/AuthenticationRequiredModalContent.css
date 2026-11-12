@@ -10,3 +10,9 @@
   color: var(--helpTextColor);
   font-size: 13px;
 }
+
+.saveError {
+  padding: 10px 30px;
+  color: var(--dangerColor);
+  font-weight: bold;
+}

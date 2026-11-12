@@ -105,6 +105,27 @@ export default function AuthenticationRequiredModalContent({
     onModalClose();
   }, [isSaving, wasSaving, saveError, dispatch, onModalClose]);
 
+  // Midgar: say why a save failed, even when the problem is a setting this
+  // window doesn't show.
+  const saveErrorText = (() => {
+    if (!saveError) {
+      return null;
+    }
+
+    const details = (
+      saveError as { responseJSON?: { errorMessage?: string }[] }
+    ).responseJSON;
+
+    if (Array.isArray(details) && details.length) {
+      return details
+        .map((detail) => detail.errorMessage)
+        .filter(Boolean)
+        .join(' ');
+    }
+
+    return "Midgar couldn't save these settings. Try again.";
+  })();
+
   const onPress = useCallback(() => {
     dispatch(saveGeneralSettings());
   }, [dispatch]);
@@ -223,6 +244,10 @@ export default function AuthenticationRequiredModalContent({
 
         {!isPopulated && !error ? <LoadingIndicator /> : null}
       </ModalBody>
+
+      {saveErrorText ? (
+        <div className={styles.saveError}>{saveErrorText}</div>
+      ) : null}
 
       <ModalFooter>
         <div className={styles.later}>
