@@ -3,6 +3,7 @@
 interface CssExports {
   'authRequiredAlert': string;
   'later': string;
+  'saveError': string;
 }
 export const cssExports: CssExports;
 export default cssExports;
