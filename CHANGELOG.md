@@ -3,6 +3,10 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.9
+
+- Fixed the login page asking for an @ in the username; any username works.
+
 ## 1.8
 
 - Fixed sign-in and General settings refusing to save (a leftover Sonarr rule wanted the instance name to contain "Sonarr").
