@@ -16,7 +16,8 @@ import translate from 'Utilities/String/translate';
 // Midgar: the two looks. Sonarr's old theme names count as the FFVII menu.
 export const themeOptions = [
   { key: 'midgar', value: 'FFVII menu' },
-  { key: 'boxofx', value: 'Box of X' }
+  { key: 'boxofx', value: 'Box of X' },
+  { key: 'blades', value: 'Blades' }
 ];
 
 export const firstDayOfWeekOptions = [
@@ -119,7 +120,7 @@ class UISettings extends Component {
                         onSavePress();
                       }}
                       {...settings.theme}
-                      value={settings.theme.value === 'boxofx' ? 'boxofx' : 'midgar'}
+                      value={['boxofx', 'blades'].includes(settings.theme.value) ? settings.theme.value : 'midgar'}
                     />
                   </FormGroup>
                 </FieldSet>
