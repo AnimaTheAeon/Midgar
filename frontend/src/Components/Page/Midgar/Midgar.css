@@ -141,3 +141,9 @@
   border-radius: 0;
   clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
 }
+
+/* Blades: soft glass windows. */
+
+:global(html.blades) .window {
+  border-radius: 18px;
+}

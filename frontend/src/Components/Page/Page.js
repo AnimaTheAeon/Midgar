@@ -6,6 +6,7 @@ import ConnectionLostModal from 'App/ConnectionLostModal';
 import SignalRConnector from 'Components/SignalRConnector';
 import AuthenticationRequiredModal from 'FirstRun/AuthenticationRequiredModal';
 import locationShape from 'Helpers/Props/Shapes/locationShape';
+import BladesLayout from './Blades/BladesLayout';
 import BoxOfXLayout from './BoxOfX/BoxOfXLayout';
 import PageHeader from './Header/PageHeader';
 import StatusLine from './Midgar/StatusLine';
@@ -94,6 +95,7 @@ class Page extends Component {
       enableColorImpairedMode,
       authenticationEnabled,
       isBoxOfX,
+      isBlades,
       onSidebarToggle,
       onSidebarVisibleChange
     } = this.props;
@@ -116,6 +118,21 @@ class Page extends Component {
         />
       </React.Fragment>
     );
+
+    // Midgar: the Blades theme puts each page on the open blade.
+    if (isBlades) {
+      return (
+        <ColorImpairedContext.Provider value={enableColorImpairedMode}>
+          <SignalRConnector />
+
+          <BladesLayout location={location}>
+            {children}
+          </BladesLayout>
+
+          {modals}
+        </ColorImpairedContext.Provider>
+      );
+    }
 
     // Midgar: the Box of X theme has its own home screen and page layout.
     if (isBoxOfX) {
@@ -172,6 +189,7 @@ Page.propTypes = {
   enableColorImpairedMode: PropTypes.bool.isRequired,
   authenticationEnabled: PropTypes.bool.isRequired,
   isBoxOfX: PropTypes.bool.isRequired,
+  isBlades: PropTypes.bool,
   onResize: PropTypes.func.isRequired,
   onSidebarToggle: PropTypes.func.isRequired,
   onSidebarVisibleChange: PropTypes.func.isRequired

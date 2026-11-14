@@ -115,3 +115,11 @@
   border-radius: 0;
   clip-path: polygon(22px 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%, 0 22px);
 }
+
+/* Blades: rounded glass-edged pop-up windows. */
+
+:global(html.blades) .modal {
+  border-color: rgb(255 255 255 / 55%);
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 45%);
+}

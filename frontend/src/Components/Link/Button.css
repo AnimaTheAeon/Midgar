@@ -137,3 +137,11 @@
     color: #1c3504;
   }
 }
+
+/* Blades: glass pills. */
+
+:global(html.blades) .button {
+  border-radius: 18px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 40%);
+  text-shadow: none;
+}

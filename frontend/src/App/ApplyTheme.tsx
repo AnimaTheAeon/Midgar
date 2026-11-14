@@ -19,6 +19,7 @@ function ApplyTheme() {
   const updateCSSVariables = useCallback(() => {
     // Midgar: the Box of X layout and shapes hang off this class.
     document.documentElement.classList.toggle('boxofx', theme === 'boxofx');
+    document.documentElement.classList.toggle('blades', theme === 'blades');
 
     Object.entries(themes[theme] ?? themes.midgar).forEach(([key, value]) => {
       document.documentElement.style.setProperty(`--${key}`, value);
