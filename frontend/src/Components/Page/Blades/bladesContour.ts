@@ -1,3 +1,10 @@
+// Moves a row right by dx and narrows it by the same amount, so its right
+// end stays where it was instead of running past the blade's edge.
+function shiftRow(el: HTMLElement, dx: number) {
+  el.style.translate = dx ? `${dx}px 0` : '';
+  el.style.maxWidth = dx ? `calc(100% - ${dx}px)` : '';
+}
+
 // Blades: rows follow the open blade's curved left edge. Each row shifts
 // right by how far the curve comes in at its height (the most it comes in
 // over the row's span), so nothing runs into the curve near the top and
@@ -59,19 +66,19 @@ export default function bladesContour(
       const rows: HTMLElement[] = [];
       kidsOf(open).forEach((c) => pick(c, rows));
       for (const el of rows) {
-        el.style.translate = '';
+        shiftRow(el, 0);
         const er = el.getBoundingClientRect();
         const top = Math.max(er.top, br.top);
         const bot = Math.min(er.bottom, br.bottom);
         const dx = bot > top ? Math.round(Math.max(arc(top), arc(bot))) : 0;
         if (dx > 0) {
-          el.style.translate = `${dx}px 0`;
+          shiftRow(el, dx);
           next.add(el);
         }
       }
     }
     shifted.forEach((el) => {
-      if (!next.has(el)) el.style.translate = '';
+      if (!next.has(el)) shiftRow(el, 0);
     });
     shifted = next;
   };
@@ -100,7 +107,7 @@ export default function bladesContour(
       removeEventListener('resize', queue);
       stage.removeEventListener('transitionend', queue);
       shifted.forEach((el) => {
-        el.style.translate = '';
+        shiftRow(el, 0);
       });
       shifted.clear();
     },
