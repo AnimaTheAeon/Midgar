@@ -1,6 +1,5 @@
 // Midgar: "Blades" theme, glossy silver blades with the page on the open
-// blade's color (shared with Lifestream, Jenova and Turks; project doc
-// claude/themes/blades.md). White text and see-through glass, so pages read
+// blade's color (shared with Lifestream, Jenova and Turks). White text and see-through glass, so pages read
 // on any blade color. Same keys as the FFVII theme.
 const dark = require('./dark');
 

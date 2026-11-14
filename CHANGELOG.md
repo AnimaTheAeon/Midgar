@@ -3,6 +3,10 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.14
+
+- New start screen: the plate with its slow rings and eight reactors, in the FFVII menu, Xbox and Blades looks. It replaces the old loading logo and jokes.
+
 ## 1.13
 
 - Fixed rows near the top and bottom of a Blades page getting cut off at the right edge (a toolbar button could run past the blade).
