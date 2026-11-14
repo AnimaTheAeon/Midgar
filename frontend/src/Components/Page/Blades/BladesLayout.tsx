@@ -12,6 +12,7 @@ import { useStatusSummary } from 'Components/Page/Midgar/StatusLine';
 import MessagesConnector from 'Components/Page/Sidebar/Messages/MessagesConnector';
 import { getActiveParent, links } from 'Components/Page/Sidebar/PageSidebar';
 import HealthStatus from 'System/Status/Health/HealthStatus';
+import bladesContour from './bladesContour';
 import styles from './Blades.css';
 
 // Midgar: the "Blades" layout. One glossy silver blade per menu section; the
@@ -193,6 +194,24 @@ function BladesLayout({ location, children }: BladesLayoutProps) {
   const [instant, setInstant] = useState(true);
   const width = useWidth();
   const drag = useRef<{ x: number; y: number; ok: boolean } | null>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+
+  // Rows follow the open blade's curved left edge.
+  useEffect(() => {
+    const stage = stageRef.current;
+
+    if (!stage) {
+      return undefined;
+    }
+
+    const contour = bladesContour(
+      stage,
+      `.${styles.open} .${styles.bodyInner}`,
+      `.${styles.panel}`
+    );
+
+    return () => contour.stop();
+  }, []);
 
   const go = useCallback(
     (to: string) => history.push(`${window.Sonarr.urlBase}${to}`),
@@ -354,6 +373,7 @@ function BladesLayout({ location, children }: BladesLayoutProps) {
 
   return (
     <div
+      ref={stageRef}
       className={styles.stage}
       style={stageStyle}
       onPointerDown={onPointerDown}
