@@ -15,8 +15,8 @@ import translate from 'Utilities/String/translate';
 
 // Midgar: the two looks. Sonarr's old theme names count as the FFVII menu.
 export const themeOptions = [
-  { key: 'midgar', value: 'FFVII menu' },
-  { key: 'boxofx', value: 'Box of X' },
+  { key: 'midgar', value: 'FFVII Menu' },
+  { key: 'boxofx', value: 'Xbox' },
   { key: 'blades', value: 'Blades' }
 ];
 
