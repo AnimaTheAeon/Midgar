@@ -48,7 +48,7 @@ namespace NzbDrone.Core.Update
         {
             try
             {
-                return _cache.Get("releases", FetchReleases, TimeSpan.FromHours(1));
+                return _cache.Get("releases", FetchReleases, TimeSpan.FromMinutes(2));
             }
             catch (Exception ex)
             {

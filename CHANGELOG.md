@@ -3,6 +3,10 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.18
+
+- Fixed Check for updates not seeing a brand-new release for up to an hour. Midgar now asks GitHub again after two minutes.
+
 ## 1.17
 
 - Fixed Blades pop-up windows having square corners poking out past their rounded frame.
