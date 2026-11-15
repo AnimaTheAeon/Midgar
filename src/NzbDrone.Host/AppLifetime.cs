@@ -1,8 +1,11 @@
+using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using NLog;
 using NzbDrone.Common.EnvironmentInfo;
+using NzbDrone.Common.Extensions;
 using NzbDrone.Common.Processes;
 using NzbDrone.Core.Configuration;
 using NzbDrone.Core.Lifecycle;
@@ -67,9 +70,35 @@ namespace NzbDrone.Host
             _eventAggregator.PublishEvent(new ApplicationStartedEvent());
         }
 
+        private void WriteSynologyRestartRequest()
+        {
+            // On Synology, midgar-run.sh keeps Midgar running. A restart can't
+            // start a new copy itself, so it leaves a note for the script and exits.
+            var dir = Environment.GetEnvironmentVariable("MIDGAR_SPK_UPDATE_DIR");
+
+            if (dir.IsNullOrWhiteSpace())
+            {
+                return;
+            }
+
+            try
+            {
+                Directory.CreateDirectory(dir);
+                File.WriteAllText(Path.Combine(dir, "restart"), string.Empty);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Could not leave the restart note for the run script");
+            }
+        }
+
         private void OnAppStopped()
         {
-            if (_runtimeInfo.RestartPending && !_runtimeInfo.IsWindowsService)
+            if (_runtimeInfo.RestartPending && Environment.GetEnvironmentVariable("MIDGAR_SPK_UPDATE_DIR").IsNotNullOrWhiteSpace())
+            {
+                WriteSynologyRestartRequest();
+            }
+            else if (_runtimeInfo.RestartPending && !_runtimeInfo.IsWindowsService)
             {
                 var restartArgs = GetRestartArgs();
 

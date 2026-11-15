@@ -3,6 +3,11 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.19
+
+- Fixed Midgar not coming back after a Restart inside the app (the Restart button, restoring a backup, changing the port) on a Synology. It now restarts itself.
+- Midgar no longer loads Sonarr's usage-tracking and error-report scripts in the browser, and nothing is sent to anyone's servers. The switch is gone because it can't be turned on.
+
 ## 1.18
 
 - Fixed Check for updates not seeing a brand-new release for up to an hour. Midgar now asks GitHub again after two minutes.

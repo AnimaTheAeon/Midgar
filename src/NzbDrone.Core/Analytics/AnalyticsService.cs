@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using NzbDrone.Common.EnvironmentInfo;
 using NzbDrone.Core.Configuration;
 using NzbDrone.Core.Datastore;
 using NzbDrone.Core.History;
@@ -24,7 +23,9 @@ namespace NzbDrone.Core.Analytics
             _historyService = historyService;
         }
 
-        public bool IsEnabled => (_configFileProvider.AnalyticsEnabled && RuntimeInfo.IsProduction) || RuntimeInfo.IsDevelopment;
+        // Midgar never sends usage data or error reports to anyone's servers. This
+        // also keeps the web page from loading the upstream tracking and error scripts.
+        public bool IsEnabled => false;
 
         public bool InstallIsActive
         {

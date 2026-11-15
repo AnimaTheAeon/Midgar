@@ -224,7 +224,7 @@ namespace NzbDrone.Core.Configuration
 
         public string AllowedHosts => _serverOptions.AllowedHosts ?? GetValue("AllowedHosts", string.Empty);
 
-        public bool AnalyticsEnabled => _logOptions.AnalyticsEnabled ?? GetValueBoolean("AnalyticsEnabled", true, persist: false);
+        public bool AnalyticsEnabled => _logOptions.AnalyticsEnabled ?? GetValueBoolean("AnalyticsEnabled", false, persist: false);
 
         public string Branch => _updateOptions.Branch ?? GetValue("Branch", "main").ToLowerInvariant();
 
