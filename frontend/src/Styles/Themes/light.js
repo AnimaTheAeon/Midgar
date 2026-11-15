@@ -190,6 +190,9 @@ module.exports = {
   inputSelectedBackgroundColor: '#e2e2e2',
   advancedFormLabelColor: '#ff902b',
   disabledCheckInputColor: '#ddd',
+  checkInputBackgroundColor: white,
+  checkInputBorderColor: '#ccc',
+  checkInputTickColor: white,
   disabledInputColor: '#808080',
 
   //

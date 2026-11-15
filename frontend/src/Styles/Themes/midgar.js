@@ -146,6 +146,11 @@ module.exports = {
   sliderAccentColor: label,
 
   inputBackgroundColor: well,
+  // Unchecked boxes read as an empty dark well; checked ones fill with the
+  // theme label colour and carry a dark tick so the two states never blur.
+  checkInputBackgroundColor: well,
+  checkInputBorderColor: borderLight,
+  checkInputTickColor: '#080c34',
   inputReadOnlyBackgroundColor: '#0c1244',
   inputHoverBackgroundColor: '#0c1244',
   inputSelectedBackgroundColor: '#2c48aa',
