@@ -29,7 +29,7 @@
     width: 100%;
     border: 1px solid var(--inputBorderColor);
     border-radius: 4px;
-    background-color: var(--inputBackgroundColor);
+    background-color: var(--selectOptionsBackgroundColor, var(--inputBackgroundColor));
     box-shadow: inset 0 1px 1px var(--inputBoxShadowColor);
   }
 }

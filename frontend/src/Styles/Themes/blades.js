@@ -163,6 +163,10 @@ module.exports = {
   sliderAccentColor: label,
 
   inputBackgroundColor: well,
+  // Dropdown lists sit on top of other text, so they need a solid background.
+  selectOptionsBackgroundColor: '#2a2540',
+  selectOptionHoverBackgroundColor: 'rgba(255, 255, 255, 0.16)',
+  selectOptionSelectedBackgroundColor: 'rgba(255, 255, 255, 0.28)',
   // Unchecked boxes read as an empty dark well; checked ones fill with the
   // theme label colour and carry a dark tick so the two states never blur.
   checkInputBackgroundColor: well,

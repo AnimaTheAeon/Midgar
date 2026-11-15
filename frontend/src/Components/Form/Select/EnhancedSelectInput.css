@@ -52,7 +52,7 @@
 
   border: 1px solid var(--inputBorderColor);
   border-radius: 4px;
-  background-color: var(--inputBackgroundColor);
+  background-color: var(--selectOptionsBackgroundColor, var(--inputBackgroundColor));
 }
 
 .optionsModal {
@@ -84,7 +84,7 @@
 
   border: 1px solid var(--inputBorderColor);
   border-radius: 4px;
-  background-color: var(--inputBackgroundColor);
+  background-color: var(--selectOptionsBackgroundColor, var(--inputBackgroundColor));
 }
 
 .loading {

@@ -7,7 +7,7 @@
   cursor: default;
 
   &:hover {
-    background-color: var(--inputHoverBackgroundColor);
+    background-color: var(--selectOptionHoverBackgroundColor, var(--inputHoverBackgroundColor));
   }
 
   &.isDisabled {
@@ -28,10 +28,10 @@
 }
 
 .isSelected {
-  background-color: var(--inputSelectedBackgroundColor);
+  background-color: var(--selectOptionSelectedBackgroundColor, var(--inputSelectedBackgroundColor));
 
   &:hover {
-    background-color: var(--inputSelectedBackgroundColor);
+    background-color: var(--selectOptionSelectedBackgroundColor, var(--inputSelectedBackgroundColor));
   }
 
   &.isMobile {

@@ -3,6 +3,11 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.17
+
+- Fixed Blades pop-up windows having square corners poking out past their rounded frame.
+- Fixed dropdown lists in the Blades look being see-through, so the text behind them showed through and was hard to read. They now have a solid background, with a clear highlight for the option under your cursor and the one that's selected.
+
 ## 1.16
 
 - Midgar on a Synology now updates itself, like Materia: Install on the Updates page downloads the new version, swaps it in and restarts, with a progress bar in every theme. No more installing the .spk by hand. (This version has to be installed by hand once; every one after it updates itself.)
