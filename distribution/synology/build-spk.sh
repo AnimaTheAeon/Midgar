@@ -17,7 +17,11 @@ rm -rf "$WORK/pkg/app/Sonarr.Update"
 chmod 755 "$WORK/pkg/app/Midgar"
 find "$WORK/pkg/app" -name ffprobe -exec chmod 755 {} \;
 cp -R "$HERE/ui/." "$WORK/pkg/ui/"
-(cd "$WORK/pkg" && tar --owner=0 --group=0 -czf "$WORK/package.tgz" app ui)
+# Midgar updates itself: it downloads the next .spk and midgar-run.sh swaps the
+# new version in (the old Sonarr updater isn't used, so it's left out above).
+cp "$HERE/midgar-run.sh" "$WORK/pkg/midgar-run.sh"
+chmod 755 "$WORK/pkg/midgar-run.sh"
+(cd "$WORK/pkg" && tar --owner=0 --group=0 -czf "$WORK/package.tgz" app ui midgar-run.sh)
 
 # spk layout
 mkdir -p "$WORK/spk"

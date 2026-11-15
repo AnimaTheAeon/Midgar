@@ -9,6 +9,7 @@ namespace NzbDrone.Core.Update
         public string FileName { get; set; }
         public string Url { get; set; }
         public UpdateChanges Changes { get; set; }
+        public long Size { get; set; }
         public string Hash { get; set; }
         public string Branch { get; set; }
     }

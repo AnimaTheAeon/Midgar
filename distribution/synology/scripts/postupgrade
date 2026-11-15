@@ -1,2 +1,5 @@
 #!/bin/sh
+# An .spk installed by hand replaces any self-downloaded update, so the
+# version Package Center just installed is the one that runs.
+rm -rf "$SYNOPKG_PKGVAR/app-update"
 exit 0

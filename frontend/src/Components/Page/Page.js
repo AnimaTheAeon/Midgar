@@ -4,6 +4,7 @@ import AppUpdatedModal from 'App/AppUpdatedModal';
 import ColorImpairedContext from 'App/ColorImpairedContext';
 import ConnectionLostModal from 'App/ConnectionLostModal';
 import SignalRConnector from 'Components/SignalRConnector';
+import UpdateProgress, { isUpdateShowing } from 'Components/UpdateProgress/UpdateProgress';
 import AuthenticationRequiredModal from 'FirstRun/AuthenticationRequiredModal';
 import locationShape from 'Helpers/Props/Shapes/locationShape';
 import BladesLayout from './Blades/BladesLayout';
@@ -102,13 +103,15 @@ class Page extends Component {
 
     const modals = (
       <React.Fragment>
+        <UpdateProgress />
+
         <AppUpdatedModal
-          isOpen={this.state.isUpdatedModalOpen}
+          isOpen={this.state.isUpdatedModalOpen && !isUpdateShowing()}
           onModalClose={this.onUpdatedModalClose}
         />
 
         <ConnectionLostModal
-          isOpen={this.state.isConnectionLostModalOpen}
+          isOpen={this.state.isConnectionLostModalOpen && !isUpdateShowing()}
           onModalClose={this.onConnectionLostModalClose}
         />
 

@@ -108,6 +108,7 @@ namespace NzbDrone.Core.Update
                         {
                             package.FileName = name;
                             package.Url = asset.Value<string>("browser_download_url");
+                            package.Size = asset.Value<long?>("size") ?? 0;
                             package.Hash = (asset.Value<string>("digest") ?? string.Empty).Replace("sha256:", string.Empty);
                         }
                     }

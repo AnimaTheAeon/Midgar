@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Formats.Tar;
 using System.IO;
+using System.IO.Compression;
 using System.Threading;
 using NLog;
 using NzbDrone.Common;
@@ -14,6 +16,7 @@ using NzbDrone.Common.Processes;
 using NzbDrone.Core.Backup;
 using NzbDrone.Core.Configuration;
 using NzbDrone.Core.Lifecycle;
+using NzbDrone.Core.Lifecycle.Commands;
 using NzbDrone.Core.Messaging.Commands;
 using NzbDrone.Core.Messaging.Events;
 using NzbDrone.Core.Update.Commands;
@@ -83,6 +86,16 @@ namespace NzbDrone.Core.Update
         {
             EnsureAppDataSafety();
 
+            // Synology: the package's run script supervises Midgar and points this
+            // at its update folder. The new version is unpacked there and the script
+            // swaps it in when Midgar stops (see distribution/synology/midgar-run.sh).
+            var spkUpdateDir = Environment.GetEnvironmentVariable("MIDGAR_SPK_UPDATE_DIR");
+
+            if (spkUpdateDir.IsNotNullOrWhiteSpace())
+            {
+                return InstallSpkUpdate(updatePackage, spkUpdateDir);
+            }
+
             if (_configFileProvider.UpdateMechanism != UpdateMechanism.Script)
             {
                 var startupFolder = _appFolderInfo.StartUpFolder;
@@ -123,9 +136,10 @@ namespace NzbDrone.Core.Update
 
             _logger.ProgressInfo("Downloading update {0}", updatePackage.Version);
             _logger.Debug("Downloading update package from [{0}] to [{1}]", updatePackage.Url, packageDestination);
-            _httpClient.DownloadFile(updatePackage.Url, packageDestination);
+            DownloadWithProgress(updatePackage, packageDestination);
 
             _logger.ProgressInfo("Verifying update package");
+            UpdateProgress.Set("verify", updatePackage.Version.ToString());
 
             if (!_updateVerifier.Verify(updatePackage, packageDestination))
             {
@@ -136,6 +150,7 @@ namespace NzbDrone.Core.Update
             _logger.Info("Update package verified successfully");
 
             _logger.ProgressInfo("Extracting Update package");
+            UpdateProgress.Set("extract", updatePackage.Version.ToString());
             _archiveService.Extract(packageDestination, updateSandboxFolder);
             _logger.Info("Update package extracted successfully");
 
@@ -167,11 +182,119 @@ namespace NzbDrone.Core.Update
             }
 
             _logger.Info("Starting update client {0}", updateClientExePath);
-            _logger.ProgressInfo("Sonarr will restart shortly.");
+            _logger.ProgressInfo("Midgar will restart shortly.");
+            UpdateProgress.Set("restart", updatePackage.Version.ToString());
 
             _processProvider.Start(updateClientExePath, GetUpdaterArgs(updateSandboxFolder));
 
             return true;
+        }
+
+        private bool InstallSpkUpdate(UpdatePackage updatePackage, string updateDir)
+        {
+            if (updatePackage.FileName.IsNullOrWhiteSpace())
+            {
+                throw new UpdateFailedException("This release has no Synology package (.spk) to install");
+            }
+
+            var work = Path.Combine(_appFolderInfo.TempFolder, "midgar_update");
+            var spkPath = Path.Combine(work, updatePackage.FileName);
+            var unpacked = Path.Combine(work, "spk");
+            var staged = Path.Combine(updateDir, "next.tmp");
+            var next = Path.Combine(updateDir, "next");
+
+            if (_diskProvider.FolderExists(work))
+            {
+                _diskProvider.DeleteFolder(work, true);
+            }
+
+            _diskProvider.CreateFolder(unpacked);
+
+            _logger.ProgressInfo("Downloading update {0}", updatePackage.Version);
+            DownloadWithProgress(updatePackage, spkPath);
+
+            _logger.ProgressInfo("Verifying update package");
+            UpdateProgress.Set("verify", updatePackage.Version.ToString());
+
+            if (!_updateVerifier.Verify(updatePackage, spkPath))
+            {
+                _logger.Error("Update package is invalid");
+                throw new UpdateVerificationFailedException("Update file '{0}' is invalid", spkPath);
+            }
+
+            _logger.ProgressInfo("Extracting Update package");
+            UpdateProgress.Set("extract", updatePackage.Version.ToString());
+
+            // An .spk is a plain tar holding package.tgz, which holds app/, ui/ and midgar-run.sh.
+            TarFile.ExtractToDirectory(spkPath, unpacked, true);
+
+            if (_diskProvider.FolderExists(staged))
+            {
+                _diskProvider.DeleteFolder(staged, true);
+            }
+
+            _diskProvider.CreateFolder(staged);
+
+            using (var tgz = File.OpenRead(Path.Combine(unpacked, "package.tgz")))
+            using (var gz = new GZipStream(tgz, CompressionMode.Decompress))
+            {
+                TarFile.ExtractToDirectory(gz, staged, true);
+            }
+
+            var exe = Path.Combine(staged, "app", "Midgar");
+
+            if (!_diskProvider.FileExists(exe))
+            {
+                throw new UpdateFailedException("Update package has no Midgar program in it");
+            }
+
+            _diskProvider.SetFilePermissions(exe, "755", null);
+
+            _backupService.Backup(BackupType.Update);
+
+            if (_diskProvider.FolderExists(next))
+            {
+                _diskProvider.DeleteFolder(next, true);
+            }
+
+            _diskProvider.MoveFolder(staged, next);
+            _diskProvider.DeleteFolder(work, true);
+
+            _logger.ProgressInfo("Midgar will restart into {0} shortly.", updatePackage.Version);
+            UpdateProgress.Set("restart", updatePackage.Version.ToString());
+            _commandQueueManager.Push(new ShutdownCommand());
+
+            return true;
+        }
+
+        // Downloads the package, reporting the bytes so far for the progress bar.
+        // HttpClient writes to "<file>.part" and renames it when done.
+        private void DownloadWithProgress(UpdatePackage updatePackage, string destination)
+        {
+            var version = updatePackage.Version.ToString();
+            var part = destination + ".part";
+            UpdateProgress.Set("download", version, 0, updatePackage.Size);
+
+            void Report(object state)
+            {
+                try
+                {
+                    var done = File.Exists(part) ? new FileInfo(part).Length : 0;
+                    UpdateProgress.Set("download", version, done, updatePackage.Size);
+                }
+                catch (IOException)
+                {
+                    // The file is being renamed; the next tick catches up.
+                }
+            }
+
+            using (new System.Threading.Timer(Report, null, 300, 300))
+            {
+                _httpClient.DownloadFile(updatePackage.Url, destination);
+            }
+
+            var size = File.Exists(destination) ? new FileInfo(destination).Length : updatePackage.Size;
+            UpdateProgress.Set("download", version, size, Math.Max(size, updatePackage.Size));
         }
 
         private void EnsureValidBranch(UpdatePackage package)
@@ -292,23 +415,35 @@ namespace NzbDrone.Core.Update
             {
                 try
                 {
-                    InstallUpdate(latestAvailable);
-                    _logger.ProgressDebug("Restarting Sonarr to apply updates");
+                    if (!InstallUpdate(latestAvailable))
+                    {
+                        UpdateProgress.Clear();
+                    }
+
+                    _logger.ProgressDebug("Restarting Midgar to apply updates");
                 }
                 catch (UpdateFolderNotWritableException ex)
                 {
                     _logger.Error(ex, "Update process failed");
+                    UpdateProgress.Set("failed", latestAvailable.Version.ToString(), message: "Midgar's folder isn't writable, so it can't update itself.");
                     throw new CommandFailedException("Startup folder not writable by user '{0}'", ex, Environment.UserName);
                 }
                 catch (UpdateVerificationFailedException ex)
                 {
                     _logger.Error(ex, "Update process failed");
+                    UpdateProgress.Set("failed", latestAvailable.Version.ToString(), message: "The download was corrupted. Nothing was changed.");
                     throw new CommandFailedException("Downloaded update package is corrupt", ex);
                 }
                 catch (UpdateFailedException ex)
                 {
                     _logger.Error(ex, "Update process failed");
+                    UpdateProgress.Set("failed", latestAvailable.Version.ToString(), message: ex.Message);
                     throw new CommandFailedException(ex);
+                }
+                catch (Exception ex)
+                {
+                    UpdateProgress.Set("failed", latestAvailable.Version.ToString(), message: "The update didn't work: " + ex.Message);
+                    throw;
                 }
             }
         }

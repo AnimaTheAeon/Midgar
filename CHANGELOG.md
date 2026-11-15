@@ -3,6 +3,10 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.16
+
+- Midgar on a Synology now updates itself, like Materia: Install on the Updates page downloads the new version, swaps it in and restarts, with a progress bar in every theme. No more installing the .spk by hand. (This version has to be installed by hand once; every one after it updates itself.)
+
 ## 1.15
 
 - Fixed checkboxes not showing whether they were on or off in the Xbox and Blades looks (and hard to read in the FFVII look). An empty box is now dark with a clear outline, and a checked one fills in with a dark tick.

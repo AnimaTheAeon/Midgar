@@ -1,8 +1,8 @@
 #!/bin/sh
 # DSM service control for Midgar.
 PID_FILE="$SYNOPKG_PKGVAR/midgar-service.pid"
-BIN="$SYNOPKG_PKGDEST/app/Midgar"
-DATA="$SYNOPKG_PKGVAR"
+RUN="$SYNOPKG_PKGDEST/midgar-run.sh"
+APP_PID_FILE="$SYNOPKG_PKGVAR/midgar-app.pid"
 
 is_running() {
 	[ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null
@@ -11,31 +11,40 @@ is_running() {
 case "$1" in
 	start)
 		is_running && exit 0
-		# .NET looks for ICU for culture data; DSM may not ship it.
-		if ! ls /usr/lib/libicuuc.so* /lib/libicuuc.so* >/dev/null 2>&1; then
+		# .NET uses ICU for dates and languages when DSM has it. Without ICU it runs
+		# in invariant mode, which must still accept "en-US".
+		if ! ls /usr/lib/libicuuc.so* /lib/libicuuc.so* /usr/lib64/libicuuc.so* >/dev/null 2>&1; then
 			export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+			export DOTNET_SYSTEM_GLOBALIZATION_PREDEFINED_CULTURES_ONLY=false
 		fi
-		export HOME="$DATA"
-		cd "$SYNOPKG_PKGDEST/app" || exit 1
-		nohup "$BIN" -nobrowser -data="$DATA" >> "$DATA/service.out" 2>&1 < /dev/null &
+		export HOME="$SYNOPKG_PKGVAR"
+		# midgar-run.sh runs Midgar and swaps in its self-updates.
+		nohup /bin/sh "$RUN" "$SYNOPKG_PKGVAR" "$SYNOPKG_PKGDEST" >> "$SYNOPKG_PKGVAR/service.out" 2>&1 < /dev/null &
 		echo $! > "$PID_FILE"
-		sleep 1
-		is_running && exit 0
+		i=0
+		while [ $i -lt 20 ]; do
+			is_running && exit 0
+			sleep 0.25
+			i=$((i + 1))
+		done
 		exit 1
 		;;
 	stop)
 		if is_running; then
 			PID="$(cat "$PID_FILE")"
 			kill -TERM "$PID" 2>/dev/null
-			# Give it time to close the database cleanly.
 			i=0
 			while [ $i -lt 60 ] && kill -0 "$PID" 2>/dev/null; do
-				sleep 0.5
+				sleep 0.25
 				i=$((i + 1))
 			done
 			kill -KILL "$PID" 2>/dev/null
 		fi
-		rm -f "$PID_FILE"
+		# Midgar itself, if the run script was killed before it could stop it.
+		if [ -f "$APP_PID_FILE" ]; then
+			kill -KILL "$(cat "$APP_PID_FILE")" 2>/dev/null
+		fi
+		rm -f "$PID_FILE" "$APP_PID_FILE"
 		exit 0
 		;;
 	status)
@@ -43,7 +52,7 @@ case "$1" in
 		exit 3
 		;;
 	log)
-		echo "$DATA/logs/midgar.txt"
+		echo "$SYNOPKG_PKGVAR/logs/midgar.txt"
 		exit 0
 		;;
 esac
