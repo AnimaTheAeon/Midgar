@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Formats.Tar;
 using System.IO;
-using System.IO.Compression;
+using System.Text;
 using System.Threading;
+using ICSharpCode.SharpZipLib.Tar;
 using NLog;
 using NzbDrone.Common;
 using NzbDrone.Common.Disk;
@@ -226,7 +226,11 @@ namespace NzbDrone.Core.Update
             UpdateProgress.Set("extract", updatePackage.Version.ToString());
 
             // An .spk is a plain tar holding package.tgz, which holds app/, ui/ and midgar-run.sh.
-            TarFile.ExtractToDirectory(spkPath, unpacked, true);
+            using (var spk = File.OpenRead(spkPath))
+            using (var tar = TarArchive.CreateInputTarArchive(spk, Encoding.UTF8))
+            {
+                tar.ExtractContents(unpacked);
+            }
 
             if (_diskProvider.FolderExists(staged))
             {
@@ -235,11 +239,7 @@ namespace NzbDrone.Core.Update
 
             _diskProvider.CreateFolder(staged);
 
-            using (var tgz = File.OpenRead(Path.Combine(unpacked, "package.tgz")))
-            using (var gz = new GZipStream(tgz, CompressionMode.Decompress))
-            {
-                TarFile.ExtractToDirectory(gz, staged, true);
-            }
+            _archiveService.Extract(Path.Combine(unpacked, "package.tgz"), staged);
 
             var exe = Path.Combine(staged, "app", "Midgar");
 
@@ -249,6 +249,11 @@ namespace NzbDrone.Core.Update
             }
 
             _diskProvider.SetFilePermissions(exe, "755", null);
+
+            foreach (var ffprobe in Directory.GetFiles(Path.Combine(staged, "app"), "ffprobe", SearchOption.AllDirectories))
+            {
+                _diskProvider.SetFilePermissions(ffprobe, "755", null);
+            }
 
             _backupService.Backup(BackupType.Update);
 
