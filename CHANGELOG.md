@@ -3,6 +3,10 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.20
+
+- The sign-in page now matches the look picked in Settings → UI: FFVII Menu, Xbox or Blades.
+
 ## 1.19
 
 - Fixed Midgar not coming back after a Restart inside the app (the Restart button, restoring a backup, changing the port) on a Synology. It now restarts itself.
