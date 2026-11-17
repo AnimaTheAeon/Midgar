@@ -5,7 +5,6 @@ import Alert from 'Components/Alert';
 import Icon from 'Components/Icon';
 import Label from 'Components/Label';
 import Button from 'Components/Link/Button';
-import Link from 'Components/Link/Link';
 import SpinnerButton from 'Components/Link/SpinnerButton';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import PageContent from 'Components/Page/PageContent';
@@ -23,7 +22,11 @@ import styles from './Updates.css';
 // newest one. On Windows the desktop app does the install; on Synology the new
 // package is downloaded and installed through Package Center.
 
-const RELEASES_URL = 'https://github.com/AnimaTheAeon/Midgar/releases';
+// The newest package, downloaded through Midgar itself.
+const packageUrl = () =>
+  `${window.Sonarr.urlBase}/api/v3/midgarupdate/package?apikey=${encodeURIComponent(
+    window.Sonarr.apiKey
+  )}`;
 
 type InstallState = 'idle' | 'asking' | 'started' | 'manual';
 
@@ -102,9 +105,8 @@ function Updates() {
 
         {couldNotCheck ? (
           <Alert kind={kinds.WARNING}>
-            Midgar couldn't reach GitHub to look for new versions. Check your
-            internet connection, or look on the{' '}
-            <Link to={RELEASES_URL}>Releases page</Link>.
+            Midgar couldn't reach the update server to look for new versions.
+            Check your internet connection and try again.
           </Alert>
         ) : null}
 
@@ -121,7 +123,7 @@ function Updates() {
               <Alert kind={kinds.WARNING}>
                 The Midgar desktop app isn't running here, so it can't install
                 the update for you.{' '}
-                <Link to={latest.url}>Download the installer</Link> and run it;
+                <a href={packageUrl()}>Download the installer</a> and run it;
                 your settings and library are kept.
               </Alert>
             ) : null}
@@ -145,7 +147,12 @@ function Updates() {
               choose Manual Install. Your settings and library are kept.
             </Alert>
 
-            <Button kind={kinds.PRIMARY} to={latest.url}>
+            <Button
+              kind={kinds.PRIMARY}
+              onPress={() => {
+                window.location.href = packageUrl();
+              }}
+            >
               Download Midgar {latest.version}
             </Button>
           </div>

@@ -1,8 +1,7 @@
-; Midgar installer (Inno Setup). Built by .github/workflows/build.yml.
+; Midgar installer (Inno Setup). Built by the CI workflow.
 
 #define AppName "Midgar"
-#define AppPublisher "AnimaTheAeon"
-#define AppURL "https://github.com/AnimaTheAeon/Midgar"
+#define AppPublisher "Midgar"
 #define AppExeName "Midgar.exe"
 #define BuildNumber GetEnv('MIDGAR_VERSION')
 #define Framework GetEnv('FRAMEWORK')
@@ -13,9 +12,6 @@ AppId={{092C9D4A-3B01-4A7A-89A4-84A9297C7402}
 AppName={#AppName}
 AppVersion={#BuildNumber}
 AppPublisher={#AppPublisher}
-AppPublisherURL={#AppURL}
-AppSupportURL={#AppURL}
-AppUpdatesURL={#AppURL}/releases
 UsePreviousAppDir=no
 DefaultDirName={commonappdata}\Midgar\bin
 DisableDirPage=yes

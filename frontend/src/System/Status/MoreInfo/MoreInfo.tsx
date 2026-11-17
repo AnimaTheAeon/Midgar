@@ -12,29 +12,6 @@ function MoreInfo() {
   return (
     <FieldSet legend={translate('MoreInfo')}>
       <DescriptionList>
-        <DescriptionListItemTitle>
-          {translate('HomePage')}
-        </DescriptionListItemTitle>
-        <DescriptionListItemDescription>
-          <Link to="https://github.com/AnimaTheAeon/Midgar">
-            github.com/AnimaTheAeon/Midgar
-          </Link>
-        </DescriptionListItemDescription>
-
-        <DescriptionListItemTitle>Releases</DescriptionListItemTitle>
-        <DescriptionListItemDescription>
-          <Link to="https://github.com/AnimaTheAeon/Midgar/releases">
-            github.com/AnimaTheAeon/Midgar/releases
-          </Link>
-        </DescriptionListItemDescription>
-
-        <DescriptionListItemTitle>Report a problem</DescriptionListItemTitle>
-        <DescriptionListItemDescription>
-          <Link to="https://github.com/AnimaTheAeon/Midgar/issues">
-            github.com/AnimaTheAeon/Midgar/issues
-          </Link>
-        </DescriptionListItemDescription>
-
         <DescriptionListItemTitle>Settings help</DescriptionListItemTitle>
         <DescriptionListItemDescription>
           <Link to="https://wiki.servarr.com/sonarr">

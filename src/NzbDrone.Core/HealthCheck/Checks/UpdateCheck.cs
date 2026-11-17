@@ -4,7 +4,6 @@ using System.IO;
 using NzbDrone.Common.Disk;
 using NzbDrone.Common.EnvironmentInfo;
 using NzbDrone.Common.Extensions;
-using NzbDrone.Common.Http;
 using NzbDrone.Core.Configuration;
 using NzbDrone.Core.Configuration.Events;
 using NzbDrone.Core.Localization;
@@ -94,10 +93,7 @@ namespace NzbDrone.Core.HealthCheck.Checks
             {
                 return new HealthCheck(GetType(),
                     HealthCheckResult.Notice,
-                    $"Midgar {latestAvailable.Version} is available. Open System > Updates to install it.")
-                {
-                    WikiUrl = new HttpUri("https://github.com/AnimaTheAeon/Midgar/releases/latest")
-                };
+                    $"Midgar {latestAvailable.Version} is available. Open System > Updates to install it.");
             }
 
             return new HealthCheck(GetType());

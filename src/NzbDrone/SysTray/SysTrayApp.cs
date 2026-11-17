@@ -280,7 +280,7 @@ namespace NzbDrone.SysTray
                 _installing = false;
                 _updateItem.Text = $"Install update {_update.Version}";
                 _updateItem.Enabled = true;
-                _trayIcon.ShowBalloonTip(6000, "Midgar", "The update couldn't be downloaded or didn't pass its check. Try again later, or get it from the Releases page.", ToolTipIcon.Warning);
+                _trayIcon.ShowBalloonTip(6000, "Midgar", "The update couldn't be downloaded or didn't pass its check. Try again later.", ToolTipIcon.Warning);
             }
         }
 
