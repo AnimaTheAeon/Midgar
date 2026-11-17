@@ -48,15 +48,40 @@ namespace NzbDrone.Core.Update
         {
             try
             {
-                return _cache.Get("releases", FetchReleases, TimeSpan.FromMinutes(2));
+                var releases = _cache.Get("releases", FetchReleases, TimeSpan.FromMinutes(2));
+
+                lock (LastGate)
+                {
+                    _lastReleases = releases;
+                    _lastAt = DateTime.UtcNow;
+                }
+
+                return releases;
             }
             catch (Exception ex)
             {
+                // Pressing Install right after the page listed an update asks again; if
+                // that request is refused (the server limits how often one address may
+                // ask), use the list from earlier.
+                lock (LastGate)
+                {
+                    if (_lastReleases != null && DateTime.UtcNow - _lastAt < TimeSpan.FromHours(1))
+                    {
+                        _logger.Warn(ex, "Update server didn't answer; using the list from {0:HH:mm} UTC", _lastAt);
+
+                        return _lastReleases;
+                    }
+                }
+
                 _logger.Debug(ex, "Couldn't get the list of Midgar releases");
 
                 return new List<UpdatePackage>();
             }
         }
+
+        private static readonly object LastGate = new object();
+        private static List<UpdatePackage> _lastReleases;
+        private static DateTime _lastAt;
 
         // 1.4 and 1.4.0 are the same version.
         private static Version Normalize(Version version)

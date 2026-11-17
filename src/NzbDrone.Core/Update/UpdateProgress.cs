@@ -6,7 +6,7 @@ namespace NzbDrone.Core.Update
     // download until the new version is running.
     public class UpdateProgressInfo
     {
-        // "", "download", "verify", "extract", "restart" or "failed".
+        // "", "check", "download", "verify", "extract", "restart" or "failed".
         public string Phase { get; set; } = string.Empty;
         public string Version { get; set; }
         public long Done { get; set; }

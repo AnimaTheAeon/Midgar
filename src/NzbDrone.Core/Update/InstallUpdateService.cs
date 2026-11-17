@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using ICSharpCode.SharpZipLib.Tar;
 using NLog;
 using NzbDrone.Common;
@@ -274,6 +275,30 @@ namespace NzbDrone.Core.Update
 
         // Downloads the package, reporting the bytes so far for the progress bar.
         // HttpClient writes to "<file>.part" and renames it when done.
+        private static readonly TimeSpan StallLimit = TimeSpan.FromSeconds(90);
+
+        // A failed download's own error text names the server; say it plainly instead.
+        private static string PlainError(Exception ex)
+        {
+            var e = ex is AggregateException agg && agg.InnerException != null ? agg.InnerException : ex;
+
+            switch (e)
+            {
+                case HttpException he:
+                    return $"The update server answered with an error (HTTP {(int)he.Response.StatusCode}). Try again later.";
+                case TimeoutException:
+                case TaskCanceledException:
+                case OperationCanceledException:
+                    return "The download took too long. Try again later.";
+                case System.Net.WebException:
+                case System.Net.Http.HttpRequestException:
+                case System.Net.Sockets.SocketException:
+                    return "Midgar couldn't reach the update server. Check its internet connection (and Settings > General > Proxy, if one is set), then try again.";
+                default:
+                    return "The update didn't work: " + e.Message;
+            }
+        }
+
         private void DownloadWithProgress(UpdatePackage updatePackage, string destination)
         {
             var version = updatePackage.Version.ToString();
@@ -293,10 +318,44 @@ namespace NzbDrone.Core.Update
                 }
             }
 
+            // No fixed time limit (a slow connection may need more than a few
+            // minutes), but a download that stops getting data is given up after
+            // StallLimit, so the page never waits on it forever.
+            var download = Task.Run(() => _httpClient.DownloadFileAsync(updatePackage.Url, destination, TimeSpan.FromHours(2)));
+            long last = -1;
+            var lastChange = DateTime.UtcNow;
+
             using (new System.Threading.Timer(Report, null, 300, 300))
             {
-                _httpClient.DownloadFile(updatePackage.Url, destination);
+                while (!download.IsCompleted)
+                {
+                    Thread.Sleep(500);
+                    long done;
+
+                    try
+                    {
+                        done = File.Exists(part) ? new FileInfo(part).Length : 0;
+                    }
+                    catch (IOException)
+                    {
+                        continue;
+                    }
+
+                    if (done != last)
+                    {
+                        last = done;
+                        lastChange = DateTime.UtcNow;
+                    }
+                    else if (!download.IsCompleted && DateTime.UtcNow - lastChange > StallLimit)
+                    {
+                        throw new UpdateFailedException(
+                            "The download stopped: nothing came in for {0} seconds. Check Midgar's internet connection (and Settings > General > Proxy, if one is set), then try again.",
+                            (int)StallLimit.TotalSeconds);
+                    }
+                }
             }
+
+            download.GetAwaiter().GetResult();
 
             var size = File.Exists(destination) ? new FileInfo(destination).Length : updatePackage.Size;
             UpdateProgress.Set("download", version, size, Math.Max(size, updatePackage.Size));
@@ -414,9 +473,27 @@ namespace NzbDrone.Core.Update
 
         public void Execute(ApplicationUpdateCommand message)
         {
-            var latestAvailable = GetUpdatePackage(message.Trigger, message.InstallMajorUpdate);
+            // The page shows every step, including this check, and how it ended.
+            UpdateProgress.Set("check", null);
+            UpdatePackage latestAvailable;
 
-            if (latestAvailable != null)
+            try
+            {
+                latestAvailable = GetUpdatePackage(message.Trigger, message.InstallMajorUpdate);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Update check before installing failed");
+                UpdateProgress.Set("failed", null, message: PlainError(ex));
+                throw;
+            }
+
+            if (latestAvailable == null)
+            {
+                UpdateProgress.Set("failed", null, message: "Midgar couldn't find a newer version to install. Press Check again, then Install.");
+                return;
+            }
+
             {
                 try
                 {
@@ -447,7 +524,8 @@ namespace NzbDrone.Core.Update
                 }
                 catch (Exception ex)
                 {
-                    UpdateProgress.Set("failed", latestAvailable.Version.ToString(), message: "The update didn't work: " + ex.Message);
+                    _logger.Error(ex, "Update process failed");
+                    UpdateProgress.Set("failed", latestAvailable.Version.ToString(), message: PlainError(ex));
                     throw;
                 }
             }

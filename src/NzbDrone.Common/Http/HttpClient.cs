@@ -29,6 +29,7 @@ namespace NzbDrone.Common.Http
 
         Task<HttpResponse> ExecuteAsync(HttpRequest request);
         Task DownloadFileAsync(string url, string fileName);
+        Task DownloadFileAsync(string url, string fileName, TimeSpan timeout);
         Task<HttpResponse> GetAsync(HttpRequest request);
         Task<HttpResponse<T>> GetAsync<T>(HttpRequest request)
             where T : new();
@@ -262,7 +263,12 @@ namespace NzbDrone.Common.Http
             }
         }
 
-        public async Task DownloadFileAsync(string url, string fileName)
+        public Task DownloadFileAsync(string url, string fileName)
+        {
+            return DownloadFileAsync(url, fileName, TimeSpan.FromSeconds(300));
+        }
+
+        public async Task DownloadFileAsync(string url, string fileName, TimeSpan timeout)
         {
             var fileNamePart = fileName + ".part";
 
@@ -282,7 +288,7 @@ namespace NzbDrone.Common.Http
                     var request = new HttpRequest(url);
                     request.AllowAutoRedirect = true;
                     request.ResponseStream = fileStream;
-                    request.RequestTimeout = TimeSpan.FromSeconds(300);
+                    request.RequestTimeout = timeout;
                     var response = await GetAsync(request);
 
                     if (response.Headers.ContentType != null && response.Headers.ContentType.Contains("text/html"))

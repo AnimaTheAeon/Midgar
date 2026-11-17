@@ -3,6 +3,14 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.25
+
+- Fixed: Install could sit at "Starting the download, 2%" forever when the update stopped before downloading (for example when the update server didn't answer). The page now says the update didn't start, and why.
+- Fixed: an update waited until every other task had finished (a series refresh or RSS sync can take many minutes). It now starts right away; if it ever has to wait, the page says what it's waiting for.
+- Install uses the update list the page loaded earlier if the update server doesn't answer again.
+- Downloads no longer give up after 5 minutes on a slow connection. A download that stops getting data for 90 seconds is stopped, with a plain message.
+- Update error messages never show the address of the update server.
+
 ## 1.24
 
 - Xbox theme: every page now has the page bar along the bottom, one tab per page, next to Back. It is hidden on the home screen.

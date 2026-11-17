@@ -70,6 +70,27 @@ function UpdateProgress() {
     )
   );
 
+  // While the update waits its turn: what it's waiting for.
+  const waitingFor = useSelector((state: AppState) => {
+    const queued = state.commands.items.some(
+      (command) =>
+        command.name === commandNames.APPLICATION_UPDATE &&
+        command.status === 'queued'
+    );
+
+    return queued
+      ? state.commands.items
+          .filter((command) => command.status === 'started')
+          .map((command) => command.commandName || command.name)
+          .join(', ')
+      : '';
+  });
+
+  const runningRef = useRef(running);
+  const waitingRef = useRef(waitingFor);
+  runningRef.current = running;
+  waitingRef.current = waitingFor;
+
   const [view, setView] = useState<View | null>(null);
   const [visible, setVisible] = useState(false);
   const target = useRef<string | null>(null);
@@ -89,6 +110,57 @@ function UpdateProgress() {
     const runningPhase =
       progress !== null &&
       ['download', 'verify', 'extract', 'restart'].includes(progress.phase);
+
+    // Pressed Install, but no download has started yet.
+    if (!target.current && startedAt.current) {
+      const ended = !runningRef.current;
+
+      if (progress?.phase === 'failed' && ended) {
+        setView({
+          title: "The update didn't start",
+          fraction: 0,
+          step: '',
+          note: `${
+            progress.message ?? ''
+          } Midgar keeps running the version you have.`,
+          failed: true,
+        });
+        startedAt.current = 0;
+        return;
+      }
+
+      if (!runningPhase) {
+        if (ended && Date.now() - startedAt.current > 8000) {
+          // It ended without saying why (an older Midgar on the other end).
+          setView({
+            title: "The update didn't start",
+            fraction: 0,
+            step: '',
+            note: 'Midgar stopped before downloading anything. System > Log Files says why. Midgar keeps running the version you have.',
+            failed: true,
+          });
+          startedAt.current = 0;
+          return;
+        }
+
+        let step = 'Step 1 of 3 · Starting the download';
+
+        if (waitingRef.current) {
+          step = 'Step 1 of 3 · Waiting for other tasks to finish';
+        } else if (progress?.phase === 'check') {
+          step = 'Step 1 of 3 · Checking for the update';
+        }
+
+        setView({
+          title: 'Updating Midgar',
+          fraction: 0.02,
+          step,
+          note: waitingRef.current ? `Running now: ${waitingRef.current}` : '',
+          failed: false,
+        });
+        return;
+      }
+    }
 
     if (
       runningPhase &&
@@ -236,6 +308,7 @@ function UpdateProgress() {
 
   const onOk = useCallback(() => {
     target.current = null;
+    startedAt.current = 0;
     setView(null);
   }, []);
 
