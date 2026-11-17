@@ -18,15 +18,16 @@ import translate from 'Utilities/String/translate';
 import UpdateChanges from './UpdateChanges';
 import styles from './Updates.css';
 
-// Midgar: this page lists Midgar's own releases (from GitHub) and installs the
+// Midgar: this page lists Midgar's own releases and installs the
 // newest one. On Windows the desktop app does the install; on Synology the new
 // package is downloaded and installed through Package Center.
 
 // The newest package, downloaded through Midgar itself.
-const packageUrl = () =>
-  `${window.Sonarr.urlBase}/api/v3/midgarupdate/package?apikey=${encodeURIComponent(
-    window.Sonarr.apiKey
-  )}`;
+function packageUrl() {
+  const key = encodeURIComponent(window.Sonarr.apiKey);
+
+  return `${window.Sonarr.urlBase}/api/v3/midgarupdate/package?apikey=${key}`;
+}
 
 type InstallState = 'idle' | 'asking' | 'started' | 'manual';
 
@@ -46,6 +47,10 @@ function Updates() {
   useEffect(() => {
     dispatch(fetchUpdates());
   }, [dispatch]);
+
+  const handleDownloadPress = useCallback(() => {
+    window.location.href = packageUrl();
+  }, []);
 
   const handleRefreshPress = useCallback(() => {
     dispatch(fetchUpdates());
@@ -147,12 +152,7 @@ function Updates() {
               choose Manual Install. Your settings and library are kept.
             </Alert>
 
-            <Button
-              kind={kinds.PRIMARY}
-              onPress={() => {
-                window.location.href = packageUrl();
-              }}
-            >
+            <Button kind={kinds.PRIMARY} onPress={handleDownloadPress}>
               Download Midgar {latest.version}
             </Button>
           </div>

@@ -8,6 +8,7 @@ Lines starting with "Fixed" are listed under Fixed.
 - System > Updates downloads the new package through Midgar itself, and its messages no longer mention where updates come from.
 - System > Status no longer lists web links for Midgar's home page, releases or problem reports.
 - The Windows installer and Package Center no longer show developer or support web links; the developer is shown as Midgar.
+- The Updates page no longer points to a commit history.
 
 ## 1.21
 
