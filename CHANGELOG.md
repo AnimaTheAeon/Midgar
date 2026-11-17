@@ -3,6 +3,10 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.26
+
+- Fixed: after an update the page could switch to a "Failed to load" screen while Midgar restarted, instead of reloading by itself into the new version. Once the page has loaded, a moment without Midgar no longer replaces it.
+
 ## 1.25
 
 - Fixed: Install could sit at "Starting the download, 2%" forever when the update stopped before downloading (for example when the update server didn't answer). The page now says the update didn't start, and why.

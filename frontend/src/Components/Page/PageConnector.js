@@ -266,6 +266,23 @@ class PageConnector extends Component {
       ...otherProps
     } = this.props;
 
+    // Midgar: once the page has loaded, a refresh that fails while Midgar
+    // restarts (after an update) keeps the page up, so the update card can
+    // reload it when Midgar is back. Only a first load that fails shows the
+    // error page.
+    if (isPopulated && !hasError) {
+      this.hasLoaded = true;
+    }
+
+    if (this.hasLoaded && this.state.isLocalStorageSupported) {
+      return (
+        <Page
+          {...otherProps}
+          onSidebarToggle={this.onSidebarToggle}
+        />
+      );
+    }
+
     if (hasError || !this.state.isLocalStorageSupported) {
       return (
         <ErrorPage
