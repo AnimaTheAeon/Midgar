@@ -596,8 +596,62 @@
 }
 
 .messages {
-  flex: 1 1 auto;
+  flex: 1 1 100%;
   min-width: 0;
+}
+
+/* Page bar: one tab per page, along the bottom (never on the home screen). */
+.pageBar {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-self: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pageTab {
+  position: relative;
+  isolation: isolate;
+  min-width: 110px;
+  padding: 7px 16px;
+  border: 0;
+  background: rgba(150, 240, 70, 0.5);
+  color: #bef27e;
+  text-transform: uppercase;
+  text-shadow: none;
+  font-weight: 800;
+  font-size: 12px;
+  font-family: 'Orbitron', 'Nunito', sans-serif;
+  cursor: pointer;
+  clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+
+  &::before {
+    position: absolute;
+    z-index: -1;
+    background: linear-gradient(#24700e, #0c3406);
+    content: '';
+    clip-path: polygon(8.5px 0, 100% 0, 100% calc(100% - 8.5px), calc(100% - 8.5px) 100%, 0 100%, 0 8.5px);
+    inset: 1px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    outline: none;
+    background: rgba(170, 255, 90, 0.85);
+    color: #e6ffb4;
+  }
+}
+
+.pageTabActive,
+.pageTabActive:hover,
+.pageTabActive:focus-visible {
+  background: #f2ff9a;
+  color: #1c3504;
+
+  &::before {
+    background: linear-gradient(#e2ff6a, #8cc81c);
+  }
 }
 
 @media only screen and (max-width: $breakpointSmall) {

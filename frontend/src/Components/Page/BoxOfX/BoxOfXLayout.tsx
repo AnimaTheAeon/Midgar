@@ -14,7 +14,7 @@ import { getActiveParent, links } from 'Components/Page/Sidebar/PageSidebar';
 import { toggleAdvancedSettings } from 'Store/Actions/settingsActions';
 import HealthStatus from 'System/Status/Health/HealthStatus';
 import Orb from './Orb';
-import { sinkIntoGlow, zoomIntoOrb, zoomOutOfOrb } from './orbZoom';
+import { sinkIntoGlow, softSwitch, zoomIntoOrb, zoomOutOfOrb } from './orbZoom';
 import styles from './BoxOfX.css';
 
 // Midgar: the "Box of X" layout. A home screen with the big orb and the menu
@@ -118,6 +118,29 @@ function isTabActive(tab: NavLink, pathname: string) {
 function sectionStatus(section: NavLink) {
   return section.children?.find((child) => !!child.statusComponent)
     ?.statusComponent;
+}
+
+interface PageTabProps {
+  index: number;
+  title: string;
+  isActive: boolean;
+  onOpen: (index: number) => void;
+}
+
+// One tab of the page bar along the bottom of every page.
+function PageTab({ index, title, isActive, onOpen }: PageTabProps) {
+  const handleClick = useCallback(() => onOpen(index), [index, onOpen]);
+
+  return (
+    <button
+      type="button"
+      className={classNames(styles.pageTab, isActive && styles.pageTabActive)}
+      aria-current={isActive ? 'page' : undefined}
+      onClick={handleClick}
+    >
+      {title}
+    </button>
+  );
 }
 
 interface HintProps {
@@ -437,6 +460,20 @@ function BoxOfXLayout({ location, children }: BoxOfXLayoutProps) {
   );
   const section = sections[sectionIndex];
 
+  // Page bar: jump straight to another page with a soft fade.
+  const openFromBar = useCallback(
+    (index: number) => {
+      const target = sections[index];
+
+      homeCursor = index;
+
+      if (target !== section || pathname !== target.to) {
+        softSwitch(() => go(target.to));
+      }
+    },
+    [section, pathname, go]
+  );
+
   useEffect(() => {
     if (!isHome) {
       homeCursor = sectionIndex;
@@ -556,6 +593,18 @@ function BoxOfXLayout({ location, children }: BoxOfXLayoutProps) {
             <div className={styles.messages}>
               <MessagesConnector />
             </div>
+
+            <nav className={styles.pageBar} aria-label="Pages">
+              {sections.map((item, index) => (
+                <PageTab
+                  key={item.to}
+                  index={index}
+                  title={item.title()}
+                  isActive={index === sectionIndex}
+                  onOpen={openFromBar}
+                />
+              ))}
+            </nav>
 
             <Hint
               keyName="ESC"

@@ -3,6 +3,12 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.24
+
+- Xbox theme: every page now has the page bar along the bottom, one tab per page, next to Back. It is hidden on the home screen.
+- Xbox theme: opening a page from the orb now fades through a dark green veil instead of a bright lime flash.
+- Fixed: messages from the server (for example on the health bar) said "Sonarr" instead of "Midgar".
+
 ## 1.23
 
 - On a Synology, System > Updates now has an Install button: Midgar downloads the new version, checks it and restarts by itself, like the other apps. No more downloading the package and installing it in Package Center.

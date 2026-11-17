@@ -35,7 +35,10 @@ interface CssExports {
   'node': string;
   'orb': string;
   'orbGlow': string;
+  'pageBar': string;
   'pageScreen': string;
+  'pageTab': string;
+  'pageTabActive': string;
   'search': string;
   'selected': string;
   'shellCore': string;

@@ -1,11 +1,11 @@
-// Box of X: opening a page from home zooms into the big orb until it fills
-// the window and flares lime, then the page fades in out of the glow. BACK
-// plays it in reverse. Same timing as Jenova, Lifestream, Turks and Materia.
+// Xbox: opening a page from home, the big orb drifts a little closer while
+// everything eases into a dark veil, then the page fades in out of it. BACK
+// plays it in reverse. No bright flashes: the user wants slow, gentle fades
+// only. Same as Lifestream, Turks, Jenova and Materia.
 
-const ZOOM_MS = 500;
-const REVEAL_MS = 350;
-const EASE_IN = 'cubic-bezier(.32, 0, .67, 0)';
-const EASE_OUT = 'cubic-bezier(.33, 1, .68, 1)';
+const ZOOM_MS = 600;
+const REVEAL_MS = 500;
+const VEIL = 0.96;
 
 let busy = false;
 let pendingOut = false;
@@ -14,46 +14,40 @@ function calm() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-function glowLayer(): HTMLElement {
-  let glow = document.getElementById('boxofx-zoom');
+function veilLayer(): HTMLElement {
+  let veil = document.getElementById('boxofx-zoom');
 
-  if (!glow) {
-    glow = document.createElement('div');
-    glow.id = 'boxofx-zoom';
-    Object.assign(glow.style, {
+  if (!veil) {
+    veil = document.createElement('div');
+    veil.id = 'boxofx-zoom';
+    Object.assign(veil.style, {
       position: 'fixed',
       inset: '0',
-      background: '#aaec3c',
+      background: 'rgb(3, 18, 3)',
       opacity: '0',
       pointerEvents: 'none',
       zIndex: '9999',
     });
-    document.body.appendChild(glow);
+    document.body.appendChild(veil);
   }
 
-  return glow;
-}
-
-// How much the orb must grow to cover the window from its center.
-function coverScale(orb: HTMLElement) {
-  const box = orb.getBoundingClientRect();
-  const cx = box.left + box.width / 2;
-  const cy = box.top + box.height / 2;
-  const corners = [
-    [0, 0],
-    [window.innerWidth, 0],
-    [0, window.innerHeight],
-    [window.innerWidth, window.innerHeight],
-  ];
-  const reach = Math.max(
-    ...corners.map(([x, y]) => Math.hypot(x - cx, y - cy))
-  );
-
-  return (reach * 1.15) / (box.width / 2 || 1);
+  return veil;
 }
 
 function stop(element: Element) {
   element.getAnimations().forEach((a) => a.cancel());
+}
+
+function fade(from: number, to: number, ms: number) {
+  const veil = veilLayer();
+
+  stop(veil);
+
+  return veil.animate([{ opacity: from }, { opacity: to }], {
+    duration: ms,
+    easing: 'ease-in-out',
+    fill: 'forwards',
+  }).finished;
 }
 
 /** The big orb on the home screen (marked with data-big-orb). */
@@ -61,7 +55,7 @@ export function findOrb() {
   return document.querySelector<HTMLElement>('[data-big-orb]');
 }
 
-/** Zoom into the orb, then `open` the page, then fade it in. */
+/** Ease into the dark, then `open` the page, then fade it in. */
 export function zoomIntoOrb(open: () => void) {
   if (busy) {
     return;
@@ -75,32 +69,17 @@ export function zoomIntoOrb(open: () => void) {
   }
 
   busy = true;
-  const glow = glowLayer();
-  const scale = coverScale(orb);
-
-  orb.style.zIndex = '40';
-  orb.animate([{ scale: '1' }, { scale: String(scale) }], {
+  orb.animate([{ scale: '1' }, { scale: '1.6' }], {
     duration: ZOOM_MS,
-    easing: EASE_IN,
+    easing: 'ease-in-out',
     fill: 'forwards',
   });
-  glow
-    .animate([{ opacity: 0 }, { opacity: 0, offset: 0.55 }, { opacity: 1 }], {
-      duration: ZOOM_MS,
-      easing: 'ease-in',
-      fill: 'forwards',
-    })
-    .finished.then(() => {
+  fade(0, VEIL, ZOOM_MS)
+    .then(() => {
       stop(orb);
-      orb.style.zIndex = '';
       open();
-      stop(glow);
 
-      return glow.animate([{ opacity: 1 }, { opacity: 0 }], {
-        duration: REVEAL_MS,
-        easing: 'ease-out',
-        fill: 'forwards',
-      }).finished;
+      return fade(VEIL, 0, REVEAL_MS);
     })
     .finally(() => {
       busy = false;
@@ -108,7 +87,7 @@ export function zoomIntoOrb(open: () => void) {
 }
 
 /**
- * BACK: the page sinks into the glow, then `goHome` shows the home screen.
+ * BACK: the page fades into the dark, then `goHome` shows the home screen.
  * Call zoomOutOfOrb() once the home screen (and its orb) is on screen.
  */
 export function sinkIntoGlow(goHome: () => void) {
@@ -123,50 +102,45 @@ export function sinkIntoGlow(goHome: () => void) {
 
   busy = true;
   pendingOut = true;
-  const glow = glowLayer();
-
-  stop(glow);
-  glow
-    .animate([{ opacity: 0 }, { opacity: 1 }], {
-      duration: REVEAL_MS,
-      easing: 'ease-in',
-      fill: 'forwards',
-    })
-    .finished.then(goHome, goHome);
+  fade(0, VEIL, REVEAL_MS).then(goHome, goHome);
 }
 
-/** After sinkIntoGlow's goHome: the orb shrinks back from full-window. */
+/** After sinkIntoGlow's goHome: the orb settles back and the dark lifts. */
 export function zoomOutOfOrb() {
   if (!pendingOut) {
     return;
   }
 
   pendingOut = false;
-  const glow = glowLayer();
   const orb = findOrb();
 
   if (orb) {
-    const scale = coverScale(orb);
-
-    orb.style.zIndex = '40';
-    orb
-      .animate([{ scale: String(scale) }, { scale: '1' }], {
-        duration: ZOOM_MS,
-        easing: EASE_OUT,
-      })
-      .finished.finally(() => {
-        orb.style.zIndex = '';
-      });
+    orb.animate([{ scale: '1.6' }, { scale: '1' }], {
+      duration: ZOOM_MS,
+      easing: 'ease-in-out',
+    });
   }
 
-  stop(glow);
-  glow
-    .animate([{ opacity: 1 }, { opacity: 0, offset: 0.45 }, { opacity: 0 }], {
-      duration: ZOOM_MS,
-      easing: 'ease-out',
-      fill: 'forwards',
+  fade(VEIL, 0, ZOOM_MS).finally(() => {
+    busy = false;
+  });
+}
+
+/** Page bar: a short soft fade between pages. */
+export function softSwitch(open: () => void) {
+  if (busy || calm()) {
+    open();
+    return;
+  }
+
+  busy = true;
+  fade(0, 0.7, 200)
+    .then(() => {
+      open();
+
+      return fade(0.7, 0, 300);
     })
-    .finished.finally(() => {
+    .finally(() => {
       busy = false;
     });
 }
