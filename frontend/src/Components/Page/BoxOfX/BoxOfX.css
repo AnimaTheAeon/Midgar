@@ -603,18 +603,17 @@
 /* Page bar: one tab per page, along the bottom (never on the home screen). */
 .pageBar {
   display: flex;
+  align-self: center;
   flex: 1 1 auto;
   flex-wrap: wrap;
-  align-self: center;
-  gap: 8px;
   min-width: 0;
+  gap: 8px;
 }
 
 .pageTab {
   position: relative;
-  isolation: isolate;
-  min-width: 110px;
   padding: 7px 16px;
+  min-width: 110px;
   border: 0;
   background: rgba(150, 240, 70, 0.5);
   color: #bef27e;
@@ -624,15 +623,16 @@
   font-size: 12px;
   font-family: 'Orbitron', 'Nunito', sans-serif;
   cursor: pointer;
+  isolation: isolate;
   clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
 
   &::before {
     position: absolute;
+    inset: 1px;
     z-index: -1;
     background: linear-gradient(#24700e, #0c3406);
     content: '';
     clip-path: polygon(8.5px 0, 100% 0, 100% calc(100% - 8.5px), calc(100% - 8.5px) 100%, 0 100%, 0 8.5px);
-    inset: 1px;
   }
 
   &:hover,

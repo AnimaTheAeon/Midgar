@@ -24,13 +24,6 @@ import styles from './Updates.css';
 // On Windows the desktop app does the install; on Synology Midgar downloads the
 // new package itself and its run script swaps it in (midgar-run.sh).
 
-// The newest package, downloaded through Midgar itself.
-function packageUrl() {
-  const key = encodeURIComponent(window.Sonarr.apiKey);
-
-  return `${window.Sonarr.urlBase}/api/v3/midgarupdate/package?apikey=${key}`;
-}
-
 type InstallState = 'idle' | 'asking' | 'started' | 'manual';
 
 function Updates() {
@@ -131,10 +124,9 @@ function Updates() {
 
             {installState === 'manual' ? (
               <Alert kind={kinds.WARNING}>
-                The Midgar desktop app isn't running here, so it can't install
-                the update for you.{' '}
-                <a href={packageUrl()}>Download the installer</a> and run it;
-                your settings and library are kept.
+                The Midgar desktop app isn't running, so the update can't be
+                installed yet. Open Midgar from the Start menu, then press
+                Install again. Your settings and library are kept.
               </Alert>
             ) : null}
 

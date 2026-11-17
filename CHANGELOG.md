@@ -8,6 +8,7 @@ Lines starting with "Fixed" are listed under Fixed.
 - Xbox theme: every page now has the page bar along the bottom, one tab per page, next to Back. It is hidden on the home screen.
 - Xbox theme: opening a page from the orb now fades through a dark green veil instead of a bright lime flash.
 - Fixed: messages from the server (for example on the health bar) said "Sonarr" instead of "Midgar".
+- Windows: if the Midgar desktop app isn't running when you press Install, Midgar now asks you to open it and press Install again, instead of offering a download.
 
 ## 1.23
 
