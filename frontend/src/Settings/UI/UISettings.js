@@ -13,11 +13,12 @@ import { inputTypes, kinds } from 'Helpers/Props';
 import SettingsToolbarConnector from 'Settings/SettingsToolbarConnector';
 import translate from 'Utilities/String/translate';
 
-// Midgar: the two looks. Sonarr's old theme names count as the FFVII menu.
+// Midgar: the looks. Sonarr's old theme names count as the FFVII menu.
 export const themeOptions = [
   { key: 'midgar', value: 'FFVII Menu' },
   { key: 'boxofx', value: 'Xbox' },
-  { key: 'blades', value: 'Blades' }
+  { key: 'blades', value: 'Blades' },
+  { key: 'glass', value: 'Liquid Glass' }
 ];
 
 export const firstDayOfWeekOptions = [
@@ -120,7 +121,7 @@ class UISettings extends Component {
                         onSavePress();
                       }}
                       {...settings.theme}
-                      value={['boxofx', 'blades'].includes(settings.theme.value) ? settings.theme.value : 'midgar'}
+                      value={['boxofx', 'blades', 'glass'].includes(settings.theme.value) ? settings.theme.value : 'midgar'}
                     />
                   </FormGroup>
                 </FieldSet>

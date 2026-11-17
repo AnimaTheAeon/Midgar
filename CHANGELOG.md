@@ -3,6 +3,11 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.21
+
+- New look: Liquid Glass. Dark frosted glass over soft color, capsule buttons and fields, switches instead of check boxes, and a menu pill that glides to the page you open. Dialogs and menus spring in. Pick it in Settings → UI → Theme. The other three looks are unchanged.
+- The sign-in page has a Liquid Glass version too.
+
 ## 1.20
 
 - The sign-in page now matches the look picked in Settings → UI: FFVII Menu, Xbox or Blades.
