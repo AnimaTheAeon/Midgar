@@ -3,6 +3,10 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.23
+
+- On a Synology, System > Updates now has an Install button: Midgar downloads the new version, checks it and restarts by itself, like the other apps. No more downloading the package and installing it in Package Center.
+
 ## 1.22
 
 - System > Updates downloads the new package through Midgar itself, and its messages no longer mention where updates come from.

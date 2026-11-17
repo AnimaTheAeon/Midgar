@@ -1,16 +1,18 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import AppState from 'App/State/AppState';
+import * as commandNames from 'Commands/commandNames';
 import Alert from 'Components/Alert';
 import Icon from 'Components/Icon';
 import Label from 'Components/Label';
-import Button from 'Components/Link/Button';
 import SpinnerButton from 'Components/Link/SpinnerButton';
 import LoadingIndicator from 'Components/Loading/LoadingIndicator';
 import PageContent from 'Components/Page/PageContent';
 import PageContentBody from 'Components/Page/PageContentBody';
 import { icons, kinds } from 'Helpers/Props';
+import { executeCommand } from 'Store/Actions/commandActions';
 import { fetchUpdates } from 'Store/Actions/systemActions';
+import createCommandExecutingSelector from 'Store/Selectors/createCommandExecutingSelector';
 import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import createAjaxRequest from 'Utilities/createAjaxRequest';
 import formatDate from 'Utilities/Date/formatDate';
@@ -18,9 +20,9 @@ import translate from 'Utilities/String/translate';
 import UpdateChanges from './UpdateChanges';
 import styles from './Updates.css';
 
-// Midgar: this page lists Midgar's own releases and installs the
-// newest one. On Windows the desktop app does the install; on Synology the new
-// package is downloaded and installed through Package Center.
+// Midgar: this page lists Midgar's own releases and installs the newest one.
+// On Windows the desktop app does the install; on Synology Midgar downloads the
+// new package itself and its run script swaps it in (midgar-run.sh).
 
 // The newest package, downloaded through Midgar itself.
 function packageUrl() {
@@ -43,14 +45,17 @@ function Updates() {
   );
   const { shortDateFormat } = useSelector(createUISettingsSelector());
   const [installState, setInstallState] = useState<InstallState>('idle');
+  const isUpdating = useSelector(
+    createCommandExecutingSelector(commandNames.APPLICATION_UPDATE)
+  );
 
   useEffect(() => {
     dispatch(fetchUpdates());
   }, [dispatch]);
 
-  const handleDownloadPress = useCallback(() => {
-    window.location.href = packageUrl();
-  }, []);
+  const handleNasInstallPress = useCallback(() => {
+    dispatch(executeCommand({ name: commandNames.APPLICATION_UPDATE }));
+  }, [dispatch]);
 
   const handleRefreshPress = useCallback(() => {
     dispatch(fetchUpdates());
@@ -148,13 +153,17 @@ function Updates() {
         {hasUpdate && !isWindows ? (
           <div className={styles.install}>
             <Alert kind={kinds.INFO}>
-              Download the new package, then open Package Center on your NAS and
-              choose Manual Install. Your settings and library are kept.
+              Midgar downloads the new version, checks it and restarts by
+              itself. Your settings and library are kept.
             </Alert>
 
-            <Button kind={kinds.PRIMARY} onPress={handleDownloadPress}>
-              Download Midgar {latest.version}
-            </Button>
+            <SpinnerButton
+              kind={kinds.PRIMARY}
+              isSpinning={isUpdating}
+              onPress={handleNasInstallPress}
+            >
+              Install Midgar {latest.version}
+            </SpinnerButton>
           </div>
         ) : null}
 
