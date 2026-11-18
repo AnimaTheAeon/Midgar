@@ -1,5 +1,5 @@
-// Liquid Glass (dark): frosted glass panes over a dark, softly lit backdrop,
-// iOS system colors. Shapes, blur and motion are in glassCss.js.
+// Dark Glass (dark): frosted glass panes over a dark, softly lit backdrop,
+// bright system-style colors. Shapes, blur and motion are in glassCss.js.
 const midgar = require('./midgar');
 
 const accent = '#0a84ff';

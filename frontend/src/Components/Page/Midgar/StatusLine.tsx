@@ -13,7 +13,7 @@ function formatCountdown(ms: number) {
   return `${String(m).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 }
 
-// What the status line says; also used by the Box of X status box.
+// What the status line says; also used by the Xbox status box.
 export function useStatusSummary(includeQueue = true) {
   const now = useNow();
   const status = useMidgarStatus();

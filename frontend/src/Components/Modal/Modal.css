@@ -108,7 +108,7 @@
   }
 }
 
-/* Box of X: corner-cut pop-up windows. */
+/* Xbox: corner-cut pop-up windows. */
 
 :global(html.boxofx) .modal {
   border-color: rgb(160 255 80 / 75%);

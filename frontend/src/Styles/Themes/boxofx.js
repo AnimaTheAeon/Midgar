@@ -1,5 +1,5 @@
-// Midgar: "Box of X" theme, a green console-dashboard look shared with Jenova
-// and Lifestream (palette from the Box of X theme kit). Same keys as the FFVII
+// Midgar: "Xbox" theme, a green console-dashboard look shared with Jenova
+// and Lifestream (palette from the Xbox theme kit). Same keys as the FFVII
 // theme; the ff7* keys colour Midgar's own windows.
 const dark = require('./dark');
 

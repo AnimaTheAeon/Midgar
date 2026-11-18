@@ -137,7 +137,7 @@ class Page extends Component {
       );
     }
 
-    // Midgar: the Box of X theme has its own home screen and page layout.
+    // Midgar: the Xbox theme has its own home screen and page layout.
     if (isBoxOfX) {
       return (
         <ColorImpairedContext.Provider value={enableColorImpairedMode}>

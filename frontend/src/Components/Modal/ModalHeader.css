@@ -9,7 +9,7 @@
   font-size: 22px;
 }
 
-/* Box of X: display face, upper case. */
+/* Xbox: display face, upper case. */
 
 :global(html.boxofx) .modalHeader {
   color: #dcff64;

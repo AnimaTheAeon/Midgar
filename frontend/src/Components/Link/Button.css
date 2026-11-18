@@ -120,7 +120,7 @@
   border-bottom-left-radius: 0;
 }
 
-/* Box of X: corner-cut buttons. */
+/* Xbox: corner-cut buttons. */
 
 :global(html.boxofx) .button {
   border-radius: 0;

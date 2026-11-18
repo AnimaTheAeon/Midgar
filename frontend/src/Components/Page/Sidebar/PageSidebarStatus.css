@@ -6,7 +6,7 @@
   composes: status;
 }
 
-/* Box of X: counts are dark numbers on the lime chip, big enough to read. */
+/* Xbox: counts are dark numbers on the lime chip, big enough to read. */
 
 :global(html.boxofx) .statusInfo {
   padding: 2px 7px;

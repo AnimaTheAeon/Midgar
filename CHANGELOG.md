@@ -3,6 +3,10 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.28
+
+- The Liquid Glass look is now called Dark Glass. Nothing else changes: if you were using it, you still are.
+
 ## 1.27
 
 - A download that gets no data at all for 30 minutes in Lifestream (nobody is sharing it) is now marked failed: Midgar blocks that release and searches for another one. Lifestream only counts while the download is really running and the network works, so a pause, a queue or a VPN or internet outage never counts. Needs Lifestream 1.3.20.
@@ -40,8 +44,8 @@ Lines starting with "Fixed" are listed under Fixed.
 
 ## 1.21
 
-- New look: Liquid Glass. Dark frosted glass over soft color, capsule buttons and fields, switches instead of check boxes, and a menu pill that glides to the page you open. Dialogs and menus spring in. Pick it in Settings → UI → Theme. The other three looks are unchanged.
-- The sign-in page has a Liquid Glass version too.
+- New look: Dark Glass. Dark frosted glass over soft color, capsule buttons and fields, switches instead of check boxes, and a menu pill that glides to the page you open. Dialogs and menus spring in. Pick it in Settings → UI → Theme. The other three looks are unchanged.
+- The sign-in page has a Dark Glass version too.
 
 ## 1.20
 
@@ -105,7 +109,7 @@ Lines starting with "Fixed" are listed under Fixed.
 - Sign-in setup is one step: a login that isn't asked for on your own PC or home network, and the window doesn't come back after saving.
 - Settings show a Save bar when something has changed.
 - Bigger toolbar buttons. A show's page keeps Search, Refresh and Edit up front and puts the rest under More.
-- Box of X: readable queue count, BACK steps from a show to the series list before going home, a MODE button on the home screen, a compact top row on phones, the current page always has a tab, and a gentler glow on the orb.
+- Xbox: readable queue count, BACK steps from a show to the series list before going home, a MODE button on the home screen, a compact top row on phones, the current page always has a tab, and a gentler glow on the orb.
 - FFVII menu: the info window holds the counts and the status line says how Midgar is doing; "Time" explains itself on hover.
 - General settings: networking is under Show Advanced; "Open Midgar on start" replaces "Open browser on start".
 - Midgar no longer asks Sonarr's servers for updates, notices or the time, and System > Status links to Midgar's own pages.

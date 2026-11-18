@@ -1,4 +1,4 @@
-// Liquid Glass: shapes, blur and motion. Generated rules, all scoped to html.glass.
+// Dark Glass: shapes, blur and motion. Generated rules, all scoped to html.glass.
 // (Colors live in glass.js like every other theme.)
 export default `
 html.glass, html.glass body { background: radial-gradient(900px 640px at 10% 6%, rgba(56,92,255,.38), transparent 60%), radial-gradient(820px 620px at 94% 24%, rgba(168,64,255,.26), transparent 62%), radial-gradient(900px 700px at 58% 112%, rgba(0,190,170,.2), transparent 60%), #04050a fixed; }

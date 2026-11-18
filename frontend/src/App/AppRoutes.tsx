@@ -157,7 +157,7 @@ function AppRoutes() {
       <Route path="/system/logs/files" component={Logs} />
 
       {/*
-        Box of X home screen
+        Xbox home screen
       */}
 
       <Route path="/home" exact={true} component={HomeRoute} />

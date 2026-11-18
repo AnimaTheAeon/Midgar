@@ -226,7 +226,7 @@ function BladesLayout({ location, children }: BladesLayoutProps) {
   );
   const isSeriesDetails = pathname.startsWith('/series/');
 
-  // The Box of X home screen doesn't exist here: open Series instead.
+  // The Xbox home screen doesn't exist here: open Series instead.
   useEffect(() => {
     if (pathname === '/home') {
       history.replace(`${window.Sonarr.urlBase}/`);

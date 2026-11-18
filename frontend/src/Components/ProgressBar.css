@@ -104,7 +104,7 @@
   }
 }
 
-/* Box of X: every primary bar runs lime, left to right. */
+/* Xbox: every primary bar runs lime, left to right. */
 
 :global(html.boxofx) .progressBar.primary {
   background: linear-gradient(90deg, #4fb51a, #e2ff6a);

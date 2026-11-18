@@ -135,7 +135,7 @@
   }
 }
 
-/* Box of X: corner-cut windows. */
+/* Xbox: corner-cut windows. */
 
 :global(html.boxofx) .window {
   border-radius: 0;

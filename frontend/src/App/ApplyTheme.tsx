@@ -18,7 +18,7 @@ function ApplyTheme() {
   const theme = useSelector(createThemeSelector());
 
   const updateCSSVariables = useCallback(() => {
-    // Midgar: the Box of X layout and shapes hang off this class.
+    // Midgar: the Xbox layout and shapes hang off this class.
     document.documentElement.classList.toggle('boxofx', theme === 'boxofx');
     document.documentElement.classList.toggle('blades', theme === 'blades');
     document.documentElement.classList.toggle('glass', theme === 'glass');
@@ -39,7 +39,7 @@ function ApplyTheme() {
     updateCSSVariables();
   }, [updateCSSVariables, theme]);
 
-  // Liquid Glass: the sidebar's selection pill glides to the open page. The
+  // Dark Glass: the sidebar's selection pill glides to the open page. The
   // pill is the sidebar's ::before; this keeps its position in CSS variables.
   useEffect(() => {
     if (theme !== 'glass') {

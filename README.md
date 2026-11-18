@@ -34,7 +34,7 @@ as a Synology package. Sibling app to
 Settings → UI → **Theme** switches between two looks, right away:
 
 - **FFVII menu**: the party-menu window layout with the menu on the right.
-- **Box of X**: a green console dashboard. Midgar opens on a home screen with
+- **Xbox**: a green console dashboard. Midgar opens on a home screen with
   the orb and the main menu (mouse, or arrow keys + Enter). Each page opens in
   a panel with its sub-pages as tabs; **BACK**, Esc or the mouse's back button
   return home.

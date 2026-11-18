@@ -17,7 +17,7 @@ import Orb from './Orb';
 import { sinkIntoGlow, softSwitch, zoomIntoOrb, zoomOutOfOrb } from './orbZoom';
 import styles from './BoxOfX.css';
 
-// Midgar: the "Box of X" layout. A home screen with the big orb and the menu
+// Midgar: the "Xbox" layout. A home screen with the big orb and the menu
 // on an arc; every page opens in one big panel under a slanted title bar, with
 // its sub-pages as tabs. BACK, Esc and the mouse's back button return home.
 

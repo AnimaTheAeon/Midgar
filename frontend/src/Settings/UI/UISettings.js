@@ -18,7 +18,7 @@ export const themeOptions = [
   { key: 'midgar', value: 'FFVII Menu' },
   { key: 'boxofx', value: 'Xbox' },
   { key: 'blades', value: 'Blades' },
-  { key: 'glass', value: 'Liquid Glass' }
+  { key: 'glass', value: 'Dark Glass' }
 ];
 
 export const firstDayOfWeekOptions = [
