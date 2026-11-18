@@ -3,6 +3,10 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.29
+
+- Fixed: a download that Midgar gave up on because it got no data for 30 minutes stayed in Lifestream. With Remove Failed on (the default), Midgar now removes it there too.
+
 ## 1.28
 
 - The Liquid Glass look is now called Dark Glass. Nothing else changes: if you were using it, you still are.

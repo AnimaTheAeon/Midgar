@@ -67,6 +67,11 @@ namespace NzbDrone.Core.Download.Clients.Lifestream
                 {
                     item.Status = DownloadItemStatus.Failed;
                     item.Message = $"No data for {(int)StallLimit.TotalMinutes} minutes: nobody is sharing this release. Midgar will try another one.";
+
+                    // Normally a torrent may only be removed once it has seeded enough.
+                    // A dead one has nothing to seed, so let Remove Failed take it out.
+                    item.CanBeRemoved = true;
+                    item.CanMoveFiles = false;
                 }
             }
 
