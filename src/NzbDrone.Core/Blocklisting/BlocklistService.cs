@@ -130,7 +130,9 @@ namespace NzbDrone.Core.Blocklisting
                 return release.InfoHash.Equals(item.TorrentInfoHash, StringComparison.InvariantCultureIgnoreCase);
             }
 
-            return HasSameIndexer(item, release.Indexer);
+            // No hash in the search result: the same title (already matched) from the
+            // same site, or from any site at the same size, is the same torrent.
+            return HasSameIndexer(item, release.Indexer) || (item.Size.HasValue && item.Size.Value > 0 && release.Size > 0 && HasSameSize(item, release.Size));
         }
 
         private bool HasSameIndexer(Blocklist item, string indexer)

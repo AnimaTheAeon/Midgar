@@ -3,6 +3,11 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.27
+
+- A download that gets no data at all for 30 minutes in Lifestream (nobody is sharing it) is now marked failed: Midgar blocks that release and searches for another one. Lifestream only counts while the download is really running and the network works, so a pause, a queue or a VPN or internet outage never counts. Needs Lifestream 1.3.20.
+- A blocked release is also recognized when it comes back from a different site (same title, same size), so the same dead release isn't grabbed again.
+
 ## 1.26
 
 - Fixed: after an update the page could switch to a "Failed to load" screen while Midgar restarted, instead of reloading by itself into the new version. Once the page has loaded, a moment without Midgar no longer replaces it.
