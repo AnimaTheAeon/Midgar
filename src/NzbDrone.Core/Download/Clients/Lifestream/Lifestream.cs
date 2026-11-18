@@ -83,7 +83,12 @@ namespace NzbDrone.Core.Download.Clients.Lifestream
             var response = _proxy.ProcessRequest("torrent-get", arguments, Settings);
             var result = new Dictionary<string, long>();
 
-            if (response?.Arguments == null || !response.Arguments.TryGetValue("torrents", out var list) || list is not JArray torrents)
+            if (response?.Arguments == null || !response.Arguments.TryGetValue("torrents", out var list))
+            {
+                return result;
+            }
+
+            if (list is not JArray torrents)
             {
                 return result;
             }

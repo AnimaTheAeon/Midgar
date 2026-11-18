@@ -26,6 +26,7 @@ namespace NzbDrone.Core.Download.Clients.Transmission
         void RemoveTorrent(string hash, bool removeData, TransmissionSettings settings);
         void MoveTorrentToTopInQueue(string hashString, TransmissionSettings settings);
         void SetTorrentLabels(string hash, IEnumerable<string> labels, TransmissionSettings settings);
+        TransmissionResponse ProcessRequest(string action, object arguments, TransmissionSettings settings);
     }
 
     public class TransmissionProxy : ITransmissionProxy
