@@ -192,16 +192,21 @@ function loadOnce(id: string, make: () => HTMLElement) {
   });
 }
 
+// The server lets browsers keep /Content files for a year, so the engine's
+// address carries the app version: an update always loads the new engine.
 function loadEngine(base: string) {
+  const v = encodeURIComponent(
+    window.Sonarr.appVersion || window.Sonarr.version || ''
+  );
   const css = loadOnce('mc360-css', () => {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = `${base}mc360.css`;
+    link.href = `${base}mc360.css?v=${v}`;
     return link;
   });
   const js = loadOnce('mc360-js', () => {
     const script = document.createElement('script');
-    script.src = `${base}mc360.js`;
+    script.src = `${base}mc360.js?v=${v}`;
     return script;
   });
 

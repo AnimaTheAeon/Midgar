@@ -3,6 +3,10 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.32
+
+- Fixed: after an update the browser could keep using the previous version's MC360 files (they're kept for a long time), so fixes to the look didn't show until a hard refresh. The look's files now load fresh with each new version.
+
 ## 1.31
 
 - MC360 now always opens on the menu of the blade you're on (switching looks used to drop you straight onto the page, with the blades parted off the screen until you clicked the blade's edge). It also fits tall or narrow windows: it scales to the window's width as well as its height and centres itself, and it re-checks the size whenever it draws.
