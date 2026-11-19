@@ -3,6 +3,12 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.31
+
+- MC360 now always opens on the menu of the blade you're on (switching looks used to drop you straight onto the page, with the blades parted off the screen until you clicked the blade's edge). It also fits tall or narrow windows: it scales to the window's width as well as its height and centres itself, and it re-checks the size whenever it draws.
+- Fixed: in MC360 the series search's results were see-through, so the toolbar showed through them. They now sit on a solid pane above the page.
+- Fixed: in Blades and MC360, pop-up windows (such as an episode's History) had square insides poking past their rounded corners, language tags were near-white with white text, and the Keyboard Shortcuts keys were blank white boxes.
+
 ## 1.30
 
 - New look: MC360. The blades from the MC360 dashboard skin, one per menu section (Series, Calendar, Activity, Wanted, Settings, System), each with its own menu of pages. Pick one and the page opens on the blade, with every button and setting it has in the other looks. Left and Right change blades, Up and Down move, Enter opens, Esc goes back. Three skins (Default, Glass, Carbon), the skin's sounds with a volume control, and Calmer motion for a still background. Press G or the Y button for the guide: look, skin, sounds, updates and sign out. Pick it in Settings > UI.

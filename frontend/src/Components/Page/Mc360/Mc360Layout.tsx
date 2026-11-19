@@ -320,21 +320,11 @@ function Mc360Layout({ location, children }: Mc360LayoutProps) {
         applyStatus();
         mc = window.MC360.mount(options);
 
-        // Opened on a page's own address: show that page. The home address
-        // shows the Series blade's menu.
-        const { b, id } = locate(
-          live.current.pathname,
-          live.current.showAdvanced
-        );
+        // Start on the menu of the blade the current page belongs to (the
+        // look switch happens on Settings > UI); Enter opens the page.
+        const { b } = locate(live.current.pathname, live.current.showAdvanced);
 
-        if (
-          live.current.pathname === '/' ||
-          live.current.pathname === '/home'
-        ) {
-          mc.home(b);
-        } else {
-          mc.showPage(b, id);
-        }
+        mc.home(b);
 
         setEngine(mc);
       },

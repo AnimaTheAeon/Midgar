@@ -119,6 +119,7 @@
 /* Blades: rounded glass-edged pop-up windows. */
 
 :global(html.blades) .modal {
+  overflow: hidden;
   border-color: rgb(255 255 255 / 55%);
   border-radius: 18px;
   box-shadow: 0 8px 24px rgb(0 0 0 / 45%);

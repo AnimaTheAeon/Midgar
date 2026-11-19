@@ -77,8 +77,10 @@ module.exports = {
   pageBackground: panel,
   pageFooterBackground: well,
 
-  inverseLabelColor: inkSoft,
-  inverseLabelTextColor: onAccent,
+  // Tags such as languages: see-through white with white text (like Materia),
+  // never near-white with white text.
+  inverseLabelColor: 'rgba(255, 255, 255, 0.3)',
+  inverseLabelTextColor: '#ffffff',
   disabledLabelColor: 'rgba(255, 255, 255, 0.35)',
 
   defaultLinkHoverColor: '#ffffff',

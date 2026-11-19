@@ -3,6 +3,8 @@
    reads on every blade color and skin. */
 
 .bar {
+  position: relative;
+  z-index: 5;
   display: flex;
   align-items: center;
   flex: none;
@@ -51,4 +53,13 @@
   display: flex;
   padding: 16px;
   background: #3a3452;
+}
+
+/* The search results drop down over the page, so they need a solid pane
+   (the page's see-through colors would let the toolbar show through). */
+.search :global([class*=-seriesContainer]) {
+  border-color: rgb(255 255 255 / 35%);
+  border-radius: 10px;
+  background: #2b2740;
+  box-shadow: 0 8px 22px rgb(0 0 0 / 55%);
 }
