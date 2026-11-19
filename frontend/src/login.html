@@ -48,7 +48,7 @@
     <title>Sign in - Midgar</title>
 
     <style>
-      /* Midgar: sign-in page in the look picked in the app (FFVII menu, Xbox or Blades). */
+      /* Midgar: sign-in page in the look picked in the app (FFVII menu, Xbox, Blades, Dark Glass or MC360). */
       html, body { height: 100%; margin: 0; }
       * { box-sizing: border-box; }
       body { font-family: 'Nunito', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; -webkit-font-smoothing: antialiased; }
@@ -195,6 +195,24 @@
       body.glass .button:active { transform: scale(.97); }
       body.glass .failed { color: #ff6961; }
       @media (prefers-reduced-motion: reduce) { body.glass .window { animation: none; } }
+      /* MC360: the dashboard's green swirl, with the form on a grey guide-style pane. */
+      @font-face { font-family: 'MC360'; src: url('/Content/MC360/mc360.ttf') format('truetype'); font-display: swap; }
+      html:has(body.mc360) { background: #000; }
+      body.mc360 { color: #000; font-family: 'MC360', Tahoma, 'Segoe UI', sans-serif; font-weight: 400;
+        background: #2d7a1c url('/Content/MC360/swirl-default.jpg') center / cover no-repeat; }
+      body.mc360 .window { width: 380px; max-width: 100%; padding: 26px 30px 24px; border-radius: 6px 46px 46px 6px / 6px 50% 50% 6px;
+        background: linear-gradient(180deg, #d9d9d9 0%, #f1f1f1 18%, #e4e4e4 60%, #cfcfcf 100%);
+        border: 1px solid rgba(255, 255, 255, .9); box-shadow: 0 10px 30px rgba(0, 0, 0, .55), inset -10px 0 14px rgba(0, 0, 0, .12); }
+      body.mc360 .brand { margin-bottom: 10px; font-size: 26px; text-shadow: 1px 1px 0 rgba(218, 218, 218, .63); }
+      body.mc360 .label { color: #353535; }
+      body.mc360 .form-input { height: 36px; padding: 0 10px; border: 1px solid #8c8c8c; border-radius: 3px; background: #fff; color: #000; font-family: 'Segoe UI', Tahoma, sans-serif; }
+      body.mc360 .form-input:focus { outline: 0; border-color: #4a9a32; box-shadow: 0 0 0 2px rgba(108, 196, 72, .55); }
+      body.mc360 .remember input { accent-color: #4a9a32; }
+      body.mc360 .forgot { color: #245f9c; }
+      body.mc360 .button { border: 1px solid #2f6b1c; border-radius: 4px; background: linear-gradient(180deg, #8fd36a, #4a9a32 55%, #357a22); color: #fff;
+        font-family: 'MC360', Tahoma, sans-serif; font-size: 17px; text-shadow: 1px 1px 0 rgba(0, 0, 0, .6); }
+      body.mc360 .button:hover, body.mc360 .button:focus { background: linear-gradient(180deg, #a2e07e, #56aa3c 55%, #3f8a2a); }
+      body.mc360 .failed { color: #a02c28; }
     </style>
   </head>
 
@@ -234,10 +252,10 @@
     <script type="text/javascript">
       (function () {
         var raw = '_THEME_';
-        var look = raw === 'boxofx' ? 'green' : raw === 'blades' || raw === 'glass' ? raw : 'ff';
+        var look = raw === 'boxofx' ? 'green' : raw === 'blades' || raw === 'glass' || raw === 'mc360' ? raw : 'ff';
         document.body.className = look;
         var meta = document.querySelector('meta[name=theme-color]');
-        if (meta) meta.setAttribute('content', look === 'green' ? '#0a3608' : look === 'blades' ? '#3479c0' : look === 'glass' ? '#04050a' : '#121e78');
+        if (meta) meta.setAttribute('content', look === 'green' ? '#0a3608' : look === 'blades' ? '#3479c0' : look === 'glass' ? '#04050a' : look === 'mc360' ? '#2d7a1c' : '#121e78');
         // Blades: the sign-in form sits on the open blade.
         if (look === 'blades') document.querySelector('.slot').appendChild(document.querySelector('.window'));
         if (window.location.search.indexOf('loginFailed=true') > -1) {

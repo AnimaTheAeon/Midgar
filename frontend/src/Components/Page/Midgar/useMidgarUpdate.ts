@@ -87,6 +87,13 @@ async function check() {
   }
 }
 
+// Checks right now (the guide's Check for updates); the newer release, if any.
+export async function checkMidgarUpdateNow() {
+  await check();
+
+  return cached;
+}
+
 // Returns the newer release if there is one.
 export default function useMidgarUpdate() {
   const [update, setUpdate] = useState<MidgarUpdate | null>(cached);

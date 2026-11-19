@@ -20,7 +20,12 @@ function ApplyTheme() {
   const updateCSSVariables = useCallback(() => {
     // Midgar: the Xbox layout and shapes hang off this class.
     document.documentElement.classList.toggle('boxofx', theme === 'boxofx');
-    document.documentElement.classList.toggle('blades', theme === 'blades');
+    // MC360 pages reuse the Blades styling for buttons, dialogs and progress.
+    document.documentElement.classList.toggle(
+      'blades',
+      theme === 'blades' || theme === 'mc360'
+    );
+    document.documentElement.classList.toggle('mc360', theme === 'mc360');
     document.documentElement.classList.toggle('glass', theme === 'glass');
     if (theme === 'glass' && !document.getElementById('glass-css')) {
       const style = document.createElement('style');

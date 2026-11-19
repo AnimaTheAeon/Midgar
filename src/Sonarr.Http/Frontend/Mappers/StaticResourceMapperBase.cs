@@ -59,7 +59,11 @@ namespace Sonarr.Http.Frontend.Mappers
                 return Task.FromResult<IActionResult>(new FileStreamResult(GetContentStream(filePath), new MediaTypeHeaderValue(contentType)
                 {
                     Encoding = contentType == "text/plain" ? Encoding.UTF8 : null
-                }));
+                })
+                {
+                    // Lets the MC360 swirl video loop and seek.
+                    EnableRangeProcessing = true
+                });
             }
 
             _logger.Warn("File {0} not found", filePath);

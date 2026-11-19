@@ -18,7 +18,8 @@ export const themeOptions = [
   { key: 'midgar', value: 'FFVII Menu' },
   { key: 'boxofx', value: 'Xbox' },
   { key: 'blades', value: 'Blades' },
-  { key: 'glass', value: 'Dark Glass' }
+  { key: 'glass', value: 'Dark Glass' },
+  { key: 'mc360', value: 'MC360' }
 ];
 
 export const firstDayOfWeekOptions = [
@@ -121,7 +122,7 @@ class UISettings extends Component {
                         onSavePress();
                       }}
                       {...settings.theme}
-                      value={['boxofx', 'blades', 'glass'].includes(settings.theme.value) ? settings.theme.value : 'midgar'}
+                      value={['boxofx', 'blades', 'glass', 'mc360'].includes(settings.theme.value) ? settings.theme.value : 'midgar'}
                     />
                   </FormGroup>
                 </FieldSet>

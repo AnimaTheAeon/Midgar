@@ -1,0 +1,54 @@
+/* Midgar: the page area on the open MC360 blade. Pages keep their Blades-look
+   colors (white text on glass), so they sit on a dark see-through pane that
+   reads on every blade color and skin. */
+
+.bar {
+  display: flex;
+  align-items: center;
+  flex: none;
+  gap: 10px;
+
+  margin-bottom: 6px;
+  padding: 6px 10px;
+  min-height: 38px;
+  border: 1px solid rgb(255 255 255 / 30%);
+  border-radius: 10px;
+  background: rgb(8 12 22 / 50%);
+  color: #fff;
+}
+
+.search {
+  flex: 0 1 320px;
+  min-width: 140px;
+}
+
+.messages {
+  flex: 1;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.actions {
+  flex: none;
+}
+
+.page {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  overflow: hidden;
+  min-height: 0;
+  border: 1px solid rgb(255 255 255 / 30%);
+  border-radius: 10px;
+  background: rgb(8 12 22 / 50%);
+  color: #fff;
+}
+
+.fallback {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  padding: 16px;
+  background: #3a3452;
+}

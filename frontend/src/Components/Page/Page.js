@@ -10,6 +10,7 @@ import locationShape from 'Helpers/Props/Shapes/locationShape';
 import BladesLayout from './Blades/BladesLayout';
 import BoxOfXLayout from './BoxOfX/BoxOfXLayout';
 import PageHeader from './Header/PageHeader';
+import Mc360Layout from './Mc360/Mc360Layout';
 import StatusLine from './Midgar/StatusLine';
 import { useMidgarPolling } from './Midgar/useMidgarStatus';
 import PageSidebar from './Sidebar/PageSidebar';
@@ -97,6 +98,7 @@ class Page extends Component {
       authenticationEnabled,
       isBoxOfX,
       isBlades,
+      isMc360,
       onSidebarToggle,
       onSidebarVisibleChange
     } = this.props;
@@ -121,6 +123,21 @@ class Page extends Component {
         />
       </React.Fragment>
     );
+
+    // Midgar: the MC360 look shows each page on the open skin blade.
+    if (isMc360) {
+      return (
+        <ColorImpairedContext.Provider value={enableColorImpairedMode}>
+          <SignalRConnector />
+
+          <Mc360Layout location={location}>
+            {children}
+          </Mc360Layout>
+
+          {modals}
+        </ColorImpairedContext.Provider>
+      );
+    }
 
     // Midgar: the Blades theme puts each page on the open blade.
     if (isBlades) {
@@ -193,6 +210,7 @@ Page.propTypes = {
   authenticationEnabled: PropTypes.bool.isRequired,
   isBoxOfX: PropTypes.bool.isRequired,
   isBlades: PropTypes.bool,
+  isMc360: PropTypes.bool,
   onResize: PropTypes.func.isRequired,
   onSidebarToggle: PropTypes.func.isRequired,
   onSidebarVisibleChange: PropTypes.func.isRequired
