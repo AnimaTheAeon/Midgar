@@ -1,5 +1,7 @@
 {
   "name": "__INSTANCE_NAME__",
+  "short_name": "Midgar",
+  "id": "__URL_BASE__/",
   "icons": [
     {
       "src": "__URL_BASE__/Content/Images/Icons/android-chrome-192x192.png",
@@ -13,7 +15,9 @@
     }
   ],
   "start_url": "__URL_BASE__/",
-  "theme_color": "#3a3f51",
-  "background_color": "#3a3f51",
-  "display": "standalone"
+  "scope": "__URL_BASE__/",
+  "theme_color": "#121e78",
+  "background_color": "#04040c",
+  "display": "standalone",
+  "orientation": "any"
 }

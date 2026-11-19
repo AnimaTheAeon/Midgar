@@ -207,6 +207,17 @@
   .stats > span:nth-child(3) {
     display: none;
   }
+
+  /* Long names get two lines instead of being cut short. */
+  .name {
+    display: box;
+    white-space: normal;
+    font-size: 18px;
+    line-height: 1.2;
+    /* autoprefixer: ignore next */
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
 }
 
 /* Xbox: slanted rows, orb-green bars, no FFVII hand. */

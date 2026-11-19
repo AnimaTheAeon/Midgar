@@ -6,6 +6,7 @@ import Link from 'Components/Link/Link';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import ConfirmModal from 'Components/Modal/ConfirmModal';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
+import phone from 'Components/Table/PhoneCard.css';
 import TableRow from 'Components/Table/TableRow';
 import Popover from 'Components/Tooltip/Popover';
 import Tooltip from 'Components/Tooltip/Tooltip';
@@ -13,6 +14,7 @@ import EpisodeFormats from 'Episode/EpisodeFormats';
 import EpisodeLanguages from 'Episode/EpisodeLanguages';
 import EpisodeQuality from 'Episode/EpisodeQuality';
 import IndexerFlags from 'Episode/IndexerFlags';
+import useIsPhone from 'Helpers/Hooks/useIsPhone';
 import { icons, kinds, tooltipPositions } from 'Helpers/Props';
 import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import Release from 'typings/Release';
@@ -163,6 +165,88 @@ function InteractiveSearchRow(props: InteractiveSearchRowProps) {
     setIsOverrideModalOpen(false);
   }, [setIsOverrideModalOpen]);
 
+  const isPhone = useIsPhone();
+
+  const modals = (
+    <>
+      <ConfirmModal
+        isOpen={isConfirmGrabModalOpen}
+        kind={kinds.WARNING}
+        title={translate('GrabRelease')}
+        message={translate('GrabReleaseUnknownSeriesOrEpisodeMessageText', {
+          title,
+        })}
+        confirmLabel={translate('Grab')}
+        onConfirm={onGrabConfirm}
+        onCancel={onGrabCancel}
+      />
+
+      <OverrideMatchModal
+        isOpen={isOverrideModalOpen}
+        title={title}
+        indexerId={indexerId}
+        guid={guid}
+        seriesId={mappedSeriesId}
+        seasonNumber={mappedSeasonNumber}
+        episodes={mappedEpisodeInfo}
+        languages={languages}
+        quality={quality}
+        protocol={protocol}
+        isGrabbing={isGrabbing}
+        grabError={grabError}
+        onModalClose={onOverrideModalClose}
+      />
+    </>
+  );
+
+  // Midgar on a phone: one card per release, everything readable without
+  // sideways scrolling, and a big grab button.
+  if (isPhone) {
+    return (
+      <TableRow className={phone.phoneRow}>
+        <td className={phone.phoneCard}>
+          <div className={styles.phoneTitle}>
+            <Link to={infoUrl}>{title}</Link>
+          </div>
+
+          <div className={phone.phoneMeta}>
+            <EpisodeQuality quality={quality} showRevision={true} />
+            <span>{formatBytes(size)}</span>
+            {protocol === 'torrent' ? (
+              <Peers seeders={seeders} leechers={leechers} />
+            ) : (
+              <ProtocolLabel protocol={protocol} />
+            )}
+            <span>{formatAge(age, ageHours, ageMinutes)}</span>
+          </div>
+
+          <div className={phone.phoneEpisode}>{indexer}</div>
+
+          {rejections.length ? (
+            <ul className={styles.phoneRejections}>
+              {rejections.map((rejection, index) => {
+                return <li key={index}>{rejection}</li>;
+              })}
+            </ul>
+          ) : null}
+        </td>
+
+        <td className={phone.phoneSide}>
+          <SpinnerIconButton
+            name={getDownloadIcon(isGrabbing, isGrabbed, grabError)}
+            kind={getDownloadKind(isGrabbed, grabError)}
+            title={getDownloadTooltip(isGrabbing, isGrabbed, grabError)}
+            size={20}
+            isSpinning={isGrabbing}
+            onPress={onGrabPressWrapper}
+          />
+        </td>
+
+        {modals}
+      </TableRow>
+    );
+  }
+
   return (
     <TableRow>
       <TableRowCell className={styles.protocol}>
@@ -283,33 +367,7 @@ function InteractiveSearchRow(props: InteractiveSearchRowProps) {
         </Link>
       </TableRowCell>
 
-      <ConfirmModal
-        isOpen={isConfirmGrabModalOpen}
-        kind={kinds.WARNING}
-        title={translate('GrabRelease')}
-        message={translate('GrabReleaseUnknownSeriesOrEpisodeMessageText', {
-          title,
-        })}
-        confirmLabel={translate('Grab')}
-        onConfirm={onGrabConfirm}
-        onCancel={onGrabCancel}
-      />
-
-      <OverrideMatchModal
-        isOpen={isOverrideModalOpen}
-        title={title}
-        indexerId={indexerId}
-        guid={guid}
-        seriesId={mappedSeriesId}
-        seasonNumber={mappedSeasonNumber}
-        episodes={mappedEpisodeInfo}
-        languages={languages}
-        quality={quality}
-        protocol={protocol}
-        isGrabbing={isGrabbing}
-        grabError={grabError}
-        onModalClose={onOverrideModalClose}
-      />
+      {modals}
     </TableRow>
   );
 }

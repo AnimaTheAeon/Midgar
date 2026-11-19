@@ -28,9 +28,9 @@ body.mc360 { overflow: hidden; text-shadow: none; }
 .mc360-root .tr, .mc360-root .trf .ft { transition: left .7s cubic-bezier(.22,.9,.25,1), top .7s cubic-bezier(.22,.9,.25,1), width .7s cubic-bezier(.22,.9,.25,1), height .7s cubic-bezier(.22,.9,.25,1), opacity .5s ease; }
 .mc360-root .mc-host { position: absolute; z-index: 3; overflow: auto; display: flex; flex-direction: column; box-sizing: border-box; visibility: hidden; pointer-events: none; user-select: text; -webkit-user-select: text; }
 .mc360-root.mc-paged .mc-host { visibility: visible; pointer-events: auto; }
-.mc360-root .mc-scrim { position: absolute; left: 0; top: 0; width: 100%; height: 576px; background: rgba(0,0,0,.8); animation: mcFade .3s ease; }
+.mc360-root .mc-scrim { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,.8); animation: mcFade .3s ease; }
 .mc360-root .mc-guide { position: absolute; left: 0; top: 0; width: 390px; height: 576px; animation: mcGuide .25s cubic-bezier(.22,.9,.25,1); }
-.mc360-root .mc-toast { position: absolute; top: 450px; width: 215px; height: 64px; animation: mcToast .2s ease; transform-origin: 0 50%; }
+.mc360-root .mc-toast { position: absolute; width: 215px; height: 64px; animation: mcToast .2s ease; transform-origin: 0 50%; }
 .mc360-root .mc-ring { position: absolute; left: 8px; top: 6px; width: 50px; height: 50px; }
 .mc360-root .mc-tt { left: 65px; top: 11px; font-size: 15px; text-shadow: 1px 1px 0 #000; }
 .mc360-root .mc-ts { left: 65px; top: 34px; font-size: 13px; opacity: .9; text-shadow: 1px 1px 0 #000; max-width: 145px; overflow: hidden; text-overflow: ellipsis; }
@@ -49,3 +49,8 @@ body.mc360 { overflow: hidden; text-shadow: none; }
 }
 /* Pages inside the open blade: dark text on the light glass, lightly framed scroll area. */
 .mc360-root .mc-host { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.35) transparent; }
+/* Phones: the page pane gets a darker glass so text stays readable over the swirl. */
+.mc360-root.mc-phone .mc-host { -webkit-overflow-scrolling: touch; }
+/* Sideways swipes change blades: keep the browser's swipe-to-go-back out of it. */
+.mc360-root.mc-phone { touch-action: pan-y; overscroll-behavior: none; }
+html:has(.mc360-root.mc-phone), html:has(.mc360-root.mc-phone) body { overscroll-behavior-x: none; }

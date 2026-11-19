@@ -15,3 +15,19 @@
     padding: 0;
   }
 }
+
+/* Midgar on a phone: the toolbar scrolls sideways instead of cutting off
+   the buttons that don't fit (View, Sort and Filter never fold away). */
+
+@media only screen and (max-width: 600px) {
+  .toolbar {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .toolbar::-webkit-scrollbar {
+    display: none;
+  }
+}

@@ -3,6 +3,16 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.34
+
+- Midgar works on a phone. Open it in your phone's browser (at home, or through a private connection to your home network), then use Share > Add to Home Screen: it opens full-screen as "Midgar" with its own icon.
+- On a phone, Queue, Missing and the episode search show one card per item instead of a wide table: each download with its progress bar, state, size and time left; each missing episode with its search buttons; each release with its quality, size, seeders, age and a big grab button, plus the reasons it was turned down written out.
+- On a phone the toolbar scrolls sideways instead of cutting buttons off, long show names get two lines, and the Add Series window fits the screen.
+- Blades on a phone: the closed blades shrink to thin slivers so the page gets the screen, and a row of section buttons along the bottom switches blades. Swiping works on every page.
+- MC360 on a phone: the blades become a strip of tabs across the top (tap or swipe), with big menu rows cut from the skin's own highlight, the status card, the guide, and pages using the full width. The Y, X, B and A buttons sit along the bottom.
+- FFVII Menu, Xbox and Dark Glass keep their look with the same phone improvements.
+- Fixed: swiping between blades could trigger the browser's swipe-to-go-back.
+
 ## 1.33
 
 - Fixed: in MC360, pointing at a blade or a menu entry could fill it with a solid blue block, and the menu text came out heavy and bold. The look no longer picks up the app's own button and text styles.

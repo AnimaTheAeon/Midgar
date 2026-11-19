@@ -38,3 +38,10 @@
     }
   }
 }
+
+@media only screen and (max-width: 600px) {
+  .sectionContainer {
+    flex: none;
+    overflow: visible;
+  }
+}

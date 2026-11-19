@@ -32,7 +32,7 @@ function calculateOverflowItems(children, isMeasured, width, collapseButtons, ma
   });
 
   const buttonsWidth = buttonCount * BUTTON_WIDTH;
-  const separatorsWidth = separatorCount + SEPARATOR_WIDTH;
+  const separatorsWidth = separatorCount * SEPARATOR_WIDTH;
   const totalWidth = buttonsWidth + separatorsWidth;
 
   // If the width of buttons and separators is less than

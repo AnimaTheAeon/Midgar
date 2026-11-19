@@ -128,6 +128,23 @@ function useWidth() {
   return width;
 }
 
+// Is the touch on something that scrolls sideways itself (the toolbar or the
+// section tabs on a phone, a wide table)? Then a sideways swipe is for that.
+function scrollsSideways(target: HTMLElement | null, stop: HTMLElement | null) {
+  for (let el = target; el && el !== stop; el = el.parentElement) {
+    const overflowX = window.getComputedStyle(el).overflowX;
+
+    if (
+      (overflowX === 'auto' || overflowX === 'scroll') &&
+      el.scrollWidth > el.clientWidth + 1
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 const calm = () =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -311,20 +328,35 @@ function BladesLayout({ location, children }: BladesLayoutProps) {
     };
   }, [cur, go, isSeriesDetails, step]);
 
-  // Swipe sideways: anywhere with a finger, or from a tab or the top band with the mouse.
+  // Swipe sideways: from a tab or the top band with the mouse; anywhere with a
+  // finger (through touch events, which the browser doesn't cancel when the
+  // page scrolls), except on something that itself scrolls sideways.
   const onPointerDown = useCallback((event: React.PointerEvent) => {
     const target = event.target as HTMLElement;
-    drag.current = {
-      x: event.clientX,
-      y: event.clientY,
-      ok:
-        event.pointerType === 'touch' ||
-        !!target.closest(`.${styles.tab}, .${styles.band}`),
-    };
+    drag.current =
+      event.pointerType === 'touch'
+        ? null
+        : {
+            x: event.clientX,
+            y: event.clientY,
+            ok: !!target.closest(`.${styles.tab}, .${styles.band}`),
+          };
   }, []);
 
-  const onPointerUp = useCallback(
-    (event: React.PointerEvent) => {
+  const onTouchStart = useCallback((event: React.TouchEvent) => {
+    const touch = event.touches[0];
+    drag.current =
+      event.touches.length === 1 && touch
+        ? {
+            x: touch.clientX,
+            y: touch.clientY,
+            ok: !scrollsSideways(event.target as HTMLElement, stageRef.current),
+          }
+        : null;
+  }, []);
+
+  const swipeEnd = useCallback(
+    (x: number, y: number) => {
       const d = drag.current;
       drag.current = null;
 
@@ -332,8 +364,8 @@ function BladesLayout({ location, children }: BladesLayoutProps) {
         return;
       }
 
-      const dx = event.clientX - d.x;
-      const dy = event.clientY - d.y;
+      const dx = x - d.x;
+      const dy = y - d.y;
 
       if (Math.abs(dx) > 70 && Math.abs(dy) < 60) {
         step(dx < 0 ? 1 : -1);
@@ -342,10 +374,33 @@ function BladesLayout({ location, children }: BladesLayoutProps) {
     [step]
   );
 
+  const onPointerUp = useCallback(
+    (event: React.PointerEvent) => {
+      if (event.pointerType !== 'touch') {
+        swipeEnd(event.clientX, event.clientY);
+      }
+    },
+    [swipeEnd]
+  );
+
+  const onTouchEnd = useCallback(
+    (event: React.TouchEvent) => {
+      const touch = event.changedTouches[0];
+
+      if (touch) {
+        swipeEnd(touch.clientX, touch.clientY);
+      }
+    },
+    [swipeEnd]
+  );
+
+  // On a phone the closed blades become thin slivers, so the open one gets
+  // the screen; a row of section buttons at the bottom switches blades.
+  const phone = width <= 600;
   const narrow = width < 700;
-  const p = narrow ? 30 : 52;
-  const r = narrow ? 20 : 44;
-  const edge = narrow ? 14 : 30;
+  // [blade step, curve radius, right edge] for phone, narrow, wide.
+  const [p, r, edge] = (phone && [6, 12, 4]) ||
+    (narrow && [30, 20, 14]) || [52, 44, 30];
   const ms = instant || calm() ? 0 : 700;
   const stageStyle = {
     '--p': `${p}px`,
@@ -374,10 +429,12 @@ function BladesLayout({ location, children }: BladesLayoutProps) {
   return (
     <div
       ref={stageRef}
-      className={styles.stage}
+      className={classNames(styles.stage, phone && styles.phone)}
       style={stageStyle}
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
     >
       {/* Keeps queue and health counts fresh (the FFVII menu does this itself). */}
       <span hidden={true}>
@@ -466,6 +523,32 @@ function BladesLayout({ location, children }: BladesLayoutProps) {
                     <div className={styles.bodyInner}>{children}</div>
                   ) : null}
                 </div>
+
+                {phone ? (
+                  <nav className={styles.bladeBar} aria-label="Sections">
+                    {sections.map((b, j) => (
+                      <button
+                        key={b.to}
+                        type="button"
+                        className={classNames(
+                          styles.bladeButton,
+                          j === cur && styles.bladeButtonOn
+                        )}
+                        style={
+                          {
+                            '--bc': COLORS[j % COLORS.length][1],
+                          } as React.CSSProperties
+                        }
+                        tabIndex={open ? 0 : -1}
+                        aria-current={j === cur ? 'page' : undefined}
+                        data-to={b.to}
+                        onClick={onTabClick}
+                      >
+                        {b.title()}
+                      </button>
+                    ))}
+                  </nav>
+                ) : null}
 
                 <div className={styles.foot}>
                   <span className={classNames(styles.key, styles.hint)}>

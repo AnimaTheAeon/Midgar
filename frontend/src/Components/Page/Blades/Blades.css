@@ -2,6 +2,12 @@
    section's color; the page sits in the open blade. Same look as Lifestream,
    Jenova and Turks. */
 
+/* Sideways swipes change blades: keep the browser's swipe-to-go-back out of it. */
+:global(html):has(.stage),
+:global(html):has(.stage) :global(body) {
+  overscroll-behavior-x: none;
+}
+
 .stage {
   position: fixed;
   inset: 0;
@@ -407,4 +413,84 @@
   .label {
     font-size: 18px;
   }
+}
+
+/* Phones: thin slivers for the closed blades, the page gets the width, and a
+   row of section buttons along the bottom replaces the keyboard hints. */
+.phone .label,
+.phone .edge,
+.phone .foot,
+.phone .chip,
+.phone .updateChip {
+  display: none;
+}
+
+.phone .tab::before,
+.phone .tab::after {
+  display: none;
+}
+
+.phone .band {
+  padding: 0 10px 0 calc(var(--r) + 4px);
+  height: 58px;
+  border-radius: 0 0 18px 18px;
+  gap: 10px;
+}
+
+.phone .title {
+  font-size: 22px;
+}
+
+.phone .search {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: none;
+}
+
+.phone .subtabs {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 8px 10px 4px calc(var(--r) + 4px);
+  scrollbar-width: none;
+}
+
+.phone .subtab {
+  flex: none;
+  padding: 7px 14px;
+}
+
+.phone .body {
+  padding: 6px 6px 4px calc(var(--r) + 2px);
+}
+
+.bladeBar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: none;
+  overflow-x: auto;
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom)) calc(var(--r) + 4px);
+  border-top: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 18px 18px 0 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.25)), var(--band);
+  gap: 6px;
+  scrollbar-width: none;
+}
+
+.bladeButton {
+  flex: none;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 60%), var(--bc);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.bladeButtonOn {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.55), 0 0 12px rgba(255, 255, 255, 0.35);
 }

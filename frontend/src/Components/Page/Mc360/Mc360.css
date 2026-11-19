@@ -63,3 +63,20 @@
   background: #2b2740;
   box-shadow: 0 8px 22px rgb(0 0 0 / 55%);
 }
+
+/* Phones: the search box takes the bar; the status line doesn't fit. */
+
+@media only screen and (max-width: 600px) {
+  .search {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .messages {
+    display: none;
+  }
+
+  .bar {
+    margin-bottom: 4px;
+  }
+}

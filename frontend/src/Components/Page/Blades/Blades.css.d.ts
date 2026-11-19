@@ -5,6 +5,9 @@ interface CssExports {
   'bad': string;
   'band': string;
   'blade': string;
+  'bladeBar': string;
+  'bladeButton': string;
+  'bladeButtonOn': string;
   'body': string;
   'bodyInner': string;
   'chip': string;
@@ -19,6 +22,7 @@ interface CssExports {
   'navs': string;
   'open': string;
   'panel': string;
+  'phone': string;
   'search': string;
   'sheen': string;
   'stage': string;

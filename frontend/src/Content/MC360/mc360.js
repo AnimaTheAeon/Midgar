@@ -15,6 +15,8 @@
  *     checkUpdates: () => Promise<string>|string, notes: () => [..], signOut: () => {},
  *     calm: () => bool                        // the app's own reduce-motion setting
  *     beforeBack: () => bool                  // optional: handle Esc/back on a page yourself (return true)
+ *     phone: true                             // optional: on screens 600 px wide or less, use the
+ *                                             //   portrait phone layout (tab strip, big rows, full-width page)
  *   });
  *   mc.showPage(bladeIndex, itemId);  mc.home(bladeIndex);  mc.refresh();  mc.toast(t, s);
  *   mc.host (element)  mc.destroy();
@@ -162,13 +164,13 @@
     }
 
     // ---------- state ----------
-    var W = 1024, s = 1;
+    var W = 1024, s = 1, H = 576, phone = false;
     function calm() { return prefs.calm || prefersCalm() || !!(opts.calm && opts.calm()); }
     function blades() { return opts.blades || []; }
     function N() { return blades().length; }
     function blade(i) { return blades()[i === undefined ? st.b : i] || { key: '', color: 'grey', items: [] }; }
     function later(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
-    function xr(j) { return W - 87 - 35 * (N() - 1 - j); }
+    function xr(j) { return phone ? W : W - 87 - 35 * (N() - 1 - j); }
     function homeGeom(b) { return { xh: 18 + 35 * b, end: b < N() - 1 ? xr(b + 1) + 65 : W }; }
     function bladePos(b, tier) {
       var res = [], n = N();
@@ -186,15 +188,23 @@
     // that the narrowest layout (560 wide) runs off the side; any height left
     // over is split above and below. Re-checked on every draw, so a window
     // that was hidden or still sizing when the look started is put right.
+    // Phones (when the app asks for it): a portrait stage 400 wide, as tall as
+    // the screen allows.
     var oy = 0, measured = '';
     function measure() {
       var h = window.innerHeight || 576, w = window.innerWidth || 1024;
       if (h + 'x' + w === measured) return;
       measured = h + 'x' + w;
-      s = Math.max(0.3, Math.min(3, h / 576, w / 560));
-      W = Math.max(560, w / s);
-      oy = Math.max(0, (h - 576 * s) / 2);
-      [stage, front].forEach(function (x) { x.style.width = px(W); x.style.top = px(oy); x.style.transform = 'scale(' + s + ')'; });
+      phone = !!opts.phone && w <= 600;
+      if (phone) {
+        s = w / 400; W = 400; H = Math.max(560, h / s); oy = 0;
+      } else {
+        s = Math.max(0.3, Math.min(3, h / 576, w / 560));
+        W = Math.max(560, w / s); H = 576;
+        oy = Math.max(0, (h - 576 * s) / 2);
+      }
+      root.classList.toggle('mc-phone', phone);
+      [stage, front].forEach(function (x) { x.style.width = px(W); x.style.height = px(H); x.style.top = px(oy); x.style.transform = 'scale(' + s + ')'; });
     }
 
     // ---------- layout ----------
@@ -203,11 +213,11 @@
       T.swirl = [x0, end - x0];
       T.clipX = x0;
       var fade = 'mask-image:linear-gradient(90deg,transparent 0,#000 46px,#000 calc(100% - 46px),transparent 100%);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 46px,#000 calc(100% - 46px),transparent 100%)';
-      T.frameRects.push(R(x0, 0, end - x0, 576, GR[v + ':tint-' + TINT[col || 'grey']], 1));
-      T.frameRects.push(R(x0 + 30, 0, we - 16 - (x0 + 30), 576, GR[v + ':wash-mid'], 2, fade));
+      T.frameRects.push(R(x0, 0, end - x0, H, GR[v + ':tint-' + TINT[col || 'grey']], 1));
+      T.frameRects.push(R(x0 + 30, 0, we - 16 - (x0 + 30), H, GR[v + ':wash-mid'], 2, fade));
       T.frameRects.push(R(x0 + 40, 0, we - 20 - (x0 + 40), 64, GR['bkgd-whitewash-glass-top-middle'], 3, fade));
-      T.frameRects.push(R(x0 + 40, 512, we - 20 - (x0 + 40), 64, GR['bkgd-whitewash-glass-bottom-middle'], 3, fade));
-      if (into) return;
+      T.frameRects.push(R(x0 + 40, H - 64, we - 20 - (x0 + 40), 64, GR['bkgd-whitewash-glass-bottom-middle'], 3, fade));
+      if (into || phone) return;
       out.runners.push(S(v + ':blades-runner-left', -61, 0, 128, 576, 20));
       out.runners.push(S(v + ':blades-runner-right', W - 55, 0, 128, 576, 20));
       var hz = HAZE[col] ? col : 'blue', show = !!HAZE[col] && tier === 1;
@@ -271,9 +281,99 @@
       }
       buttons(out, xh + 107, end);
     }
+    // ---------- phone layout ----------
+    // The blades as a strip of tabs across the top (tap or swipe), the open
+    // blade's panel filling the screen, big rows, and the four buttons along
+    // the bottom. Everything is drawn with the skin's own art.
+    var STRIP_Y = 8, STRIP_H = 44, HEAD_Y = 66, ROW_Y = 112, ROW_H = 52, FOOT_H = 56;
+    function phoneStrip(out) {
+      var n = N(), avail = W - 16, gap = 4;
+      var want = blades().map(function (bl, i) { return 18 + 8.2 * bl.key.length + (i === st.b ? 10 : 0); });
+      var sum = want.reduce(function (a, b) { return a + b; }, 0) + gap * (n - 1);
+      var k = sum > avail ? (avail - gap * (n - 1)) / (sum - gap * (n - 1)) : 1, x = 8;
+      if (sum < avail) x = 8 + (avail - sum) / 2;
+      var v = prefs.skin;
+      blades().forEach(function (bl, i) {
+        var w = want[i] * k, on = i === st.b;
+        var bg = on ? GR[v + ':tint-' + TINT[bl.color || 'grey']] + ',linear-gradient(180deg,#fff,#cfcfcf)' : 'linear-gradient(180deg,#fdfdfd 0%,#e4e4e4 45%,#bdbdbd 100%)';
+        out.rects.push(R(x, STRIP_Y, w, STRIP_H, bg, 6, 'border-radius:22px 22px 6px 6px/22px 22px 6px 6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -2px 3px rgba(0,0,0,.18),0 2px 4px rgba(0,0,0,.35)' + (on ? ';outline:2px solid rgba(255,255,255,.9);outline-offset:-2px' : '')));
+        out.texts.push(Tx(bl.key, x, STRIP_Y + 14, 15, on ? '#fff' : '#353535', 9, 'width:' + px(w) + ';text-align:center;overflow:hidden;text-overflow:ellipsis;' + (on ? 'text-shadow:' + SH_BLACK : 'text-shadow:' + SH_GREY)));
+        out.hits.push(Hit(x, STRIP_Y - 4, w, STRIP_H + 8, function () { goFromAnywhere(i); }, null, 'Open ' + bl.key));
+        x += w + gap;
+      });
+    }
+    function phoneButtons(out) {
+      var y = H - FOOT_H + 8, lab = 'text-shadow:' + SH_BLACK;
+      out.rects.push(R(0, H - FOOT_H, W, FOOT_H, 'linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.28))', 4));
+      out.sprites.push(S('button-y', 14, y + 4, 26, 26, 40)); out.texts.push(Tx('guide', 46, y + 10, 17, '#fff', 41, lab));
+      out.hits.push(Hit(8, y - 4, 100, 42, function () { toggleGuide(); }, null, 'Guide'));
+      out.sprites.push(S('button-x', 112, y + 4, 26, 26, 40)); out.texts.push(Tx(prefs.sound ? 'sound on' : 'sound off', 144, y + 10, 17, '#fff', 41, lab));
+      out.hits.push(Hit(106, y - 4, 120, 42, function () { toggleSound(); }, null, 'Sound on or off'));
+      if (st.tier === 2 || st.b > 0) {
+        out.sprites.push(S('button-b', W - 40, y + 4, 26, 26, 40)); out.texts.push(Tx('back', W - 170, y + 10, 17, '#fff', 41, 'width:122px;text-align:right;' + lab));
+        out.hits.push(Hit(W - 150, y - 4, 144, 42, function () { back(); }, null, 'Back'));
+      }
+    }
+    function phoneHome(out) {
+      var bl = blade(), items = bl.items || [];
+      out.texts.push(Tx(title(bl.key), 18, HEAD_Y + 4, 26, '#fff', 12, 'text-shadow:' + SH_BLACK));
+      out.texts.push(Tx(st.clock, W - 138, HEAD_Y + 10, 17, '#fff', 12, 'width:120px;text-align:right;font-weight:bold;text-shadow:' + SH_BLACK));
+      var cardH = 150, room = H - FOOT_H - ROW_Y - cardH - 70;
+      var vis = Math.max(4, Math.min(items.length, Math.floor(room / ROW_H)));
+      var start = Math.max(0, Math.min(items.length - vis, st.sel - vis + 1)), shown = items.slice(start, start + vis);
+      var bx = 16, rw = W - 32;
+      shown.forEach(function (it, k) {
+        var y = ROW_Y + ROW_H * k, idx = start + k, on = idx === st.sel;
+        // A row cut from the skin's menu highlight: the lit one, or an unlit one.
+        out.sprites.push(S('hl1', bx, y, rw, ROW_H, 6, '', on ? [0, 0, 256, 49] : [0, 50, 256, 49]));
+        out.sprites.push(S(ICON[it.icon] || it.icon || 'icon-info', bx + 16, y + 9, 34, 34, 8));
+        out.texts.push(Tx(it.label, bx + 62, y + 16, 20, DARK, 9, 'max-width:' + px(rw - 76) + ';overflow:hidden;text-overflow:ellipsis;text-shadow:' + SH_GREY));
+        out.hits.push(Hit(bx, y, rw, ROW_H, function () { if (st.sel !== idx) { st.sel = idx; play('cursor'); } open(idx); }, null, it.label));
+      });
+      out.shine = shown.length ? [bx + 10, ROW_Y + ROW_H * (st.sel - start) - 4, rw - 20, ROW_H + 6] : null;
+      var below = ROW_Y + ROW_H * shown.length + 12;
+      if (items.length > vis) { out.texts.push(Tx((start + 1) + '–' + (start + shown.length) + ' of ' + items.length, bx + 4, below, 14, '#fff', 9, 'text-shadow:' + SH_BLACK)); below += 24; }
+      var it0 = items[st.sel];
+      if (it0 && it0.hint) { out.texts.push(Tx(it0.hint, bx + 4, below + 4, 16, DARK, 9, 'white-space:normal;width:' + px(rw - 8) + ';line-height:1.25;text-shadow:' + SH_GREY)); }
+      // status card, near the bottom when there's room for it
+      var cy = H - FOOT_H - cardH + 4;
+      if (cy > below + 60) {
+        var cx = (W - 256) / 2, lines = (opts.card ? opts.card() : []) || [];
+        out.sprites.push(S('gamecard_home', cx, cy, 256, 128, 6));
+        out.sprites.push(S('home_logoshadow', cx + 12, cy + 124, 232, 16, 5));
+        out.texts.push(Tx((opts.app && opts.app.name) || '', cx + 14, cy + 15, 15, '#111', 8, 'font-weight:bold'));
+        out.sprites.push(S(ICON[opts.app && opts.app.icon] || (opts.app && opts.app.icon) || 'icon-randomize', cx + 14, cy + 48, 52, 52, 7));
+        lines.slice(0, 3).forEach(function (l, i) { out.texts.push(Tx(String(l), cx + 76, cy + 48 + 19 * i, 12, '#fff', 8, 'text-shadow:' + SH_BLACK + ';line-height:1.3;max-width:160px;overflow:hidden;text-overflow:ellipsis')); });
+      }
+    }
+    function phonePage(out) {
+      var bl = blade(), it = (bl.items || []).filter(function (x) { return x.id === st.item; })[0];
+      out.sprites.push(S('button-b', 14, HEAD_Y + 4, 26, 26, 12));
+      out.hits.push(Hit(6, HEAD_Y - 6, 44, 44, function () { back(); }, null, 'Back to ' + bl.key));
+      out.texts.push(Tx(title(bl.key) + (it ? ' - ' + it.label : ''), 48, HEAD_Y + 6, 22, '#fff', 12, 'max-width:' + px(W - 150) + ';overflow:hidden;text-overflow:ellipsis;text-shadow:' + SH_BLACK));
+      out.texts.push(Tx(st.clock, W - 108, HEAD_Y + 10, 15, '#fff', 12, 'width:96px;text-align:right;font-weight:bold;text-shadow:' + SH_BLACK));
+    }
+    function goFromAnywhere(i) {
+      if (st.guide) return;
+      if (st.tier === 2) {
+        st.tier = 1;
+        if (i === st.b) { render(); play('tier2_exit'); slideContent(-60); if (opts.onHome) opts.onHome(st.b); return; }
+        render();
+      }
+      if (i === st.b) return;
+      go(i);
+    }
+
     function emptyOut() { return { frameRects: [], runners: [], hazes: [], bladeItems: [], bladeHits: [], rects: [], sprites: [], texts: [], hits: [], shine: null, swirl: [0, W], clipX: 0, ghost: null }; }
     function layout() {
       var out = emptyOut(), bl = blade(), col = bl.color;
+      if (phone) {
+        frame(out, 0, W, col, st.tier);
+        phoneStrip(out);
+        if (st.tier === 1) phoneHome(out); else phonePage(out);
+        phoneButtons(out);
+        return out;
+      }
       if (st.tier === 1) {
         var G = homeGeom(st.b);
         frame(out, G.xh, G.end, col, 1);
@@ -305,8 +405,8 @@
       var out = layout();
       // main panel
       main.className = st.ghost ? 'mc-pan' : 'mc-pan trf';
-      main.style.clipPath = edgeClip(out.clipX);
-      var sw = 'left:' + px(out.swirl[0]) + ';top:0;width:' + px(out.swirl[1]) + ';height:576px';
+      main.style.clipPath = phone ? 'none' : edgeClip(out.clipX);
+      var sw = 'left:' + px(out.swirl[0]) + ';top:0;width:' + px(out.swirl[1]) + ';height:' + px(H);
       if (video._s !== sw) { video.style.cssText = sw; still.style.cssText = sw; video._s = sw; }
       var vs = U('swirl-' + prefs.skin + '.mp4'), ss = U('swirl-' + prefs.skin + '.jpg');
       if (video.getAttribute('src') !== vs) { video.setAttribute('src', vs); try { var pp = video.play(); if (pp && pp.catch) pp.catch(function () {}); } catch (e) {} }
@@ -350,7 +450,11 @@
       var hostOn = st.tier === 2;
       root.classList.toggle('mc-paged', hostOn);
       root.classList.toggle('calm', calm());
-      if (hostOn) {
+      if (hostOn && phone) {
+        // Phone: the page fills the panel between the title and the buttons.
+        host.style.left = px(6 * s); host.style.top = px((HEAD_Y + 40) * s);
+        host.style.width = px((W - 12) * s); host.style.height = px((H - HEAD_Y - 40 - FOOT_H) * s);
+      } else if (hostOn) {
         // The page pane sits between the open blade's art (it reaches x + 74)
         // and the right runner (from W - 52), so neither covers or cuts it.
         host.style.left = px(98 * s); host.style.top = px(oy + 70 * s);
@@ -389,12 +493,13 @@
         g = guideWrap.lastChild;
       }
       g = guideWrap.lastChild;
-      var BX = 296, v = prefs.skin, tuck = 'clip-path:' + leftOfClip(BX, EDGE, 22);
+      var BX = 296, v = prefs.skin, tuck = 'clip-path:' + leftOfClip(BX, EDGE, 22), dy = H - 576;
+      g.style.height = px(H);
       var rs = [], ss = [], ts = [], hs = [];
-      ss.push(S('background-grey', 0, 0, BX + 80, 576, 0, tuck));
-      rs.push(R(0, 0, BX + 80, 576, 'linear-gradient(180deg,rgba(0,0,0,.30) 0,rgba(0,0,0,.16) 5%,rgba(0,0,0,.05) 11%,rgba(255,255,255,.10) 17%,rgba(255,255,255,.05) 50%,rgba(255,255,255,.08) 80%,rgba(0,0,0,.05) 86%,rgba(0,0,0,.16) 94%,rgba(0,0,0,.30) 100%)', 1, tuck));
-      rs.push(R(BX - 40, 0, 120, 576, 'linear-gradient(90deg,rgba(0,0,0,0) 0,rgba(0,0,0,.18) 100%)', 1, tuck));
-      ss.push(S(v + ':blades-size4-header', BX, 0, 80, 576, 3));
+      ss.push(S('background-grey', 0, 0, BX + 80, H, 0, tuck));
+      rs.push(R(0, 0, BX + 80, H, 'linear-gradient(180deg,rgba(0,0,0,.30) 0,rgba(0,0,0,.16) 5%,rgba(0,0,0,.05) 11%,rgba(255,255,255,.10) 17%,rgba(255,255,255,.05) 50%,rgba(255,255,255,.08) 80%,rgba(0,0,0,.05) 86%,rgba(0,0,0,.16) 94%,rgba(0,0,0,.30) 100%)', 1, tuck));
+      rs.push(R(BX - 40, 0, 120, H, 'linear-gradient(90deg,rgba(0,0,0,0) 0,rgba(0,0,0,.18) 100%)', 1, tuck));
+      ss.push(S(v + ':blades-size4-header', BX, 0, 80, H, 3));
       ss.push(S(ICON[opts.app && opts.app.icon] || (opts.app && opts.app.icon) || 'icon-randomize', 40, 26, 44, 44, 4));
       ts.push(Tx((opts.app && opts.app.name) || '', 94, 30, 23, '#000', 5, 'text-shadow:' + SH_GREY));
       ts.push(Tx('version ' + ((opts.app && opts.app.ver) || '') + ' · ' + ((opts.app && opts.app.plat) || ''), 95, 57, 13, '#000', 5, 'opacity:.75'));
@@ -420,12 +525,12 @@
         ts.push(Tx('recent', 46, ny, 13, '#000', 5, 'opacity:.6'));
         notes.slice(0, 3).forEach(function (n, i) { ts.push(Tx(String(n), 46, ny + 20 + 19 * i, 13, '#000', 5, 'max-width:230px;overflow:hidden;text-overflow:ellipsis;opacity:.85')); });
       }
-      ss.push(S('button-y', 40, 524, 21, 21, 5)); ts.push(Tx('close', 66, 528, 15, '#000', 5, 'text-shadow:' + SH_GREY));
-      hs.push(Hit(34, 519, 90, 28, function () { toggleGuide(); }, null, 'Close guide'));
-      ss.push(S('button-back', 252, 500, 21, 21, 5)); ts.push(Tx('back', 166, 504, 15, '#000', 5, 'width:80px;text-align:right;text-shadow:' + SH_GREY));
-      hs.push(Hit(170, 496, 110, 28, function () { toggleGuide(); }, null, 'Back'));
-      ss.push(S('button-a', 252, 524, 21, 21, 5)); ts.push(Tx('select', 166, 528, 15, '#000', 5, 'width:80px;text-align:right;text-shadow:' + SH_GREY));
-      hs.push(Hit(170, 520, 110, 28, function () { guideRun(st.gsel, 1); }, null, 'Select'));
+      ss.push(S('button-y', 40, 524 + dy, 21, 21, 5)); ts.push(Tx('close', 66, 528 + dy, 15, '#000', 5, 'text-shadow:' + SH_GREY));
+      hs.push(Hit(34, 519 + dy, 90, 28, function () { toggleGuide(); }, null, 'Close guide'));
+      ss.push(S('button-back', 252, 500 + dy, 21, 21, 5)); ts.push(Tx('back', 166, 504 + dy, 15, '#000', 5, 'width:80px;text-align:right;text-shadow:' + SH_GREY));
+      hs.push(Hit(170, 496 + dy, 110, 28, function () { toggleGuide(); }, null, 'Back'));
+      ss.push(S('button-a', 252, 524 + dy, 21, 21, 5)); ts.push(Tx('select', 166, 528 + dy, 15, '#000', 5, 'width:80px;text-align:right;text-shadow:' + SH_GREY));
+      hs.push(Hit(170, 520 + dy, 110, 28, function () { guideRun(st.gsel, 1); }, null, 'Select'));
       paint(g._s, ss, 'spr'); paint(g._r, rs, 'rect'); paint(g._t, ts, 'txt'); paint(g._h, hs, 'hit');
     }
 
@@ -447,6 +552,7 @@
         el('div', 'mc-txt mc-tt', w); el('div', 'mc-txt mc-ts', w);
       }
       w.style.left = px(W / 2 - 107);
+      w.style.top = px(phone ? H - FOOT_H - 80 : 450);
       w.children[2].textContent = st.toast.title; w.children[3].textContent = st.toast.text;
     }
 
@@ -458,7 +564,7 @@
     function go(i) {
       var n = N();
       if (i < 0 || i >= n || i === st.b || st.tier !== 1) return;
-      var old = st.b, oldSel = st.sel, dir = i > old ? 1 : -1, c = calm();
+      var old = st.b, oldSel = st.sel, dir = i > old ? 1 : -1, c = calm() || phone;
       var gn = (st.ghost ? st.ghost.n : 0) + 1;
       var d = dir > 0 ? xr(i) - (18 + 35 * i) : xr(old) - (18 + 35 * old);
       st.b = i; st.sel = 0;
@@ -466,6 +572,7 @@
       render();
       play('bladeslide_' + (1 + Math.floor(Math.random() * 4)));
       if (opts.onHome) opts.onHome(i);
+      if (phone && !calm()) slideContent(dir * 80);
       if (c) return;
       try {
         if (dir > 0) {
@@ -567,6 +674,17 @@
     }
     function onMouseDown(e) { if (e.button === 3) e.preventDefault(); firstGesture(); }
     function onResize() { render(); }
+    // Phones: swipe sideways on the menu (not on a page) to change blades.
+    var touch = null;
+    function onTouchStart(e) { if (!phone || st.guide || st.tier !== 1 || e.touches.length !== 1) { touch = null; return; } touch = { x: e.touches[0].clientX, y: e.touches[0].clientY }; firstGesture(); }
+    function onTouchEnd(e) {
+      if (!touch || !phone) return;
+      var t = e.changedTouches[0], dx = t.clientX - touch.x, dy = t.clientY - touch.y;
+      touch = null;
+      if (Math.abs(dx) > 60 && Math.abs(dy) < 50 && st.tier === 1) go(st.b + (dx < 0 ? 1 : -1));
+    }
+    root.addEventListener('touchstart', onTouchStart, { passive: true });
+    root.addEventListener('touchend', onTouchEnd);
     window.addEventListener('keydown', onKey, true);
     window.addEventListener('mouseup', onMouseUp);
     window.addEventListener('mousedown', onMouseDown);
@@ -602,12 +720,12 @@
       play: play,
       state: function () { return { b: st.b, sel: st.sel, tier: st.tier, item: st.item, guide: st.guide, gsel: st.gsel, ghost: !!st.ghost, prefs: Object.assign({}, prefs) }; },
       // for tests
-      _go: go, _open: open, _back: back, _guideRows: guideRows, _bladePos: function () { return bladePos(st.b, st.tier); }, _W: function () { return W; }, _set: function (o) { Object.assign(st, o); render(); },
+      _go: go, _open: open, _phone: function () { return phone; }, _back: back, _guideRows: guideRows, _bladePos: function () { return bladePos(st.b, st.tier); }, _W: function () { return W; }, _set: function (o) { Object.assign(st, o); render(); },
       setBlades: function (bl) { opts.blades = bl; if (st.b >= N()) st.b = 0; render(); },
       destroy: destroy
     };
   }
 
   // MC360.current: the running look (for checks from the page).
-  window.MC360 = { mount: function (o) { var m = mount(o); window.MC360.current = m; var d = m.destroy; m.destroy = function () { d(); if (window.MC360.current === m) window.MC360.current = null; }; return m; }, current: null, version: '1.0.1' };
+  window.MC360 = { mount: function (o) { var m = mount(o); window.MC360.current = m; var d = m.destroy; m.destroy = function () { d(); if (window.MC360.current === m) window.MC360.current = null; }; return m; }, current: null, version: '1.1.0' };
 })();

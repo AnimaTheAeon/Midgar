@@ -99,3 +99,17 @@
   /* width: 100%; */
   text-align: center;
 }
+
+.phoneTitle {
+  overflow-wrap: anywhere;
+
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.phoneRejections {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--dangerColor);
+  font-size: 12px;
+}

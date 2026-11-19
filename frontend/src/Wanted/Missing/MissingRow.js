@@ -1,15 +1,20 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import RelativeDateCell from 'Components/Table/Cells/RelativeDateCell';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableSelectCell from 'Components/Table/Cells/TableSelectCell';
+import phone from 'Components/Table/PhoneCard.css';
 import TableRow from 'Components/Table/TableRow';
 import episodeEntities from 'Episode/episodeEntities';
 import EpisodeSearchCell from 'Episode/EpisodeSearchCell';
 import EpisodeStatus from 'Episode/EpisodeStatus';
 import EpisodeTitleLink from 'Episode/EpisodeTitleLink';
 import SeasonEpisodeNumber from 'Episode/SeasonEpisodeNumber';
+import useIsPhone from 'Helpers/Hooks/useIsPhone';
 import SeriesTitleLink from 'Series/SeriesTitleLink';
+import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
+import getRelativeDate from 'Utilities/Date/getRelativeDate';
 import styles from './MissingRow.css';
 
 function MissingRow(props) {
@@ -32,8 +37,65 @@ function MissingRow(props) {
     onSelectedChange
   } = props;
 
+  const isPhone = useIsPhone();
+  const { showRelativeDates, shortDateFormat } = useSelector(createUISettingsSelector());
+
   if (!series) {
     return null;
+  }
+
+  // Midgar on a phone: one card per missing episode, with its search buttons.
+  if (isPhone) {
+    const code = `S${String(seasonNumber).padStart(2, '0')}E${String(episodeNumber).padStart(2, '0')}`;
+    const aired = getRelativeDate({ date: airDateUtc, shortDateFormat, showRelativeDates });
+
+    return (
+      <TableRow className={phone.phoneRow}>
+        <TableSelectCell
+          className={phone.phoneSelect}
+          id={id}
+          isSelected={isSelected}
+          onSelectedChange={onSelectedChange}
+        />
+
+        <td className={phone.phoneCard}>
+          <div className={phone.phoneSeries}>
+            <SeriesTitleLink
+              titleSlug={series.titleSlug}
+              title={series.title}
+            />
+          </div>
+
+          <div className={phone.phoneEpisodeRow}>
+            <span>{code} ·</span>
+            <div className={phone.phoneEpisodeTitle}>
+              <EpisodeTitleLink
+                episodeId={id}
+                seriesId={series.id}
+                episodeEntity={episodeEntities.WANTED_MISSING}
+                episodeTitle={title}
+                showOpenSeriesButton={true}
+              />
+            </div>
+          </div>
+
+          {aired ? (
+            <div className={phone.phoneMeta}>
+              <span>Aired {aired}</span>
+            </div>
+          ) : null}
+        </td>
+
+        <EpisodeSearchCell
+          className={phone.phoneSide}
+          episodeId={id}
+          seriesId={series.id}
+          episodeTitle={title}
+          episodeEntity={episodeEntities.WANTED_MISSING}
+          showOpenSeriesButton={true}
+        />
+      </TableRow>
+    );
   }
 
   return (

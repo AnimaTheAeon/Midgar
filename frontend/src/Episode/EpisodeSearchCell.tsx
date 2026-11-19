@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { EPISODE_SEARCH } from 'Commands/commandNames';
@@ -18,10 +19,12 @@ interface EpisodeSearchCellProps {
   episodeEntity: EpisodeEntities;
   seriesId: number;
   episodeTitle: string;
+  className?: string;
+  showOpenSeriesButton?: boolean;
 }
 
 function EpisodeSearchCell(props: EpisodeSearchCellProps) {
-  const { episodeId, episodeEntity, seriesId, episodeTitle } = props;
+  const { episodeId, episodeEntity, seriesId, episodeTitle, className } = props;
 
   const executingCommands = useSelector(createExecutingCommandsSelector());
   const isSearching = executingCommands.some(({ name, body }) => {
@@ -44,7 +47,7 @@ function EpisodeSearchCell(props: EpisodeSearchCellProps) {
   }, [episodeId, dispatch]);
 
   return (
-    <TableRowCell className={styles.episodeSearchCell}>
+    <TableRowCell className={classNames(styles.episodeSearchCell, className)}>
       <SpinnerIconButton
         name={icons.SEARCH}
         isSpinning={isSearching}

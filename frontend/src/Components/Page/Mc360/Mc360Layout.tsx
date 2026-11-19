@@ -320,6 +320,8 @@ function Mc360Layout({ location, children }: Mc360LayoutProps) {
             return `Midgar ${version} is the newest version`;
           },
           signOut: undefined as (() => void) | undefined,
+          // Phones get the portrait layout (tab strip, big rows, full-width page).
+          phone: true,
         };
         optionsRef.current = options;
         applyStatus();

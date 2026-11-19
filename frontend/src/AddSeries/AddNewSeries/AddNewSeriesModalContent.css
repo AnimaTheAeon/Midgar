@@ -15,6 +15,7 @@
 
 .info {
   flex-grow: 1;
+  min-width: 0; /* Midgar: lets the dropdowns shrink to fit a phone */
 }
 
 .overview {

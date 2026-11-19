@@ -11,6 +11,8 @@ interface CssExports {
   'languages': string;
   'manualDownloadContent': string;
   'peers': string;
+  'phoneRejections': string;
+  'phoneTitle': string;
   'protocol': string;
   'quality': string;
   'rejected': string;
