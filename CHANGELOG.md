@@ -5,7 +5,7 @@ Lines starting with "Fixed" are listed under Fixed.
 
 ## 1.30
 
-- New look: MC360. The blades from the MC360 dashboard skin, one per menu section (Series, Calendar, Activity, Wanted, Settings, System), each with its own menu of pages. Pick one and the page opens on the blade, with every button and setting it has in the other looks. Left and Right change blades, Up and Down move, Enter opens, Esc goes back. Three skins (Default, Glass, Carbon), the skin's sounds with a volume control, and Calmer motion for a still background. Press G or the Y button for the guide: look, skin, sounds, updates and sign out. Pick it in Settings > UI or from any look's own picker.
+- New look: MC360. The blades from the MC360 dashboard skin, one per menu section (Series, Calendar, Activity, Wanted, Settings, System), each with its own menu of pages. Pick one and the page opens on the blade, with every button and setting it has in the other looks. Left and Right change blades, Up and Down move, Enter opens, Esc goes back. Three skins (Default, Glass, Carbon), the skin's sounds with a volume control, and Calmer motion for a still background. Press G or the Y button for the guide: look, skin, sounds, updates and sign out. Pick it in Settings > UI.
 - The sign-in page has an MC360 version too.
 
 ## 1.29
