@@ -3,6 +3,11 @@
 Each release's notes come from its section here, and show on System > Updates.
 Lines starting with "Fixed" are listed under Fixed.
 
+## 1.33
+
+- Fixed: in MC360, pointing at a blade or a menu entry could fill it with a solid blue block, and the menu text came out heavy and bold. The look no longer picks up the app's own button and text styles.
+- Fixed: on a page, MC360 now keeps the open blade fully on screen at the left, with the page beside it and the other blades showing at the right, instead of cutting the blade off at the window's edge.
+
 ## 1.32
 
 - Fixed: after an update the browser could keep using the previous version's MC360 files (they're kept for a long time), so fixes to the look didn't show until a hard refresh. The look's files now load fresh with each new version.
