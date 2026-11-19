@@ -1,2 +1,5 @@
 **/JsLibraries/**
 **/*.css.d.ts
+
+# MC360 engine: shared, prebuilt file
+frontend/src/Content/MC360/
